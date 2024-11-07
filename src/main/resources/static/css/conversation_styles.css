@@ -25,10 +25,13 @@
         .conversation-content #sidebar-wrapper #sidebar-content .sidebar-item button {
           width: 150px; }
     .conversation-content #sidebar-wrapper #new-conversation-form {
+      align-items: center;
+      bottom: 0;
       display: flex;
-      flex-direction: column; }
+      flex: 0;
+      position: sticky; }
       .conversation-content #sidebar-wrapper #new-conversation-form button {
-        border: none; }
+        width: 150px; }
   .conversation-content #conversation-wrapper {
     display: flex;
     flex: 1;

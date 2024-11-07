@@ -6,9 +6,9 @@ import code.openApi.model.GenerateContentResponse;
 import code.openApi.model.ListModelsResponse;
 import code.openApi.model.Model;
 import code.util.Facade;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 
 @Facade
@@ -17,7 +17,6 @@ public class GoogleApiAdapter {
 
   private ApiModelMapper apiModelMapper;
   private ApiCallService apiCallService;
-  private ObjectMapper objectMapper;
 
   public ApiResponseDto generate(ApiRequestDto request) {
     try {
@@ -32,7 +31,7 @@ public class GoogleApiAdapter {
     try {
       ListModelsResponse response = apiCallService.modelsList();
       List<Model> models = response.getModels();
-      return models.stream().map(Model::getName).toList();
+      return Objects.requireNonNull(models).stream().map(Model::getName).toList();
     } catch (Exception e) {
       throw new InternalApiException(e.getMessage(), e.getCause());
     }

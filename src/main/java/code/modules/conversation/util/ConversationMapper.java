@@ -22,9 +22,6 @@ public interface ConversationMapper {
 
   Request createDtoToDomain(ConversationCommandFacade.RequestGenerateDto createDto);
 
-//  ResponseReadDto domainToReadDto(Response domain);
-//  Response readDtoToDomain(ResponseReadDto responseDto);
-
   @Mapping(target = "responses", source = "responses", ignore = true)
   RequestEntity domainToEntity(Request request);
   ConversationEntity domainToEntity(Conversation conversation);
@@ -37,8 +34,6 @@ public interface ConversationMapper {
 
   Conversation createDtoToDomain(ConversationBeginDto conversationDto);
 
-
-  // TODO ensure all components map
   ConversationReadDto domainToReadDto(Conversation conversation);
   RequestReadDto domainToReadDto(Request e);
 
