@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+  <title>Introduction Window Fragment</title>
+</head>
+<th:block th:fragment="fragment">
+  <div id="window-wrapper">
+    <div id="window-content" th:fragment="content-fragment">
+      <h1>Generic invitation and instructions</h1>
+    </div>
+  </div>
+</th:block>
+</html>

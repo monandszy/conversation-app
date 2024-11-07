@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot"
+  xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+  <title>Conversation Sidebar</title>
+</head>
+<th:block th:fragment="fragment">
+  <div id="sidebar-wrapper">
+    <nav
+      id="sidebar-content"
+      hx-push-url="true" hx-swap="outerHTML" hx-target="#window-wrapper"
+    >
+      <div th:each="conversation : ${conversationPage.content}" th:classappend="sidebar-item">
+        <button
+          th:text="${conversation.id}"
+          hx:get="@{/conversation/{id}(id=${conversation.id})}"
+          th:hx-on--after-request="|setGlobal('${conversation.id}')|"
+        ></button>
+      </div>
+    </nav>
+    <div id="new-conversation-form">
+      <form
+        hx-push-url="/conversation"
+        hx-get="/conversation/introduction"
+        hx-swap="outerHTML"
+        hx-target="#window-wrapper"
+        hx-trigger="submit"
+        hx-on--after-request="resetGlobal()"
+      >
+        <button
+          type="submit" th:text="New_Conversation"
+        ></button>
+      </form>
+    </div>
+  </div>
+</th:block>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html
+  lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout.html}"
+  xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+  <title>Conversations</title>
+  <link hx-preserve="true" rel="stylesheet" href="/css/conversation_styles.css"/>
+  <script hx-preserve="true" src="/js/conversation_scripts.js" defer></script>
+</head>
+<th:block layout:fragment="content" th:fragment="fragment">
+  <div id="content" class="conversation-content">
+    <head th:if="${isHxRequest == 'true'}" hx-head="merge">
+      <title>Conversation</title>
+      <link hx-preserve="true" rel="stylesheet" href="/css/conversation_styles.css"/>
+      <script hx-preserve="true" src="/js/conversation_scripts.js" defer></script>
+    </head>
+    <div th:replace="~{conversation/sidebar :: fragment}"></div>
+    <div id="conversation-wrapper">
+      <div th:replace="~{conversation/introduction-window :: fragment}"></div>
+      <div th:replace="~{conversation/generate-form :: fragment}"></div>
+    </div>
+    <div>
+      <script th:inline="javascript" defer>
+        globalConversationId = 'null'
+        document.getElementById('submit-button').innerText = 'Begin_Generate';
+      </script>
+    </div>
+  </div>
+</th:block>
+</html>

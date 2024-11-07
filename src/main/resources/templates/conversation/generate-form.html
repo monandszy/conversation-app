@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+  <title>Introduction Window Fragment</title>
+</head>
+<body th:fragment="fragment">
+  <div id="generate-form-wrapper">
+    <div id="generate-form">
+      <form
+        id="dynamic-form"
+        th:object="${requestGenerateDto}"
+      >
+        <input type="text" th:field="*{text}" required/>
+        <button
+          id="submit-button" type="submit"
+          th:text="TEMPLATE"
+        ></button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

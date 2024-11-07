@@ -1,0 +1,65 @@
+.conversation-content {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vh;
+  overflow: hidden; }
+  .conversation-content #sidebar-wrapper {
+    border-right: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: space-between;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    width: 150px; }
+    .conversation-content #sidebar-wrapper #sidebar-content {
+      display: flex;
+      flex: 1;
+      flex-direction: column; }
+      .conversation-content #sidebar-wrapper #sidebar-content .sidebar-item {
+        align-items: center;
+        display: flex; }
+        .conversation-content #sidebar-wrapper #sidebar-content .sidebar-item button {
+          width: 150px; }
+    .conversation-content #sidebar-wrapper #new-conversation-form {
+      display: flex;
+      flex-direction: column; }
+      .conversation-content #sidebar-wrapper #new-conversation-form button {
+        border: none; }
+  .conversation-content #conversation-wrapper {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: 100vh;
+    min-width: 0;
+    overflow: hidden; }
+    .conversation-content #conversation-wrapper #window-wrapper {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden; }
+      .conversation-content #conversation-wrapper #window-wrapper #window-content {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        min-height: 0;
+        overflow-y: auto; }
+    .conversation-content #conversation-wrapper #generate-form-wrapper {
+      align-items: center;
+      border-top: 1px solid #ccc;
+      bottom: 0;
+      display: flex;
+      flex-shrink: 0;
+      position: sticky; }
+      .conversation-content #conversation-wrapper #generate-form-wrapper #generate-form {
+        display: flex;
+        flex: 1; }
+        .conversation-content #conversation-wrapper #generate-form-wrapper #generate-form #dynamic-form {
+          display: flex;
+          flex: 1; }
+          .conversation-content #conversation-wrapper #generate-form-wrapper #generate-form #dynamic-form input[type="text"] {
+            flex: 1; }

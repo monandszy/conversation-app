@@ -1,0 +1,21 @@
+networks:
+  ${default-network}:
+    driver: bridge
+    name: ${default-network}
+  observability:
+    external: true
+  data:
+    external: true
+services:
+  app-template-dev:
+    container_name: app-template-dev
+    image: project-base/${project-name}:${project-version}
+    restart: unless-stopped
+    environment:
+      - "SPRING_PROFILES_ACTIVE=dev"
+    ports:
+      - "8001:8000"
+    networks:
+      - observability
+      - data
+      - ${default-network}

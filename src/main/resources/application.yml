@@ -1,0 +1,81 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /
+spring:
+  devtools:
+    add-properties: false
+  main:
+    banner-mode: off
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    # database created based on spring.application.name see DatabaseInitializer
+    url: jdbc:postgresql://postgres:5432/postgres
+    hikari:
+      schema: app
+      idle-timeout: 10000
+      connection-timeout: 20000
+      minimum-idle: 10
+      maximum-pool-size: 20
+      pool-name: HikariCP
+  liquibase:
+    enabled: true
+    change-log: classpath:database/changelog/changelog-root.yaml
+    driver-class-name: org.postgresql.Driver
+    default-schema: app
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  modulith:
+    republish-outstanding-events-on-restart: true
+    events:
+      externalization:
+        enabled: true
+      jdbc:
+        schema-initialization:
+          enabled: true
+    detection-strategy: explicitly-annotated
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: rabbitmq
+    password: rabbitmq
+  security:
+    enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    sampling:
+      probability: 1.0
+
+otel.traces.exporter: otlp
+otel.metrics.exporter: otlp
+otel.logs.exporter: otlp
+otel:
+  exporter:
+    otlp:
+      traces:
+        endpoint: "http://otel-collector:4318/v1/traces"
+      metrics:
+        endpoint: "http://otel-collector:4318/v1/metrics"
+      logs:
+        endpoint: "http://otel-collector:4318/v1/logs"
+  instrumentation:
+    micrometer:
+      enabled: true
+
+logging:
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %logger{36} - %msg%n"
+
+api.generativelanguage.googleapis.com.url: https://generativelanguage.googleapis.com

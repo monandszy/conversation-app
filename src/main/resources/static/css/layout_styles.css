@@ -1,0 +1,20 @@
+/* Global Styles */
+html, body {
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.scaffold {
+  display: flex;
+  flex: 1;
+  background-color: white;
+}
+
+/* Layout Styles */

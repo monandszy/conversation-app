@@ -1,0 +1,59 @@
+# profile for easier view development with spring dev tools outside of docker
+# can also be used as an application demo
+spring.config.activate.on-profile: preview
+
+spring:
+  application:
+    name: conversation-app-preview
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+  devtools:
+    add-properties: true
+    restart:
+      enabled: true
+      additional-paths: resources
+    livereload:
+      port: 35731
+      enabled: true
+  h2:
+    console:
+      enabled: false
+  graphql:
+    graphiql:
+      enabled: false
+  mvc:
+    log-request-details: true
+  security:
+    enabled: true
+  rabbitmq:
+    host: localhost
+logging:
+  level:
+    org:
+      springframework:
+        modulith: debug
+        security: debug
+      apache:
+        coyote:
+          http11: debug
+      hibernate:
+        orm:
+          jdbc:
+            bind: trace
+        SQL: debug
+        hql: debug
+        jdbc: debug
+# exporting disabled
+otel.traces.exporter: none
+otel.metrics.exporter: none
+otel.logs.exporter: none
+
+otel:
+  exporter:
+    otlp:
+      traces:
+        endpoint: "http://localhost:4318/v1/traces"
+      metrics:
+        endpoint: "http://localhost:4318/v1/metrics"
+      logs:
+        endpoint: "http://localhost:4318/v1/logs"

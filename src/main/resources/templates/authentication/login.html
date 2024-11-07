@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+  <title>Log In</title>
+</head>
+<div layout:fragment="content" th:fragment="content" id="content" hx-push-url="true" hx-target="#content" hx-swap="outerHTML">
+  <div th:if="${param.unauthorized}">
+    Full authentication is required to access this resource
+  </div>
+  <div th:if="${param.invalid}">
+    Invalid username and password.
+  </div>
+  <div th:if="${param.logout}">
+    You have been logged out.
+  </div>
+  <div class="authentication-form">
+    <form hx-post="/login" th:object="${loginRequestDto}">
+      <label>
+        <input type="text" th:field="*{email}" placeholder="Email"/>
+      </label>
+      <label>
+        <input type="password" th:field="*{password}" placeholder="Password"/>
+      </label>
+      <input type="submit" value="Log in"/>
+    </form>
+  </div>
+  <div>
+    <button hx-get="/register"
+    >Register?
+    </button>
+  </div>
+  <title>Home</title>
+</div>
+</html>

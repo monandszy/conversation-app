@@ -1,0 +1,35 @@
+spring.config.activate.on-profile: test
+spring:
+  application:
+    name: app-template-test
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      format_sql: true
+  datasource:
+    hikari:
+      schema: ""
+  liquibase:
+    default-schema: ""
+  security:
+    enabled: false
+logging:
+  level:
+    org:
+      springframework:
+        modulith: debug
+        security: debug
+      hibernate:
+        orm:
+          jdbc:
+            bind: trace
+        SQL: debug
+        type: trace
+        hql: debug
+        jdbc: debug
+
+otel.traces.exporter: none
+otel.metrics.exporter: none
+otel.logs.exporter: none
