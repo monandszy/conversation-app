@@ -10,21 +10,25 @@ import code.modules.conversation.ConversationCommandFacade.RequestGenerateDto;
 import code.modules.conversation.ConversationQueryFacade;
 import code.modules.conversation.ConversationQueryFacade.ConversationReadDto;
 import code.modules.conversation.ConversationQueryFacade.RequestReadDto;
+import static code.modules.conversation.ConversationQueryFacade.ResponseReadDto;
+import code.modules.conversation.ConversationQueryFacade.SectionReadDto;
 import code.modules.conversation.data.ConversationEntity;
 import code.modules.conversation.data.ConversationRepository;
 import code.modules.conversation.data.RequestEntity;
 import code.modules.conversation.data.ResponseEntity;
+import code.modules.conversation.data.SectionEntity;
 import code.modules.conversation.data.jpa.ConversationJpaRepo;
-import code.modules.conversation.data.jpa.RequestJpaRepo;
-import code.modules.conversation.data.jpa.ResponseJpaRepo;
+import code.modules.conversation.data.jpa.SectionJpaRepo;
 import code.modules.conversation.service.Conversation;
 import code.modules.conversation.service.ConversationDao;
 import code.modules.conversation.service.Request;
 import code.modules.conversation.service.Response;
+import code.modules.conversation.service.Section;
 import code.modules.googleApi.GoogleApiAdapter;
 import code.modules.googleApi.GoogleApiAdapter.ApiRequestDto;
 import static code.modules.googleApi.GoogleApiAdapter.ApiResponseDto;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +53,7 @@ class ConversationsFacadeTest extends FacadeAbstract {
 
   private ConversationRepository repository;
   private ConversationJpaRepo conversationJpaRepo;
-  private RequestJpaRepo requestJpaRepo;
-  private ResponseJpaRepo responseJpaRepo;
+  private SectionJpaRepo sectionJpaRepo;
 
   @MockBean
   private GoogleApiAdapter googleApiAdapter;
@@ -58,7 +61,8 @@ class ConversationsFacadeTest extends FacadeAbstract {
   @Test
   void should_save_generated() {
     // given
-    Conversation conversation = repository.create(Conversation.builder().accountId(UUID.randomUUID()).build());
+    UUID conversationId = UUID.randomUUID();
+    Conversation conversation = repository.create(Conversation.builder().accountId(conversationId).build());
     String requestText = "request";
     RequestGenerateDto requestDto = new RequestGenerateDto(requestText, conversation.getId());
     ApiRequestDto apiRequestDto = new ApiRequestDto(requestText);
@@ -66,15 +70,22 @@ class ConversationsFacadeTest extends FacadeAbstract {
     ApiResponseDto apiResponseDto = new ApiResponseDto(generatedText);
     // when
     Mockito.when(googleApiAdapter.generate(apiRequestDto)).thenReturn(apiResponseDto);
-    RequestReadDto readDto = commandFacade.generate(requestDto);
+    SectionReadDto readDto = commandFacade.generate(requestDto);
     // then
-    RequestEntity request = requestJpaRepo.findAll().getFirst();
-    ResponseEntity response = responseJpaRepo.findAll().getFirst();
+    SectionEntity sectionEntity = sectionJpaRepo.findAll().getFirst();
+    RequestEntity requestEntity = sectionEntity.getRequests().stream().findAny().orElseThrow();
+    ResponseEntity responseEntity = requestEntity.getResponses().stream().findAny().orElseThrow();
+
     Mockito.verify(googleApiAdapter).generate(apiRequestDto);
-    Assertions.assertEquals(requestText, readDto.text());
-    Assertions.assertEquals(requestText, request.getText());
-    Assertions.assertEquals(generatedText, readDto.responses().getFirst().text());
-    Assertions.assertEquals(generatedText, response.getText());
+
+    RequestReadDto first = readDto.requests().getFirst();
+    Assertions.assertEquals(requestText, first.text());
+    Assertions.assertEquals(requestText, requestEntity.getText());
+    Assertions.assertEquals(generatedText, first.responses().getFirst().text());
+    Assertions.assertEquals(generatedText, responseEntity.getText());
+
+    Assertions.assertNotNull(sectionEntity.getCreated());
+    Assertions.assertEquals(conversationId, sectionEntity.getConversation().getId());
   }
 
   @Test
@@ -106,25 +117,33 @@ class ConversationsFacadeTest extends FacadeAbstract {
   }
 
   @Test
-  void should_return_request_page() {
+  void should_return_section_page() {
     // given
     PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE);
-    Conversation conversation = Conversation.builder().accountId(UUID.randomUUID()).build();
+    UUID conversationId = UUID.randomUUID();
+    Conversation conversation = Conversation.builder().accountId(conversationId).build();
     conversation = conversationDao.create(conversation);
-    Response response = Response.builder().text("response").build();
-    Request request = Request.builder()
+
+    String requestText = "request";
+    String responseText = "response";
+    Response response = Response.builder().text(responseText).build();
+    Request request = Request.builder().text(requestText).responses(Set.of(response)).build();
+    Section section = Section.builder()
       .conversation(conversation)
-      .responses(List.of(response))
-      .text("request").build();
-    request = conversationDao.create(request);
+      .requests(Set.of(request))
+      .build();
+    conversationDao.create(section);
     // when
-    Page<RequestReadDto> requestPage = queryFacade.getRequestPage(pageRequest, new ConversationReadDto(conversation.getId()));
+    Page<SectionReadDto> requestPage = queryFacade.getSectionPage(pageRequest, new ConversationReadDto(conversation.getId()));
     // then
     assertThat(requestPage).isNotNull();
-    assertThat(requestPage.getContent()).isNotEmpty();
-    assertThat(requestPage.getContent().getFirst()).isNotNull();
-    RequestReadDto requestDto = requestPage.getContent().getFirst();
-    Assertions.assertEquals(requestDto.text(), request.getText());
-    Assertions.assertEquals(requestDto.responses().getFirst().text(), response.getText());
+    List<SectionReadDto> sections = requestPage.getContent();
+    assertThat(sections).isNotEmpty();
+    List<RequestReadDto> requests = sections.getFirst().requests();
+    assertThat(requests).isNotEmpty();
+    List<ResponseReadDto> responses = requests.getFirst().responses();
+    assertThat(responses).isNotEmpty();
+
   }
+
 }

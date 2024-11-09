@@ -3,7 +3,7 @@ ALTER TABLE conversations
 
 ALTER TABLE requests
   ADD COLUMN created timestamptz NOT NULL DEFAULT NOW(),
-  ADD COLUMN text TEXT NOT NULL DEFAULT '';
+  ADD COLUMN text    TEXT        NOT NULL DEFAULT '';
 
 ALTER TABLE responses
   ADD COLUMN text TEXT NOT NULL DEFAULT '';

@@ -1,5 +1,6 @@
 package code.modules.conversation.data;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,9 +42,9 @@ public class RequestEntity {
   private OffsetDateTime created;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "conversation_id")
-  private ConversationEntity conversation;
+  @JoinColumn(name = "section_id")
+  private SectionEntity section;
 
-  @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
-  private List<ResponseEntity> responses;
+  @OneToMany(mappedBy = "request", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+  private Set<ResponseEntity> responses;
 }

@@ -1,16 +1,18 @@
 package code.modules.conversation.util;
 
 import code.configuration.SpringMapperConfig;
-import code.modules.conversation.ConversationCommandFacade;
 import code.modules.conversation.ConversationCommandFacade.ConversationBeginDto;
+import code.modules.conversation.ConversationCommandFacade.RequestGenerateDto;
 import code.modules.conversation.ConversationQueryFacade.ConversationReadDto;
-import static code.modules.conversation.ConversationQueryFacade.RequestReadDto;
+import static code.modules.conversation.ConversationQueryFacade.SectionReadDto;
 import code.modules.conversation.data.ConversationEntity;
 import code.modules.conversation.data.RequestEntity;
 import code.modules.conversation.data.ResponseEntity;
+import code.modules.conversation.data.SectionEntity;
 import code.modules.conversation.service.Conversation;
 import code.modules.conversation.service.Request;
 import code.modules.conversation.service.Response;
+import code.modules.conversation.service.Section;
 import code.util.Generated;
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
@@ -20,21 +22,22 @@ import org.mapstruct.Mapping;
 @AnnotateWith(Generated.class)
 public interface ConversationMapper {
 
-  Request createDtoToDomain(ConversationCommandFacade.RequestGenerateDto createDto);
+  Section createDtoToDomain(RequestGenerateDto generateDto);
 
   @Mapping(target = "responses", source = "responses", ignore = true)
-  RequestEntity domainToEntity(Request request);
-  ConversationEntity domainToEntity(Conversation conversation);
-  ResponseEntity domainToEntity(Response response);
+  SectionEntity domainToEntity(Section domain);
+  ConversationEntity domainToEntity(Conversation domain);
+  ResponseEntity domainToEntity(Response domain);
 
-  Request entityToDomain(RequestEntity save);
-  @Mapping(target = "request", source = "request", ignore = true)
-  Response entityToDomain(ResponseEntity saved);
-  Conversation entityToDomain(ConversationEntity saved);
+  Section entityToDomain(SectionEntity entity);
+  @Mapping(target = "conversationItem", source = "request", ignore = true)
+  Response entityToDomain(ResponseEntity entity);
+  Conversation entityToDomain(ConversationEntity entity);
 
-  Conversation createDtoToDomain(ConversationBeginDto conversationDto);
+  Conversation createDtoToDomain(ConversationBeginDto domain);
 
-  ConversationReadDto domainToReadDto(Conversation conversation);
-  RequestReadDto domainToReadDto(Request e);
+  ConversationReadDto domainToReadDto(Conversation domain);
+  SectionReadDto domainToReadDto(Section domain);
 
+  RequestEntity domainToEntity(Request domain);
 }

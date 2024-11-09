@@ -26,21 +26,25 @@ public class ConversationQueryFacade {
     return page;
   }
 
-  public Page<RequestReadDto> getRequestPage(PageRequest pageRequest, ConversationReadDto readDto) {
+  public Page<SectionReadDto> getSectionPage(PageRequest pageRequest, ConversationReadDto readDto) {
     Conversation conversation = Conversation.builder().id(readDto.id()).build();
-    Page<RequestReadDto> page = conversationDao.getRequestPage(pageRequest, conversation)
+    Page<SectionReadDto> page = conversationDao.getSectionPage(pageRequest, conversation)
       .map(e -> mapper.domainToReadDto(e));
-    log.info("Request Page: {}", page);
+    log.info("Conversation Item Page: {}", page);
     return page;
   }
+
+  public record ConversationReadDto(
+    UUID id
+  ) {}
+
+  public record SectionReadDto(
+    List<RequestReadDto> requests
+  ) {}
 
   public record RequestReadDto(
     String text,
     List<ResponseReadDto> responses
-  ) {}
-
-  public record ConversationReadDto(
-    UUID id
   ) {}
 
   public record ResponseReadDto(

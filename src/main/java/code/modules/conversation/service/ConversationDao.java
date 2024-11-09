@@ -6,11 +6,11 @@ import org.springframework.data.domain.PageRequest;
 
 public interface ConversationDao {
 
-  Request create(Request request);
+  Section create(Section item);
 
   Conversation create(Conversation conversation);
 
   Page<Conversation> getConversationPage(PageRequest pageRequest, UUID accountId);
 
-  Page<Request> getRequestPage(PageRequest pageRequest, Conversation conversation);
+  Page<Section> getSectionPage(PageRequest pageRequest, Conversation conversation);
 }
