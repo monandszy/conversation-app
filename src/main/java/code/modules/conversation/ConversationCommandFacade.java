@@ -27,15 +27,15 @@ public class ConversationCommandFacade {
   private ConversationMapper mapper;
   private ConversationDao conversationDao;
 
-  public RequestReadDto generate(@Valid RequestGenerateDto requestDto, UUID conversationId) {
+  public RequestReadDto generate(@Valid RequestGenerateDto requestDto) {
     // call to other module facade, a nested dependency
     ApiRequestDto apiRequest = new ApiRequestDto(requestDto.text());
     ApiResponseDto apiResponse = googleApiAdapter.generate(apiRequest);
 
-    Conversation conversation = Conversation.builder().id(conversationId).build();
     Request request = mapper.createDtoToDomain(requestDto);
     Response response = Response.builder()
       .text(apiResponse.text()).request(request).build();
+    Conversation conversation = Conversation.builder().id(requestDto.conversationId).build();
     request = conversationDao.create(request
       .withConversation(conversation)
       .withResponses(List.of(response))
@@ -43,12 +43,11 @@ public class ConversationCommandFacade {
     return mapper.domainToReadDto(request);
   }
 
-  public ConversationReadDto begin(ConversationBeginDto conversationDto) {
+  public ConversationReadDto begin(@Valid ConversationBeginDto conversationDto) {
     Conversation conversation = mapper.createDtoToDomain(conversationDto);
     conversation = conversationDao.create(conversation);
     return mapper.domainToReadDto(conversation);
   }
-
 
   public record ConversationBeginDto(
     @NotNull
@@ -58,6 +57,7 @@ public class ConversationCommandFacade {
   @With
   public record RequestGenerateDto(
     @NotBlank
-    String text
+    String text,
+    UUID conversationId
   ) {}
 }

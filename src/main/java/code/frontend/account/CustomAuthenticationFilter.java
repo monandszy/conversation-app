@@ -25,7 +25,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
       response.sendRedirect("/login?invalid")
     ); // Setting this in SecurityConfig did not work even tho it initialized correctly
     super.setAuthenticationSuccessHandler((request, response, authentication) ->
-      response.sendRedirect("/"));
+      response.sendRedirect("/conversation"));
     super.setUsernameParameter("email");
     super.setPasswordParameter("password");
   }

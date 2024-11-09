@@ -84,7 +84,7 @@ public class SecurityConfig {
       .formLogin(authorize -> authorize
         .loginPage("/login")
         // Configured in CustomAuthenticationFilter, options here are overridden with defaults for some reason
-        .successForwardUrl("/")
+        .successForwardUrl("/conversation")
         .failureForwardUrl("/login?invalid")
         .usernameParameter("email")
         .permitAll()

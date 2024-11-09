@@ -60,13 +60,13 @@ class ConversationsFacadeTest extends FacadeAbstract {
     // given
     Conversation conversation = repository.create(Conversation.builder().accountId(UUID.randomUUID()).build());
     String requestText = "request";
-    RequestGenerateDto requestDto = new RequestGenerateDto(requestText);
+    RequestGenerateDto requestDto = new RequestGenerateDto(requestText, conversation.getId());
     ApiRequestDto apiRequestDto = new ApiRequestDto(requestText);
     String generatedText = "response";
     ApiResponseDto apiResponseDto = new ApiResponseDto(generatedText);
     // when
     Mockito.when(googleApiAdapter.generate(apiRequestDto)).thenReturn(apiResponseDto);
-    RequestReadDto readDto = commandFacade.generate(requestDto, conversation.getId());
+    RequestReadDto readDto = commandFacade.generate(requestDto);
     // then
     RequestEntity request = requestJpaRepo.findAll().getFirst();
     ResponseEntity response = responseJpaRepo.findAll().getFirst();

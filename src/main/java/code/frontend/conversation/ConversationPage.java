@@ -2,6 +2,7 @@ package code.frontend.conversation;
 
 import code.configuration.Constants;
 import code.modules.conversation.ConversationCommandFacade;
+import code.modules.conversation.ConversationCommandFacade.ConversationBeginDto;
 import code.modules.conversation.ConversationCommandFacade.RequestGenerateDto;
 import code.modules.conversation.ConversationQueryFacade;
 import static code.modules.conversation.ConversationQueryFacade.ConversationReadDto;
@@ -35,7 +36,7 @@ public class ConversationPage {
   private ConversationQueryFacade queryFacade;
   private ConversationCommandFacade commandFacade;
 
-  @GetMapping
+  @GetMapping("/")
   @ResponseStatus(HttpStatus.OK)
   String index(
     @RequestHeader(value = "HX-Request", required = false) String hxRequest,
@@ -43,7 +44,7 @@ public class ConversationPage {
     Model model
   ) {
     list(principal, model);
-    model.addAttribute("requestGenerateDto", new RequestGenerateDto(null));
+    model.addAttribute("requestGenerateDto", getEmptyRequest());
     model.addAttribute("isHxRequest", hxRequest);
     if (Objects.nonNull(hxRequest)) {
       return "conversation/content :: fragment";
@@ -75,7 +76,7 @@ public class ConversationPage {
     ConversationReadDto readDto = new ConversationReadDto(id);
     Page<RequestReadDto> requestPage = queryFacade.getRequestPage(pageRequest, readDto);
     model.addAttribute("requestPage", requestPage);
-    model.addAttribute("requestGenerateDto", new RequestGenerateDto(null));
+    model.addAttribute("requestGenerateDto", getEmptyRequest());
     model.addAttribute("conversationId", conversationId);
     model.addAttribute("isHxRequest", hxRequest);
     if (Objects.nonNull(hxRequest)) {
@@ -91,8 +92,12 @@ public class ConversationPage {
   String introduction(
     Model model
   ) {
-    model.addAttribute("requestGenerateDto", new RequestGenerateDto(null));
+    model.addAttribute("requestGenerateDto", getEmptyRequest());
     return "conversation/introduction-window :: fragment";
+  }
+
+  private RequestGenerateDto getEmptyRequest() {
+    return new RequestGenerateDto(null, null);
   }
 
   @PostMapping("/{conversationId}")
@@ -103,20 +108,20 @@ public class ConversationPage {
     Model model
   ) {
     RequestReadDto readDto = commandFacade.generate(
-      generateDto, UUID.fromString(conversationId));
+      generateDto.withConversationId(UUID.fromString(conversationId)));
     model.addAttribute("requestReadDto", readDto);
     return "conversation/window :: singular-fragment";
   }
 
-  @PostMapping
+  @PostMapping("/")
   @ResponseBody
   ResponseEntity<ConversationReadDto> beginConversation(
     @ModelAttribute RequestGenerateDto generateDto,
     Principal principal
   ) {
-    ConversationCommandFacade.ConversationBeginDto beginDto = new ConversationCommandFacade.ConversationBeginDto(UUID.fromString(principal.getName()));
+    ConversationBeginDto beginDto = new ConversationBeginDto(UUID.fromString(principal.getName()));
     ConversationReadDto readDto = commandFacade.begin(beginDto);
-    commandFacade.generate(generateDto, readDto.id());
+    commandFacade.generate(generateDto.withConversationId(readDto.id()));
     return ResponseEntity.status(HttpStatus.CREATED).body(readDto);
   }
 }
