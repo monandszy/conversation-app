@@ -16,7 +16,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
-import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.With;
@@ -37,21 +36,19 @@ public class ConversationCommandFacade {
 
     OffsetDateTime now = OffsetDateTime.now();
     Conversation dependency = Conversation.builder().id(requestDto.dependencyId()).build();
-    Section section = Section.builder()
-      .created(now)
-      .conversation(dependency)
-      .requests(Set.of(Request.builder().text(apiRequest.text()).selected(true).created(now)
-        .responses(Set.of(Response.builder().text(apiResponse.text()).selected(true).created(now)
-          .build())).build())).build();
-    section = conversationDao.create(section);
+    Response response = Response.builder().text(apiResponse.text()).selected(true).created(now)
+      .request(Request.builder().text(apiRequest.text()).selected(true).created(now)
+        .section(Section.builder().conversation(dependency).created(now)
+          .build()).build()).build();
+    Section section = conversationDao.create(response);
     return mapper.domainToReadDto(section);
   }
 
-  public void modify(RequestGenerateDto generateDto) {
+  public void regenerate(RequestGenerateDto generateDto) {
     // dependencyId = section
   }
 
-  public void regenerate(RequestGenerateDto generateDto) {
+  public void retry(RequestGenerateDto generateDto) {
     // dependencyId = request
   }
 

@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
-//@SpringBootTest
 @WebMvcTest(controllers = EmptyController.class)
 @Import({ContextConfig.GoogleApiContext.class, GoogleApiConfig.class, TestSecurityConfig.class})
 @AllArgsConstructor(onConstructor = @__(@Autowired))

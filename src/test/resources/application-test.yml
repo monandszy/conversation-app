@@ -26,7 +26,6 @@ logging:
           jdbc:
             bind: trace
         SQL: debug
-        type: trace
         hql: debug
         jdbc: debug
 

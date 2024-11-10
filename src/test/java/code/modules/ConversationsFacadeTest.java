@@ -10,25 +10,18 @@ import code.modules.conversation.ConversationCommandFacade.RequestGenerateDto;
 import code.modules.conversation.ConversationQueryFacade;
 import code.modules.conversation.ConversationQueryFacade.ConversationReadDto;
 import code.modules.conversation.ConversationQueryFacade.RequestReadDto;
-import static code.modules.conversation.ConversationQueryFacade.ResponseReadDto;
+import code.modules.conversation.ConversationQueryFacade.ResponseReadDto;
 import code.modules.conversation.ConversationQueryFacade.SectionReadDto;
 import code.modules.conversation.data.ConversationEntity;
 import code.modules.conversation.data.ConversationRepository;
-import code.modules.conversation.data.RequestEntity;
-import code.modules.conversation.data.ResponseEntity;
-import code.modules.conversation.data.SectionEntity;
 import code.modules.conversation.data.jpa.ConversationJpaRepo;
 import code.modules.conversation.data.jpa.SectionJpaRepo;
 import code.modules.conversation.service.Conversation;
-import code.modules.conversation.service.ConversationDao;
-import code.modules.conversation.service.Request;
-import code.modules.conversation.service.Response;
-import code.modules.conversation.service.Section;
 import code.modules.googleApi.GoogleApiAdapter;
 import code.modules.googleApi.GoogleApiAdapter.ApiRequestDto;
 import static code.modules.googleApi.GoogleApiAdapter.ApiResponseDto;
+import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +42,6 @@ class ConversationsFacadeTest extends FacadeAbstract {
 
   private ConversationQueryFacade queryFacade;
   private ConversationCommandFacade commandFacade;
-  private ConversationDao conversationDao;
 
   private ConversationRepository repository;
   private ConversationJpaRepo conversationJpaRepo;
@@ -59,91 +51,57 @@ class ConversationsFacadeTest extends FacadeAbstract {
   private GoogleApiAdapter googleApiAdapter;
 
   @Test
-  void should_save_generated() {
+  void should_save_and_retrieve_generated() {
     // given
-    UUID conversationId = UUID.randomUUID();
-    Conversation conversation = repository.create(Conversation.builder().accountId(conversationId).build());
+    PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE);
+    UUID accountId = UUID.randomUUID();
+    Conversation conversation = repository.create(Conversation.builder().created(OffsetDateTime.now()).accountId(accountId).build());
+    UUID conversationId = conversation.getId();
     String requestText = "request";
-    RequestGenerateDto requestDto = new RequestGenerateDto(requestText, conversation.getId());
+    RequestGenerateDto requestDto = new RequestGenerateDto(requestText, conversationId);
     ApiRequestDto apiRequestDto = new ApiRequestDto(requestText);
     String generatedText = "response";
     ApiResponseDto apiResponseDto = new ApiResponseDto(generatedText);
+    ConversationReadDto inputReadDto = new ConversationReadDto(conversationId);
     // when
     Mockito.when(googleApiAdapter.generate(apiRequestDto)).thenReturn(apiResponseDto);
-    SectionReadDto readDto = commandFacade.generate(requestDto);
+    commandFacade.generate(requestDto);
+    Page<SectionReadDto> requestPage = queryFacade.getSectionPage(pageRequest, inputReadDto);
     // then
-    SectionEntity sectionEntity = sectionJpaRepo.findAll().getFirst();
-    RequestEntity requestEntity = sectionEntity.getRequests().stream().findAny().orElseThrow();
-    ResponseEntity responseEntity = requestEntity.getResponses().stream().findAny().orElseThrow();
-
     Mockito.verify(googleApiAdapter).generate(apiRequestDto);
 
-    RequestReadDto first = readDto.requests().getFirst();
-    Assertions.assertEquals(requestText, first.text());
-    Assertions.assertEquals(requestText, requestEntity.getText());
-    Assertions.assertEquals(generatedText, first.responses().getFirst().text());
-    Assertions.assertEquals(generatedText, responseEntity.getText());
+    assertThat(requestPage).isNotNull();
+    List<SectionReadDto> sections = requestPage.getContent();
+    assertThat(sections).isNotEmpty();
+    SectionReadDto firstSection = sections.getFirst();
+    RequestReadDto request = firstSection.request();
+    assertThat(request).isNotNull();
+    ResponseReadDto response = request.response();
+    assertThat(response).isNotNull();
 
-    Assertions.assertNotNull(sectionEntity.getCreated());
-    Assertions.assertEquals(conversationId, sectionEntity.getConversation().getId());
+    Assertions.assertEquals(requestText, request.text());
+    Assertions.assertEquals(generatedText, response.text());
   }
 
   @Test
-  void should_begin_conversation() {
+  void should_begin_and_return_conversation() {
     // given
-    ConversationBeginDto createDto = new ConversationBeginDto(UUID.randomUUID());
+    UUID accountId = UUID.randomUUID();
+    PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE);
+    ConversationBeginDto createDto = new ConversationBeginDto(accountId);
     // when
     ConversationReadDto readDto = commandFacade.begin(createDto);
+    Page<ConversationReadDto> conversationPage = queryFacade.getConversationPage(pageRequest, accountId);
     // then
     assertThat(readDto).isNotNull();
     ConversationEntity entity = conversationJpaRepo.findAll().getFirst();
     assertThat(entity).isNotNull();
     assertThat(entity.getId()).isNotNull();
     assertThat(entity.getCreated()).isNotNull();
-  }
 
-  @Test
-  void should_return_conversation_page() {
-    // given
-    UUID accountId = UUID.randomUUID();
-    conversationDao.create(Conversation.builder().accountId(accountId).build());
-    PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE);
-    // when
-    Page<ConversationReadDto> conversationPage = queryFacade.getConversationPage(pageRequest, accountId);
-    // then
     assertThat(conversationPage).isNotNull();
     assertThat(conversationPage.getContent()).isNotEmpty();
     assertThat(conversationPage.getContent().getFirst().id()).isNotNull();
-  }
-
-  @Test
-  void should_return_section_page() {
-    // given
-    PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE);
-    UUID conversationId = UUID.randomUUID();
-    Conversation conversation = Conversation.builder().accountId(conversationId).build();
-    conversation = conversationDao.create(conversation);
-
-    String requestText = "request";
-    String responseText = "response";
-    Response response = Response.builder().text(responseText).build();
-    Request request = Request.builder().text(requestText).responses(Set.of(response)).build();
-    Section section = Section.builder()
-      .conversation(conversation)
-      .requests(Set.of(request))
-      .build();
-    conversationDao.create(section);
-    // when
-    Page<SectionReadDto> requestPage = queryFacade.getSectionPage(pageRequest, new ConversationReadDto(conversation.getId()));
-    // then
-    assertThat(requestPage).isNotNull();
-    List<SectionReadDto> sections = requestPage.getContent();
-    assertThat(sections).isNotEmpty();
-    List<RequestReadDto> requests = sections.getFirst().requests();
-    assertThat(requests).isNotEmpty();
-    List<ResponseReadDto> responses = requests.getFirst().responses();
-    assertThat(responses).isNotEmpty();
-
   }
 
 }

@@ -15,7 +15,7 @@ public class ContextConfig {
   @ComponentScan(basePackageClasses = AccountQueryFacade.class)
   public static class AccountModuleContext {
     @Bean // Enables method validation
-    public MethodValidationPostProcessor methodValidationPostProcessor() {
+    public static MethodValidationPostProcessor methodValidationPostProcessor() {
       return new MethodValidationPostProcessor();
     }
   }

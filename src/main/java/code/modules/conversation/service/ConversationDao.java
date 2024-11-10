@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageRequest;
 
 public interface ConversationDao {
 
-  Section create(Section item);
+  Section create(Response response);
 
   Conversation create(Conversation conversation);
 

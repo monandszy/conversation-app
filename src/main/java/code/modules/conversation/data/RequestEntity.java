@@ -41,10 +41,13 @@ public class RequestEntity {
   @Column(name = "created", updatable = false)
   private OffsetDateTime created;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @Column(name = "selected")
+  private Boolean selected;
+
+  @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
   @JoinColumn(name = "section_id")
   private SectionEntity section;
 
-  @OneToMany(mappedBy = "request", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+  @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
   private Set<ResponseEntity> responses;
 }

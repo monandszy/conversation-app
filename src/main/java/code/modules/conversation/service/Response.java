@@ -19,4 +19,5 @@ public class Response {
   Boolean selected;
   OffsetDateTime created;
   Request request;
+  Navigation navigation;
 }

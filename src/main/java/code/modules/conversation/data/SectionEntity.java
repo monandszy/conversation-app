@@ -1,6 +1,5 @@
 package code.modules.conversation.data;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -42,6 +41,6 @@ public class SectionEntity {
   @JoinColumn(name = "conversation_id")
   private ConversationEntity conversation;
 
-  @OneToMany(mappedBy = "section", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+  @OneToMany(mappedBy = "section", fetch = FetchType.LAZY)
   private Set<RequestEntity> requests;
 }
