@@ -42,7 +42,7 @@
 </th:block>
 
 <th:block th:fragment="request-content-fragment(request, sectionId)">
-  <div hx-include="[name='text']">
+  <div hx-include="this">
     <p
       th:text="${request.text}" class="request"
       contenteditable="true"
@@ -52,16 +52,8 @@
       hx-swap="outerHTML"
       oninput="updateHiddenInput(this)"
     ></p>
-    <input type="hidden" name="text"/>
+    <input id="hidden-input" type="hidden" name="text"/>
   </div>
-  <th:block th:if="${request.navigation.nextId != null}">
-    <button
-      th:text="next"
-      th:hx-get="'/conversation/section/' + ${sectionId} + '/request/' + ${request.navigation.nextId}"
-      hx-target="closest .section"
-      hx-swap="outerHTML"
-    ></button>
-  </th:block>
   <th:block th:if="${request.navigation.previousId != null}">
     <button
       th:text="previous"
@@ -70,22 +62,30 @@
       hx-swap="outerHTML"
     ></button>
   </th:block>
+  <th:block th:if="${request.navigation.nextId != null}">
+    <button
+      th:text="next"
+      th:hx-get="'/conversation/section/' + ${sectionId} + '/request/' + ${request.navigation.nextId}"
+      hx-target="closest .section"
+      hx-swap="outerHTML"
+    ></button>
+  </th:block>
 </th:block>
 
 <th:block th:fragment="response-content-fragment(response, requestId)">
   <p th:text="${response.text}" class="response"></p>
-  <th:block th:if="${response.navigation.nextId != null}">
-    <button
-      th:text="next"
-      th:hx-get="'/conversation/request/' + ${requestId} + '/response/' + ${response.navigation.nextId}"
-      hx-target="closest .response-wrapper"
-      hx-swap="outerHTML"
-    ></button>
-  </th:block>
   <th:block th:if="${response.navigation.previousId != null}">
     <button
       th:text="previous"
       th:hx-get="'/conversation/request/' + ${requestId} + '/response/' + ${response.navigation.previousId}"
+      hx-target="closest .response-wrapper"
+      hx-swap="outerHTML"
+    ></button>
+  </th:block>
+  <th:block th:if="${response.navigation.nextId != null}">
+    <button
+      th:text="next"
+      th:hx-get="'/conversation/request/' + ${requestId} + '/response/' + ${response.navigation.nextId}"
       hx-target="closest .response-wrapper"
       hx-swap="outerHTML"
     ></button>

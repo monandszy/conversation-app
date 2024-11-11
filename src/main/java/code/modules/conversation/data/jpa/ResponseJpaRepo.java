@@ -18,14 +18,23 @@ public interface ResponseJpaRepo extends JpaRepository<ResponseEntity, UUID> {
 
   @Query("""
     SELECT res AS selectedResponse,
-           resPrev.id AS prevResponseId,
-           resNext.id AS nextResponseId
+           (SELECT resPrev.id
+            FROM ResponseEntity resPrev
+            WHERE resPrev.request = res.request 
+              AND resPrev.created < res.created
+            ORDER BY resPrev.created DESC, resPrev.id DESC
+            LIMIT 1) AS prevResponseId,
+           (SELECT resNext.id
+            FROM ResponseEntity resNext
+            WHERE resNext.request = res.request 
+              AND resNext.created > res.created
+            ORDER BY resNext.created ASC, resNext.id ASC
+            LIMIT 1) AS nextResponseId
     FROM ResponseEntity res
-    LEFT JOIN ResponseEntity resPrev ON resPrev.created < res.created
-    LEFT JOIN ResponseEntity resNext ON resNext.created > res.created
-
     WHERE res = :selectedResponse
 """)
   ResponseNavigationProjection findByResponse(@Param("selectedResponse") ResponseEntity selectedResponse);
+
+
 
 }

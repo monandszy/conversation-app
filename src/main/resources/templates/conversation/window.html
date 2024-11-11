@@ -33,7 +33,7 @@
               });
               function updateHiddenInput(paragraph) {
                 var hiddenInput = paragraph.nextElementSibling;
-                hiddenInput.value = paragraph.innerText;  // Syncs contenteditable with the hidden input
+                hiddenInput.value = paragraph.innerText;
               }
             </script>
             <div th:replace="~{conversation/window-content :: fragment(${sectionPage})}"></div>
