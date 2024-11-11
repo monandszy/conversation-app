@@ -1,4 +1,4 @@
-.conversation-content {
+#content {
   display: flex;
   flex: 1;
   flex-direction: row;
@@ -38,7 +38,7 @@
       }
     }
   }
-  #conversation-wrapper {
+  #conversation-content {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -57,7 +57,7 @@
         flex-direction: column;
         min-height: 0;
         overflow-y: auto;
-        .window-item {
+        .section {
           p {
             &.request {
             }

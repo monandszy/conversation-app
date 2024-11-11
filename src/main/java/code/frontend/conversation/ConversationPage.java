@@ -14,8 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
@@ -35,7 +34,7 @@ public class ConversationPage implements ControllerUtil {
   private ConversationQueryFacade queryFacade;
   private ConversationCommandFacade commandFacade;
 
-  @GetMapping("/")
+  @GetMapping("")
   @ResponseStatus(HttpStatus.OK)
   String index(
     @RequestHeader(value = "HX-Request", required = false) String hxRequest,
@@ -55,7 +54,7 @@ public class ConversationPage implements ControllerUtil {
   @GetMapping("/list")
   @ResponseStatus(HttpStatus.OK)
   String list(Principal principal, Model model) {
-    PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE);
+    PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE, Sort.by("created").descending());
     UUID accountId = UUID.fromString(principal.getName());
     Page<ConversationReadDto> conversationPage = queryFacade.getConversationPage(pageRequest, accountId);
     model.addAttribute("conversationPage", conversationPage);
@@ -71,15 +70,16 @@ public class ConversationPage implements ControllerUtil {
     return "conversation/introduction-window :: fragment";
   }
 
-  @PostMapping("/")
-  @ResponseBody
-  ResponseEntity<ConversationReadDto> beginConversation(
+  @PostMapping("")
+  String beginConversation(
     @ModelAttribute RequestGenerateDto generateDto,
-    Principal principal
+    Principal principal,
+    Model model
   ) {
     ConversationBeginDto beginDto = new ConversationBeginDto(UUID.fromString(principal.getName()));
     ConversationReadDto readDto = commandFacade.begin(beginDto);
-    commandFacade.generate(generateDto.withDependencyId(readDto.id()));
-    return ResponseEntity.status(HttpStatus.CREATED).body(readDto);
+    commandFacade.generate(generateDto, readDto.id());
+    model.addAttribute("conversationReadDto", readDto);
+    return "conversation/sidebar :: singular-fragment";
   }
 }

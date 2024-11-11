@@ -1,6 +1,5 @@
 package code.modules.conversation.data;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -42,7 +41,7 @@ public class ResponseEntity {
   @Column(name = "text")
   private String text;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "request_id")
   private RequestEntity request;
 }

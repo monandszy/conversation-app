@@ -37,4 +37,16 @@
     </div>
   </div>
 </th:block>
+<th:block th:fragment="singular-fragment">
+  <head>
+    <script th:inline="javascript" hx-head="merge">
+      globalConversationId = /*[[${conversationReadDto.id}]]*/ 'null'
+    </script>
+  </head>
+  <button
+    th:text="${conversationReadDto.id}"
+    hx:get="@{/conversation/{id}(id=${conversationReadDto.id})}"
+    th:hx-on--after-request="|setGlobal('${conversationReadDto.id}')|"
+  ></button>
+</th:block>
 </html>

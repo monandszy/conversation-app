@@ -1,6 +1,7 @@
 package code.modules.conversation.service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -19,6 +20,6 @@ public class Request {
   Boolean selected;
   OffsetDateTime created;
   Section section;
-  Response response;
+  List<Response> responses;
   Navigation navigation;
 }

@@ -17,7 +17,7 @@
     /*<![CDATA[*/
     document.body.addEventListener('htmx:configRequest', (event) => {
       // Check if the request is NOT an htmx GET request
-      if (event.detail.verb.toUpperCase() !== 'GET') {
+      if (event.detail.verb.toUpperCase() !== ' GET') {
         const csrfHeader = /*[[${_csrf != null ? _csrf.headerName : ''}]]*/ 'X-Sample-CSRF-Header';
         const csrfToken = /*[[${_csrf != null ? _csrf.token : ''}]]*/ 'sample-csrf-token';
         event.detail.headers[csrfHeader] = csrfToken;

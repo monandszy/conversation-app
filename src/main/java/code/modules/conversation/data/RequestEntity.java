@@ -12,7 +12,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,10 +45,10 @@ public class RequestEntity {
   @Column(name = "selected")
   private Boolean selected;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "section_id")
   private SectionEntity section;
 
-  @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
-  private Set<ResponseEntity> responses;
+  @OneToMany(mappedBy = "request", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+  private final List<ResponseEntity> responses = new ArrayList<>();
 }

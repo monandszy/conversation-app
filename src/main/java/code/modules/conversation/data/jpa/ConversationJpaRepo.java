@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface ConversationJpaRepo extends JpaRepository<ConversationEntity, UUID> {
 
   Page<ConversationEntity> findByAccountId(UUID accountId, Pageable pageRequest);
+
 }

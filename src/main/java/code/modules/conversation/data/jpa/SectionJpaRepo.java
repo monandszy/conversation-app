@@ -14,27 +14,75 @@ import org.springframework.stereotype.Repository;
 public interface SectionJpaRepo extends JpaRepository<SectionEntity, UUID> {
 
   @Query("""
-        SELECT s AS section, 
-               reqSelected AS selectedRequest, 
-               reqPrev.id AS prevRequestId, 
-               reqNext.id AS nextRequestId,
-               resSelected AS selectedResponse, 
-               resPrev.id AS prevResponseId, 
-               resNext.id AS nextResponseId
-        FROM SectionEntity s
-        LEFT JOIN RequestEntity reqSelected ON reqSelected.section.id = s.id AND reqSelected.selected = true
-        LEFT JOIN ResponseEntity resSelected ON resSelected.request.id = reqSelected.id AND resSelected.selected = true
-    
-        LEFT JOIN RequestEntity reqPrev ON reqPrev.section.id = s.id AND reqPrev.created < reqSelected.created
-        LEFT JOIN RequestEntity reqNext ON reqNext.section.id = s.id AND reqNext.created > reqSelected.created
-        LEFT JOIN ResponseEntity resPrev ON resPrev.request.id = reqSelected.id AND resPrev.created < resSelected.created
-        LEFT JOIN ResponseEntity resNext ON resNext.request.id = reqSelected.id AND resNext.created > resSelected.created
-    
-        WHERE s.conversation = :conversation
-        ORDER BY reqPrev.created DESC, reqNext.created ASC, resPrev.created DESC, resNext.created ASC
-    """)
-  Page<SectionNavigationProjection> findSectionsByConversationIdWithSelectedRequestAndResponse(
+    SELECT s AS section,
+           reqSelected AS selectedRequest,
+           (SELECT reqPrev.id 
+            FROM RequestEntity reqPrev 
+            WHERE reqPrev.section = s 
+              AND reqPrev.created < reqSelected.created 
+            ORDER BY reqPrev.created DESC, reqPrev.id DESC 
+            LIMIT 1) AS prevRequestId,
+           (SELECT reqNext.id 
+            FROM RequestEntity reqNext 
+            WHERE reqNext.section = s 
+              AND reqNext.created > reqSelected.created 
+            ORDER BY reqNext.created ASC, reqNext.id ASC 
+            LIMIT 1) AS nextRequestId,
+           resSelected AS selectedResponse,
+           (SELECT resPrev.id 
+            FROM ResponseEntity resPrev 
+            WHERE resPrev.request = reqSelected 
+              AND resPrev.created < resSelected.created 
+            ORDER BY resPrev.created DESC, resPrev.id DESC 
+            LIMIT 1) AS prevResponseId,
+           (SELECT resNext.id 
+            FROM ResponseEntity resNext 
+            WHERE resNext.request = reqSelected 
+              AND resNext.created > resSelected.created 
+            ORDER BY resNext.created ASC, resNext.id ASC 
+            LIMIT 1) AS nextResponseId
+    FROM SectionEntity s
+    LEFT JOIN RequestEntity reqSelected ON reqSelected.section = s AND reqSelected.selected = true
+    LEFT JOIN ResponseEntity resSelected ON resSelected.request = reqSelected AND resSelected.selected = true
+    WHERE s.conversation = :conversation
+""")
+  Page<SectionNavigationProjection> findSectionWithSelectedRequestAndResponse(
     @Param("conversation") ConversationEntity conversation,
     Pageable pageable
   );
+
+  @Query("""
+    SELECT s AS section,
+           reqSelected AS selectedRequest,
+           (SELECT reqPrev.id 
+            FROM RequestEntity reqPrev 
+            WHERE reqPrev.section = s 
+              AND reqPrev.created < reqSelected.created 
+            ORDER BY reqPrev.created DESC, reqPrev.id DESC 
+            LIMIT 1) AS prevRequestId,
+           (SELECT reqNext.id 
+            FROM RequestEntity reqNext 
+            WHERE reqNext.section = s 
+              AND reqNext.created > reqSelected.created 
+            ORDER BY reqNext.created ASC, reqNext.id ASC 
+            LIMIT 1) AS nextRequestId,
+           resSelected AS selectedResponse,
+           (SELECT resPrev.id 
+            FROM ResponseEntity resPrev 
+            WHERE resPrev.request = reqSelected 
+              AND resPrev.created < resSelected.created 
+            ORDER BY resPrev.created DESC, resPrev.id DESC 
+            LIMIT 1) AS prevResponseId,
+           (SELECT resNext.id 
+            FROM ResponseEntity resNext 
+            WHERE resNext.request = reqSelected 
+              AND resNext.created > resSelected.created 
+            ORDER BY resNext.created ASC, resNext.id ASC 
+            LIMIT 1) AS nextResponseId
+        FROM SectionEntity s
+        LEFT JOIN RequestEntity reqSelected ON reqSelected.section = s AND reqSelected.selected = true
+        LEFT JOIN ResponseEntity resSelected ON resSelected.request = reqSelected AND resSelected.selected = true
+        WHERE s = :section
+    """)
+  SectionNavigationProjection findBySection(@Param("section") SectionEntity section);
 }

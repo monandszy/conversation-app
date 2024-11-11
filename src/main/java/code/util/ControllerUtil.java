@@ -1,6 +1,6 @@
 package code.util;
 
-import code.modules.conversation.ConversationCommandFacade;
+import code.modules.conversation.ConversationCommandFacade.RequestGenerateDto;
 import jakarta.servlet.http.HttpSession;
 import java.util.Objects;
 
@@ -26,7 +26,7 @@ public interface ControllerUtil {
     }
   }
 
-  default ConversationCommandFacade.RequestGenerateDto getEmptyRequest() {
-    return new ConversationCommandFacade.RequestGenerateDto(null, null);
+  default RequestGenerateDto getEmptyRequest() {
+    return new RequestGenerateDto(null);
   }
 }

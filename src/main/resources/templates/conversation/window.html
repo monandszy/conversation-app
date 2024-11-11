@@ -21,13 +21,22 @@
       <th:block th:fragment="fragment">
         <div id="window-wrapper">
           <div id="window-content">
-            <h1>Some Responses and requests content</h1>
-            <div th:each="request : ${requestPage.content}" th:classappend="window-item">
-              <p th:text="${request.text}" class="request"></p>
-              <th:block th:each="response : ${request.responses}">
-                <p th:text="${response.text}" class="response"></p>
-              </th:block>
-            </div>
+            <script>
+              // Prevent "Enter" from creating a new line in any editable paragraph
+              document.addEventListener("keydown", function (event) {
+                if (event.target.classList.contains("request") && event.key === "Enter") {
+                  if (event.ctrlKey) {
+                    event.preventDefault();
+                    event.target.blur()
+                  }
+                }
+              });
+              function updateHiddenInput(paragraph) {
+                var hiddenInput = paragraph.nextElementSibling;
+                hiddenInput.value = paragraph.innerText;  // Syncs contenteditable with the hidden input
+              }
+            </script>
+            <div th:replace="~{conversation/window-content :: fragment(${sectionPage})}"></div>
           </div>
         </div>
       </th:block>
@@ -35,19 +44,19 @@
     </div>
     <div>
       <script th:inline="javascript" defer>
-        /*<![CDATA[*/
         globalConversationId = /*[[${conversationId}]]*/ 'null'
         document.getElementById('submit-button').innerText = 'Post_Generate';
-        /*]]>*/
       </script>
     </div>
   </div>
 </th:block>
 <th:block th:fragment="singular-fragment">
-  <div class="window-item">
-    <p th:text="${requestReadDto.text}"></p>
-    <th:block th:each="response : ${requestReadDto.responses}">
-      <p th:text="${response.text}"></p>
+  <div class="section">
+    <th:block th:each="request : ${sectionReadDto.requests}">
+      <p th:text="${request.text}" class="request"></p>
+      <th:block th:each="response : ${request.responses}">
+        <p th:text="${response.text}" class="response"></p>
+      </th:block>
     </th:block>
   </div>
 </th:block>

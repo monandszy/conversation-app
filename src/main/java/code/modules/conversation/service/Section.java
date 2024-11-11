@@ -1,6 +1,7 @@
 package code.modules.conversation.service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -17,5 +18,5 @@ public class Section {
   UUID id;
   OffsetDateTime created;
   Conversation conversation;
-  Request request;
+  List<Request> requests;
 }
