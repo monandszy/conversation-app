@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
@@ -43,11 +44,12 @@ public class SectionController implements ControllerUtil {
   @ResponseStatus(HttpStatus.OK)
   String window(
     @RequestHeader(value = "HX-Request", required = false) String hxRequest,
+    @RequestParam(defaultValue = "0") Integer page,
     @PathVariable String conversationId,
     Principal principal,
     Model model
   ) {
-    PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE, Sort.by("created").descending());
+    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
     UUID convId = UUID.fromString(conversationId);
     Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
     model.addAttribute("sectionPage", sectionPage);
@@ -61,6 +63,36 @@ public class SectionController implements ControllerUtil {
       conversationPage.list(0, principal, model);
       return "conversation/window";
     }
+  }
+
+  @GetMapping("/{conversationId}/previous")
+  @ResponseStatus(HttpStatus.OK)
+  String windowPrevious(
+    @RequestParam(defaultValue = "0") Integer page,
+    @PathVariable String conversationId,
+    Model model
+  ) {
+    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
+    UUID convId = UUID.fromString(conversationId);
+    Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
+    model.addAttribute("sectionPage", sectionPage);
+    model.addAttribute("conversationId", convId);
+    return "conversation/window-content :: previous-fragment";
+  }
+
+  @GetMapping("/{conversationId}/next")
+  @ResponseStatus(HttpStatus.OK)
+  String windowNext(
+    @RequestParam(defaultValue = "0") Integer page,
+    @PathVariable String conversationId,
+    Model model
+  ) {
+    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
+    UUID convId = UUID.fromString(conversationId);
+    Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
+    model.addAttribute("sectionPage", sectionPage);
+    model.addAttribute("conversationId", convId);
+    return "conversation/window-content :: next-fragment";
   }
 
   @PostMapping("/{conversationId}")

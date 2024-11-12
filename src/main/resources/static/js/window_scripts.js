@@ -60,12 +60,12 @@ function setRequestDeleteAfter(event, button) {
 }
 
 function setSectionDeleteAfter(event, button) {
-  const windowContent = document.querySelector("#window-content");
+  const windowContent = document.querySelector("#window-wrapper");
   const sections = windowContent.querySelectorAll(".section");
   if (sections.length === 1) {
     event.preventDefault();
     const element = document.querySelector('#selected-sidebar-item');
-    const deleteButton = element.querySelector('.delete-btn');
+    const deleteButton = element.querySelector('.conv-delBtn');
     deleteButton.click();
   }
 }

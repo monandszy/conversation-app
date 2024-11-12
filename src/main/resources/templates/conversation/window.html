@@ -11,7 +11,7 @@
   <script hx-preserve="true" src="/js/window_scripts.js" defer></script>
 </head>
 <th:block layout:fragment="content">
-  <div id="content" class="conversation-content">
+  <div id="content" class="conversation-wrapper">
     <div th:replace="~{conversation/sidebar :: fragment}"></div>
     <div id="conversation-wrapper">
       <th:block th:fragment="fragment">
@@ -22,8 +22,13 @@
           <script hx-preserve="true" src="/js/window_scripts.js" defer></script>
         </head>
         <div id="window-wrapper">
+          <div id="window-header">
+            <h1>Sticky Header</h1>
+          </div>
           <div id="window-content">
-            <div th:replace="~{conversation/window-content :: fragment(${sectionPage})}"></div>
+            <div
+              th:replace="~{conversation/window-content :: fragment(${sectionPage}, ${conversationId})}"
+            ></div>
           </div>
         </div>
       </th:block>
@@ -32,7 +37,7 @@
     <div>
       <script th:inline="javascript" defer>
         globalConversationId = /*[[${conversationId}]]*/ 'null'
-        document.getElementById('submit-button').innerText = 'Post_Generate';
+        document.getElementById('generate-form-button').innerText = 'Post_Generate';
       </script>
     </div>
   </div>

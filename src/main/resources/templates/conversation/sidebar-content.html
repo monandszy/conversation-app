@@ -51,9 +51,10 @@
   <div th:if="${conversationPage.hasPrevious()}">
     <button
       th:hx-get="@{/conversation/list/next(page=${conversationPage.number - 1})}"
-      hx-trigger="revealed"
+      hx-trigger="intersect"
       hx-target="this"
       hx-swap="outerHTML"
+      class="load-button"
     >Load Previous
     </button>
   </div>
@@ -71,13 +72,14 @@
   </div>
 </th:block>
 
-<th:block  th:fragment="next-content(conversationPage)">
+<th:block th:fragment="next-content(conversationPage)">
   <div th:if="${conversationPage.hasNext()}">
     <button
       th:hx-get="@{/conversation/list/previous(page=${conversationPage.number + 1})}"
-      hx-trigger="revealed"
+      hx-trigger="intersect"
       hx-target="this"
       hx-swap="outerHTML"
+      class="load-button"
     >Load Next
     </button>
   </div>
@@ -89,7 +91,7 @@
     th:hx-delete="@{/conversation/{id}(id=${conversationId})}"
     hx-swap="outerHTML"
     hx-target="closest .sidebar-item"
-    class="delete-btn"
+    class="conv-delBtn"
     hx-push-url="false"
     hx-on--before-request="setConversationDeleteAfter(event, this)"
   ></button>
@@ -98,6 +100,7 @@
     th:hx-get="@{/conversation/{id}(id=${conversationId})}"
     th:hx-on--after-request="|setGlobal('${conversationId}', this)|"
     hx-push-url="true" hx-swap="outerHTML" hx-target="#window-wrapper"
+    class="conv-getBtn"
   ></button>
 </th:block>
 </html>

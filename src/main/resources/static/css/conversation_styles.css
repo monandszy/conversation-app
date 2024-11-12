@@ -30,7 +30,7 @@
       display: flex;
       flex: 0;
       position: sticky; }
-      #content #sidebar-wrapper #new-conversation-form button {
+      #content #sidebar-wrapper #new-conversation-form #new-conversation-form-button {
         width: 150px; }
   #content #conversation-content {
     display: flex;
@@ -45,6 +45,10 @@
       flex-direction: column;
       min-height: 0;
       overflow: hidden; }
+      #content #conversation-content #window-wrapper #window-header {
+        position: sticky;
+        top: 0;
+        width: 100%; }
       #content #conversation-content #window-wrapper #window-content {
         display: flex;
         flex: 1;
@@ -58,11 +62,8 @@
       display: flex;
       flex-shrink: 0;
       position: sticky; }
-      #content #conversation-content #generate-form-wrapper #generate-form {
+      #content #conversation-content #generate-form-wrapper #dynamic-form {
         display: flex;
         flex: 1; }
-        #content #conversation-content #generate-form-wrapper #generate-form #dynamic-form {
-          display: flex;
+        #content #conversation-content #generate-form-wrapper #dynamic-form input[type="text"] {
           flex: 1; }
-          #content #conversation-content #generate-form-wrapper #generate-form #dynamic-form input[type="text"] {
-            flex: 1; }

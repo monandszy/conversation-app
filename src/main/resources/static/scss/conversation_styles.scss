@@ -25,6 +25,14 @@
         button {
           width: 150px;
         }
+        .conv-delBtn {
+        }
+        .conv-getBtn {
+        }
+        #selected-sidebar-item {
+        }
+      }
+      .load-button {
       }
     }
     #new-conversation-form {
@@ -33,7 +41,7 @@
       display: flex;
       flex: 0;
       position: sticky;
-      button {
+      #new-conversation-form-button {
         width: 150px;
       }
     }
@@ -51,6 +59,11 @@
       flex-direction: column;
       min-height: 0;
       overflow: hidden;
+      #window-header {
+        position: sticky;
+        top: 0;
+        width: 100%;
+      }
       #window-content {
         display: flex;
         flex: 1;
@@ -58,12 +71,30 @@
         min-height: 0;
         overflow-y: auto;
         .section {
-          p {
-            &.request {
+          .request-wrapper {
+            .request {
             }
-            &.response {
+            .previous-btn {
+            }
+            .next-btn {
+            }
+            .req-delBtn {
+            }
+            .response-wrapper {
+              .response {
+              }
+              .previous-btn {
+              }
+              .next-btn {
+              }
+              .res-delBtn {
+              }
+              .retry-btn {
+              }
             }
           }
+        }
+        .load-button {
         }
       }
     }
@@ -74,18 +105,14 @@
       display: flex;
       flex-shrink: 0;
       position: sticky;
-      #generate-form {
+      #dynamic-form {
         display: flex;
         flex: 1;
-        #dynamic-form {
-          display: flex;
+        input[type="text"] {
           flex: 1;
-          input[type="text"] {
-            flex: 1;
-          }
         }
-        button {
-        }
+      }
+      #generate-form-button {
       }
     }
   }

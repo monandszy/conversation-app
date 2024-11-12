@@ -6,11 +6,11 @@ document.getElementById('dynamic-form').addEventListener('submit', function (eve
   if (globalConversationId === 'null') {
     // begin conversation
     htmx.ajax('POST', '/conversation', {
-      swap: 'beforeend',
+      swap: 'beforebegin',
       target: '#sidebar-content',
       values: formData,
     }).then(() => {
-      document.getElementById('submit-button').innerText = 'Post_Generate';
+      document.getElementById('generate-form-button').innerText = 'Post_Generate';
       htmx.ajax('GET', '/conversation/' + globalConversationId, {target: '#window-wrapper', swap: 'outerHTML'});
       window.history.pushState({}, '', '/conversation/' + globalConversationId);
     });
@@ -26,7 +26,7 @@ function resetGlobal() {
     element.removeAttribute('id');
   }
   globalConversationId = 'null'
-  document.getElementById('submit-button').innerText = 'Begin_Generate';
+  document.getElementById('generate-form-button').innerText = 'Begin_Generate';
 }
 
 function setGlobal(conversationId, button) {
@@ -37,7 +37,7 @@ function setGlobal(conversationId, button) {
   }
   const selected = button.closest(".sidebar-item");
   selected.id = 'selected-sidebar-item'
-  document.getElementById('submit-button').innerText = 'Post_Generate';
+  document.getElementById('generate-form-button').innerText = 'Post_Generate';
 }
 
 function setConversationDeleteAfter(event, button) {
