@@ -53,43 +53,77 @@ public interface ConversationMapper {
 
   Conversation entityToDomain(ConversationEntity entity);
 
-  default Section entityToDomain(SectionNavigationProjection entityDto) {
-    return entityToDomain(entityDto.getSection())
-      .withRequests(List.of(entityToDomain(entityDto.getSelectedRequest())
-        .withNavigation(Navigation.builder()
-          .nextId(entityDto.getNextRequestId())
-          .previousId(entityDto.getPrevRequestId())
-          .build())
-        .withResponses(List.of(entityToDomain(entityDto.getSelectedResponse())
-          .withNavigation(Navigation.builder()
-            .nextId(entityDto.getNextResponseId())
-            .previousId(entityDto.getPrevResponseId())
-            .build())
-        ))));
-  }
-
   ResponseReadDto domainToReadDto(Response response);
 
   RequestReadDto domainToReadDto(Request request);
 
-  default Request entityToDomain(RequestNavigationProjection entityDto) {
-    return entityToDomain(entityDto.getSelectedRequest()).withNavigation(Navigation.builder()
+  default Section entityToDomain(SectionNavigationProjection entityDto) {
+    SectionEntity section = entityDto.getSection();
+    if (section == null) {
+      return null;
+    }
+
+    RequestEntity selectedRequest = entityDto.getSelectedRequest();
+    ResponseEntity selectedResponse = entityDto.getSelectedResponse();
+
+    Navigation nextRequestNav = Navigation.builder()
       .nextId(entityDto.getNextRequestId())
       .previousId(entityDto.getPrevRequestId())
-      .build())
-      .withResponses(List.of(entityToDomain(entityDto.getSelectedResponse())
-        .withNavigation(Navigation.builder()
-          .nextId(entityDto.getNextResponseId())
-          .previousId(entityDto.getPrevResponseId())
-          .build())
+      .build();
+
+    Navigation nextResponseNav = Navigation.builder()
+      .nextId(entityDto.getNextResponseId())
+      .previousId(entityDto.getPrevResponseId())
+      .build();
+
+    return entityToDomain(section)
+      .withRequests(selectedRequest == null ? List.of() : List.of(entityToDomain(selectedRequest)
+        .withNavigation(nextRequestNav)
+        .withResponses(selectedResponse == null ? List.of() : List.of(entityToDomain(selectedResponse)
+          .withNavigation(nextResponseNav))
+        ))
+      );
+  }
+
+  default Request entityToDomain(RequestNavigationProjection entityDto) {
+    RequestEntity selectedRequest = entityDto.getSelectedRequest();
+    ResponseEntity selectedResponse = entityDto.getSelectedResponse();
+
+    if (selectedRequest == null) {
+      return null;
+    }
+
+    Navigation nextRequestNav = Navigation.builder()
+      .nextId(entityDto.getNextRequestId())
+      .previousId(entityDto.getPrevRequestId())
+      .build();
+
+    Navigation nextResponseNav = Navigation.builder()
+      .nextId(entityDto.getNextResponseId())
+      .previousId(entityDto.getPrevResponseId())
+      .build();
+
+    return entityToDomain(selectedRequest)
+      .withNavigation(nextRequestNav)
+      .withResponses(selectedResponse == null ? List.of() : List.of(entityToDomain(selectedResponse)
+        .withNavigation(nextResponseNav)
       ));
   }
 
   default Response entityToDomain(ResponseNavigationProjection entityDto) {
-    return entityToDomain(entityDto.getSelectedResponse())
-      .withNavigation(Navigation.builder()
-        .nextId(entityDto.getNextResponseId())
-        .previousId(entityDto.getPrevResponseId())
-        .build());
+    ResponseEntity selectedResponse = entityDto.getSelectedResponse();
+
+    if (selectedResponse == null) {
+      return null;
+    }
+
+    Navigation nextResponseNav = Navigation.builder()
+      .nextId(entityDto.getNextResponseId())
+      .previousId(entityDto.getPrevResponseId())
+      .build();
+
+    return entityToDomain(selectedResponse)
+      .withNavigation(nextResponseNav);
   }
+
 }

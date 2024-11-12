@@ -36,8 +36,6 @@ function setResponseDeleteAfter(button) {
 }
 
 function setRequestDeleteAfter(event, button) {
-  console.log(event)
-  console.log(button)
   const responseWrapper = button.closest('.request-wrapper');
   const previousButton = responseWrapper.querySelector('.previous-btn');
   if (previousButton) {
@@ -57,7 +55,6 @@ function setRequestDeleteAfter(event, button) {
     event.preventDefault();
     const section = button.closest('.section');
     const deleteButton = section.querySelector(".section-delBtn");
-    console.log(deleteButton)
     deleteButton.click()
   }
 }
@@ -66,7 +63,6 @@ function setSectionDeleteAfter(event, button) {
   const windowContent = document.querySelector("#window-content");
   const sections = windowContent.querySelectorAll(".section");
   if (sections.length === 1) {
-    console.log("setSectionDeleteAfter === 1")
     event.preventDefault();
     const element = document.querySelector('#selected-sidebar-item');
     const deleteButton = element.querySelector('.delete-btn');

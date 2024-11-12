@@ -57,7 +57,8 @@ public class SectionController implements ControllerUtil {
     if (Objects.nonNull(hxRequest)) {
       return "conversation/window :: fragment";
     } else {
-      conversationPage.list(principal, model);
+//      TODO LIST THE ACTUAL PAGE WITH THE converastionId
+      conversationPage.list(0, principal, model);
       return "conversation/window";
     }
   }

@@ -21,9 +21,7 @@ document.getElementById('dynamic-form').addEventListener('submit', function (eve
 });
 
 function resetGlobal() {
-  console.log("RESET")
   const element = document.querySelector('#selected-sidebar-item');
-  console.log(element)
   if (element) {
     element.removeAttribute('id');
   }
@@ -43,10 +41,8 @@ function setGlobal(conversationId, button) {
 }
 
 function setConversationDeleteAfter(event, button) {
-  console.log("setConversationDeleteAfter")
   button.addEventListener('htmx:afterRequest', function () {
     if (button.closest(".sidebar-item").id === 'selected-sidebar-item') {
-      console.log("setConversationDeleteAfter === selected-sidebar-item")
       const newConversationForm = document.querySelector('#new-conversation-form-button');
       newConversationForm.click();
     }

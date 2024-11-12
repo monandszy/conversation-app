@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
@@ -43,7 +44,7 @@ public class ConversationPage implements ControllerUtil {
     Principal principal,
     Model model
   ) {
-    list(principal, model);
+    list(0, principal, model);
     model.addAttribute("requestGenerateDto", getEmptyRequest());
     model.addAttribute("isHxRequest", hxRequest);
     if (Objects.nonNull(hxRequest)) {
@@ -55,12 +56,43 @@ public class ConversationPage implements ControllerUtil {
 
   @GetMapping("/list")
   @ResponseStatus(HttpStatus.OK)
-  String list(Principal principal, Model model) {
-    PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE, Sort.by("created").descending());
+  String list(
+    @RequestParam(defaultValue = "0") Integer page,
+    Principal principal,
+    Model model
+  ) {
+    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
     UUID accountId = UUID.fromString(principal.getName());
     Page<ConversationReadDto> conversationPage = queryFacade.getConversationPage(pageRequest, accountId);
     model.addAttribute("conversationPage", conversationPage);
     return "conversation/sidebar :: fragment";
+  }
+
+  @GetMapping("/list/next")
+  public String getNext(
+    @RequestParam Integer page,
+    Principal principal,
+    Model model
+  ) {
+    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
+    UUID accountId = UUID.fromString(principal.getName());
+    Page<ConversationReadDto> conversationPage = queryFacade.getConversationPage(pageRequest, accountId);
+    model.addAttribute("conversationPage", conversationPage);
+    return "conversation/sidebar-content :: next-fragment";
+  }
+
+  @GetMapping("/list/previous")
+  public String getPrevious(
+    @RequestParam Integer page,
+    Principal principal,
+    Model model
+  ) {
+    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
+    UUID accountId = UUID.fromString(principal.getName());
+    Page<ConversationReadDto> conversationPage = queryFacade.getConversationPage(pageRequest, accountId);
+    model.addAttribute("conversationPage", conversationPage);
+
+    return "conversation/sidebar-content :: previous-fragment";
   }
 
   @GetMapping("/introduction")

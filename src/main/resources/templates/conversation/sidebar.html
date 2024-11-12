@@ -8,17 +8,9 @@
 </head>
 <th:block th:fragment="fragment">
   <div id="sidebar-wrapper">
-    <nav id="sidebar-content">
-      <div
-        th:each="conversation : ${conversationPage.content}" th:classappend="sidebar-item"
-        th:attr="id=${conversation.id == conversationId} ? 'selected-sidebar-item' : ''"
-      >
-        <div
-          th:replace="~{conversation/sidebar :: sidebar-item(${conversation.id})}"
-        >
-        </div>
-      </div>
-    </nav>
+    <div
+      th:replace="~{conversation/sidebar-content :: fragment}"
+    ></div>
     <div id="new-conversation-form">
       <form
         hx-push-url="/conversation"
@@ -28,7 +20,8 @@
         hx-trigger="submit"
         hx-on--after-request="resetGlobal()"
       >
-        <button id="new-conversation-form-button"
+        <button
+          id="new-conversation-form-button"
           type="submit" th:text="New_Conversation"
         ></button>
       </form>
@@ -44,27 +37,8 @@
   </head>
   <div class="sidebar-item" id="selected-sidebar-item">
     <div
-      th:replace="~{conversation/sidebar :: sidebar-item(${conversationReadDto.id})}"
+      th:replace="~{conversation/sidebar-content :: sidebar-item(${conversationReadDto.id})}"
     >
     </div>
   </div>
 </th:block>
-
-<th:block th:fragment="sidebar-item(conversationId)">
-  <button
-    th:text="Del"
-    th:hx-delete="@{/conversation/{id}(id=${conversationId})}"
-    hx-swap="outerHTML"
-    hx-target="closest .sidebar-item"
-    class="delete-btn"
-    hx-push-url="false"
-    hx-on--before-request="setConversationDeleteAfter(event, this)"
-  ></button>
-  <button
-    th:text="${conversationId}"
-    th:hx-get="@{/conversation/{id}(id=${conversationId})}"
-    th:hx-on--after-request="|setGlobal('${conversationId}', this)|"
-    hx-push-url="true" hx-swap="outerHTML" hx-target="#window-wrapper"
-  ></button>
-</th:block>
-</html>
