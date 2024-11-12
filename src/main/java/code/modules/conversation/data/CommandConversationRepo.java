@@ -14,6 +14,7 @@ import code.modules.conversation.service.Response;
 import code.modules.conversation.service.Section;
 import code.modules.conversation.util.ConversationMapper;
 import code.util.CommandRepositoryAdapter;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,23 +64,38 @@ public class CommandConversationRepo implements CommandConversationDao {
   }
 
   @Override
-  public void delete(Conversation conversation) {
-    conversationJpaRepo.delete(mapper.domainToEntity(conversation));
+  public void deleteConversation(UUID conversationId, UUID accountId) {
+    int rowsDeleted = conversationJpaRepo.deleteByIdAndAccountId(conversationId, accountId);
+    if (rowsDeleted == 0) {
+      // Handle case where no deletion occurred, meaning no match was found
+      throw new IllegalArgumentException("Conversation does not exist or is not associated with the given account.");
+    }
   }
 
   @Override
-  public void delete(Section section) {
-    sectionJpaRepo.delete(mapper.domainToEntity(section));
+  public void deleteSection(UUID sectionId, UUID accountId) {
+    int rowsDeleted = sectionJpaRepo.deleteByIdAndConversationAccountId(sectionId, accountId);
+    if (rowsDeleted == 0) {
+      throw new IllegalArgumentException("Section does not exist or is not associated with the given account.");
+    }
   }
 
   @Override
-  public void delete(Request request) {
-    requestJpaRepo.delete(mapper.domainToEntity(request));
+  public void deleteRequest(UUID requestId, UUID accountId) {
+    int rowsDeleted = requestJpaRepo
+      .deleteByIdAndSectionConversationAccountId(requestId, accountId);
+    if (rowsDeleted == 0) {
+      throw new IllegalArgumentException("Request does not exist or is not associated with the given account.");
+    }
   }
 
   @Override
-  public void delete(Response response) {
-    responseJpaRepo.delete(mapper.domainToEntity(response));
+  public void deleteResponse(UUID responseId, UUID accountId) {
+    int rowsDeleted = responseJpaRepo
+      .deleteByIdAndRequestSectionConversationAccountId(responseId, accountId);
+    if (rowsDeleted == 0) {
+      throw new IllegalArgumentException("Response does not exist or is not associated with the given account.");
+    }
   }
 
   @Override

@@ -8,17 +8,19 @@
   <title>Conversation</title>
   <link hx-preserve="true" rel="stylesheet" href="/css/conversation_styles.css"/>
   <script hx-preserve="true" src="/js/conversation_scripts.js" defer></script>
+  <script hx-preserve="true" hx-head="re-eval" src="/js/window_scripts.js" defer></script>
 </head>
 <th:block layout:fragment="content">
-  <head th:if="${isHxRequest == 'true'}" hx-head="merge">
-    <title>Conversation</title>
-    <link hx-preserve="true" rel="stylesheet" href="/css/conversation_styles.css"/>
-    <script hx-preserve="true" src="/js/conversation_scripts.js" defer></script>
-  </head>
   <div id="content" class="conversation-content">
     <div th:replace="~{conversation/sidebar :: fragment}"></div>
     <div id="conversation-wrapper">
       <th:block th:fragment="fragment">
+        <head th:if="${isHxRequest == 'true'}" hx-head="merge">
+          <title>Conversation</title>
+          <link hx-preserve="true" rel="stylesheet" href="/css/conversation_styles.css"/>
+          <script hx-preserve="true" src="/js/conversation_scripts.js" defer></script>
+          <script hx-preserve="true" hx-head="re-eval" src="/js/window_scripts.js" defer></script>
+        </head>
         <div id="window-wrapper">
           <div id="window-content">
             <script>
@@ -48,16 +50,6 @@
         document.getElementById('submit-button').innerText = 'Post_Generate';
       </script>
     </div>
-  </div>
-</th:block>
-<th:block th:fragment="singular-fragment">
-  <div class="section">
-    <th:block th:each="request : ${sectionReadDto.requests}">
-      <p th:text="${request.text}" class="request"></p>
-      <th:block th:each="response : ${request.responses}">
-        <p th:text="${response.text}" class="response"></p>
-      </th:block>
-    </th:block>
   </div>
 </th:block>
 </html>

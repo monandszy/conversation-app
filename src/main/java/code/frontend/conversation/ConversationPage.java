@@ -18,8 +18,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -81,5 +83,18 @@ public class ConversationPage implements ControllerUtil {
     commandFacade.generate(generateDto, readDto.id());
     model.addAttribute("conversationReadDto", readDto);
     return "conversation/sidebar :: singular-fragment";
+  }
+
+  @DeleteMapping("/{conversationId}")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  String deleteConversation(
+    @PathVariable String conversationId,
+    Principal principal
+  ) {
+    commandFacade.deleteConversation(
+      UUID.fromString(conversationId),
+      UUID.fromString(principal.getName())
+    );
+    return "empty";
   }
 }

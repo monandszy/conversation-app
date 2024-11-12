@@ -1,5 +1,7 @@
 package code.modules.conversation.service;
 
+import java.util.UUID;
+
 public interface CommandConversationDao {
 
   Section create(Section section, Request request, Response response);
@@ -10,11 +12,11 @@ public interface CommandConversationDao {
 
   Conversation create(Conversation conversation);
 
-  void delete(Conversation conversation);
+  void deleteConversation(UUID conversationId, UUID accountId);
 
-  void delete(Section section);
+  void deleteSection(UUID sectionId, UUID accountId);
 
-  void delete(Request request);
+  void deleteRequest(UUID requestId, UUID accountId);
 
-  void delete(Response response);
+  void deleteResponse(UUID responseId, UUID accountId);
 }

@@ -35,6 +35,6 @@ public interface ResponseJpaRepo extends JpaRepository<ResponseEntity, UUID> {
 """)
   ResponseNavigationProjection findByResponse(@Param("selectedResponse") ResponseEntity selectedResponse);
 
-
+  int deleteByIdAndRequestSectionConversationAccountId(UUID responseId, UUID accountId);
 
 }

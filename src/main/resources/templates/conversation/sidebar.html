@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html
   lang="en"
-  xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot"
   xmlns:th="http://www.thymeleaf.org"
 >
 <head>
@@ -9,16 +8,12 @@
 </head>
 <th:block th:fragment="fragment">
   <div id="sidebar-wrapper">
-    <nav
-      id="sidebar-content"
-      hx-push-url="true" hx-swap="outerHTML" hx-target="#window-wrapper"
-    >
+    <nav id="sidebar-content">
       <div th:each="conversation : ${conversationPage.content}" th:classappend="sidebar-item">
-        <button
-          th:text="${conversation.id}"
-          hx:get="@{/conversation/{id}(id=${conversation.id})}"
-          th:hx-on--after-request="|setGlobal('${conversation.id}')|"
-        ></button>
+        <div
+          th:replace="~{conversation/sidebar :: sidebar-item(${conversation.id})}"
+        >
+        </div>
       </div>
     </nav>
     <div id="new-conversation-form">
@@ -37,16 +32,36 @@
     </div>
   </div>
 </th:block>
+
 <th:block th:fragment="singular-fragment">
   <head>
     <script th:inline="javascript" hx-head="merge">
       globalConversationId = /*[[${conversationReadDto.id}]]*/ 'null'
     </script>
   </head>
+  <div class="sidebar-item">
+    <div
+      th:replace="~{conversation/sidebar :: sidebar-item(${conversationReadDto.id})}"
+    >
+    </div>
+  </div>
+</th:block>
+
+<th:block th:fragment="sidebar-item(conversationId)">
   <button
-    th:text="${conversationReadDto.id}"
-    hx:get="@{/conversation/{id}(id=${conversationReadDto.id})}"
-    th:hx-on--after-request="|setGlobal('${conversationReadDto.id}')|"
+    th:text="Del"
+    th:hx-delete="@{/conversation/{id}(id=${conversationId})}"
+    th:hx-on--after-request="|setGlobal('${conversationId}')|"
+    hx-swap="outerHTML"
+    hx-target="closest .sidebar-item"
+    th:data-conversation-id="${conversationId}"
+    class="delete-btn"
+  ></button>
+  <button
+    th:text="${conversationId}"
+    th:hx-get="@{/conversation/{id}(id=${conversationId})}"
+    th:hx-on--after-request="|setGlobal('${conversationId}')|"
+    hx-push-url="true" hx-swap="outerHTML" hx-target="#window-wrapper"
   ></button>
 </th:block>
 </html>

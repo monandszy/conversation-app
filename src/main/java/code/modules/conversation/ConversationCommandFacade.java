@@ -76,20 +76,20 @@ public class ConversationCommandFacade {
     return mapper.domainToReadDto(response);
   }
 
-  public void delete(ConversationReadDto readDto) {
-    commandDao.delete(Conversation.builder().id(readDto.id()).build());
+  public void deleteConversation(UUID conversationId, UUID accountId) {
+    commandDao.deleteConversation(conversationId, accountId);
   }
 
-  public void delete(SectionReadDto readDto) {
-    commandDao.delete(Section.builder().id(readDto.id()).build());
+  public void deleteSection(UUID sectionId, UUID accountId) {
+    commandDao.deleteSection(sectionId, accountId);
   }
 
-  public void delete(RequestReadDto readDto) {
-    commandDao.delete(Request.builder().id(readDto.id()).build());
+  public void deleteRequest(UUID requestId, UUID accountId) {
+    commandDao.deleteRequest(requestId, accountId);
   }
 
-  public void delete(ResponseReadDto readDto) {
-    commandDao.delete(Response.builder().id(readDto.id()).build());
+  public void deleteResponse(UUID responseId, UUID accountId) {
+    commandDao.deleteResponse(responseId, accountId);
   }
 
   public record ConversationBeginDto(

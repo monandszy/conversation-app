@@ -4,6 +4,7 @@ document.getElementById('dynamic-form').addEventListener('submit', function (eve
   const formData = new FormData(this);
   event.preventDefault();
   if (globalConversationId === 'null') {
+    // begin conversation
     htmx.ajax('POST', '/conversation', {
       swap: 'beforeend',
       target: '#sidebar-content',
@@ -12,6 +13,10 @@ document.getElementById('dynamic-form').addEventListener('submit', function (eve
       document.getElementById('submit-button').innerText = 'Post_Generate';
       htmx.ajax('GET', '/conversation/' + globalConversationId, {target: '#window-wrapper', swap: 'outerHTML'});
       window.history.pushState({}, '', '/conversation/' + globalConversationId);
+      const newSidebarItem = document
+        .querySelector('#sidebar-content .sidebar-item:last-child');
+      const newDeleteButton = newSidebarItem.querySelector('.delete-btn');
+      addDeleteButtonListener(newDeleteButton);
     });
   } else {
     htmx.ajax('POST', '/conversation/' + globalConversationId,
@@ -27,4 +32,23 @@ function resetGlobal() {
 function setGlobal(conversationId) {
   globalConversationId = conversationId
   document.getElementById('submit-button').innerText = 'Post_Generate';
+}
+
+document.querySelectorAll('.delete-btn').forEach(button => {
+  addDeleteButtonListener(button)
+});
+
+function addDeleteButtonListener(button) {
+  button.addEventListener('click', function () {
+    const deletedConversationId = button.getAttribute('data-conversation-id');
+    if (deletedConversationId === globalConversationId) {
+      // If the conversation ID matches the global conversation ID, send the additional request
+      resetGlobal()
+      window.history.pushState({}, '', '/conversation');
+      htmx.ajax('GET', '/conversation/introduction', {
+        target: '#window-wrapper',
+        swap: 'outerHTML',
+      });
+    }
+  });
 }

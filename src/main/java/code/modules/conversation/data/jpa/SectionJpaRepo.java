@@ -85,4 +85,6 @@ public interface SectionJpaRepo extends JpaRepository<SectionEntity, UUID> {
         WHERE s = :section
     """)
   SectionNavigationProjection findBySection(@Param("section") SectionEntity section);
+
+  int deleteByIdAndConversationAccountId(UUID sectionId, UUID accountId);
 }

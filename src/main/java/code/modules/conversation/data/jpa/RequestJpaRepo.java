@@ -47,4 +47,6 @@ public interface RequestJpaRepo extends JpaRepository<RequestEntity, UUID> {
 """)
   RequestNavigationProjection findByRequest(@Param("selectedRequest") RequestEntity selectedRequest);
 
+  int deleteByIdAndSectionConversationAccountId(UUID requestId, UUID accountId);
+
 }

@@ -17,8 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,7 +71,7 @@ public class SectionController implements ControllerUtil {
     SectionReadDto readDto = commandFacade
       .generate(generateDto, UUID.fromString(conversationId));
     model.addAttribute("sectionReadDto", readDto);
-    return "conversation/window :: singular-fragment";
+    return "conversation/window-content :: singular-fragment";
   }
 
   @PostMapping("/section/{sectionId}")
@@ -128,5 +130,41 @@ public class SectionController implements ControllerUtil {
     model.addAttribute("responseReadDto", responseDto);
     model.addAttribute("requestId", requestId);
     return "conversation/window-content :: response-fragment";
+  }
+
+  @DeleteMapping("/section/{sectionId}")
+  String deleteSection(
+    @PathVariable String sectionId,
+    Principal principal
+  ) {
+    commandFacade.deleteSection(
+      UUID.fromString(sectionId),
+      UUID.fromString(principal.getName())
+    );
+    return "empty";
+  }
+
+  @DeleteMapping("/request/{requestId}")
+  String deleteRequest(
+    @PathVariable String requestId,
+    Principal principal
+  ) {
+    commandFacade.deleteRequest(
+      UUID.fromString(requestId),
+      UUID.fromString(principal.getName())
+    );
+    return "empty";
+  }
+
+  @DeleteMapping("/response/{responseId}")
+  ResponseEntity<Void> deleteResponse(
+    @PathVariable String responseId,
+    Principal principal
+  ) {
+    commandFacade.deleteResponse(
+      UUID.fromString(responseId),
+      UUID.fromString(principal.getName())
+    );
+    return ResponseEntity.noContent().build();
   }
 }
