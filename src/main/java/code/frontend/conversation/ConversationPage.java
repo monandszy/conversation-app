@@ -5,6 +5,7 @@ import code.modules.conversation.ConversationCommandFacade;
 import code.modules.conversation.ConversationCommandFacade.ConversationBeginDto;
 import code.modules.conversation.ConversationCommandFacade.RequestGenerateDto;
 import code.modules.conversation.ConversationQueryFacade;
+import code.modules.conversation.ConversationQueryFacade.ConversationData;
 import static code.modules.conversation.ConversationQueryFacade.ConversationReadDto;
 import code.util.ControllerUtil;
 import java.security.Principal;
@@ -102,6 +103,17 @@ public class ConversationPage implements ControllerUtil {
   ) {
     model.addAttribute("requestGenerateDto", getEmptyRequest());
     return "conversation/introduction-window :: fragment";
+  }
+
+  @GetMapping("/{conversationId}/header")
+  @ResponseStatus(HttpStatus.OK)
+  String header(
+    @PathVariable String conversationId,
+    Model model
+  ) {
+    ConversationData data = queryFacade.getConversationData(UUID.fromString(conversationId));
+    model.addAttribute("selectedData", data);
+    return "conversation/window :: header-fragment";
   }
 
   @PostMapping("")

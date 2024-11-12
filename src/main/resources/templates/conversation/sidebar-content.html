@@ -8,6 +8,17 @@
 </head>
 <th:block th:fragment="fragment">
   <nav id="sidebar-content">
+    <th:block th:if="${selectedConversation != null}">
+      <div
+        class="sidebar-item" id="selected-sidebar-item"
+        th:include="~{conversation/sidebar-content :: sidebar-item(${selectedConversation.id})}"
+      >
+      </div>
+      <div>
+        <!--        This is temp ofc... TODO when added it appends before this..-->
+        <p>-----------------------------</p>
+      </div>
+    </th:block>
     <div
       th:replace="~{conversation/sidebar-content :: previous-content(${conversationPage})}"
     >
@@ -63,7 +74,6 @@
 <th:block th:fragment="content(conversationPage)">
   <div
     th:each="conversation : ${conversationPage.content}" th:classappend="sidebar-item"
-    th:attr="id=${conversation.id == conversationId} ? 'selected-sidebar-item' : ''"
   >
     <div
       th:replace="~{conversation/sidebar-content :: sidebar-item(${conversation.id})}"

@@ -1,5 +1,6 @@
-let globalConversationId = 'null';
-
+if (typeof globalConversationId === 'undefined') {
+  let globalConversationId = 'null';
+}
 document.getElementById('dynamic-form').addEventListener('submit', function (event) {
   const formData = new FormData(this);
   event.preventDefault();
@@ -16,11 +17,31 @@ document.getElementById('dynamic-form').addEventListener('submit', function (eve
     });
   } else {
     htmx.ajax('POST', '/conversation/' + globalConversationId,
-      {values: formData, swap: 'beforeend', target: '#window-content'});
+      {values: formData, swap: 'beforeend', target: '#window-content'})
+      .then(() => {
+        incrementCount('header-section-count');
+        incrementCount('header-request-count');
+        incrementCount('header-response-count');
+      });
   }
 });
 
+function setRequestPostAfter(button) {
+  button.addEventListener('htmx:afterRequest', function () {
+    incrementCount('header-request-count')
+    incrementCount('header-response-count')
+  })
+}
+
+function setResponsePostAfter(button) {
+  button.addEventListener('htmx:afterRequest', function () {
+    incrementCount('header-response-count')
+  })
+}
+
 function resetGlobal() {
+  console.log('reset')
+  console.log(globalConversationId)
   const element = document.querySelector('#selected-sidebar-item');
   if (element) {
     element.removeAttribute('id');
@@ -30,6 +51,8 @@ function resetGlobal() {
 }
 
 function setGlobal(conversationId, button) {
+  console.log('set')
+  console.log(conversationId)
   globalConversationId = conversationId
   const element = document.querySelector('#selected-sidebar-item');
   if (element) {

@@ -1,5 +1,6 @@
 package code.modules.conversation.data;
 
+import static code.modules.conversation.ConversationQueryFacade.ConversationData;
 import code.modules.conversation.data.jpa.ConversationJpaRepo;
 import code.modules.conversation.data.jpa.RequestJpaRepo;
 import code.modules.conversation.data.jpa.RequestNavigationProjection;
@@ -14,6 +15,7 @@ import code.modules.conversation.service.Response;
 import code.modules.conversation.service.Section;
 import code.modules.conversation.util.ConversationMapper;
 import code.util.ReadRepositoryAdapter;
+import jakarta.persistence.Tuple;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -65,5 +67,24 @@ public class ReadConversationRepo implements ReadConversationDao {
     entity.setSelected(true);
     ResponseNavigationProjection projection = responseJpaRepo.findByResponse(entity);
     return mapper.entityToDomain(projection);
+  }
+
+  @Override
+  public Conversation getConversation(Conversation conversation) {
+    ConversationEntity entity = conversationJpaRepo.findById(conversation.getId()).orElseThrow();
+    return mapper.entityToDomain(entity);
+  }
+
+  @Override
+  public ConversationData getConversationData(
+    Conversation conversation
+  ) {
+    ConversationEntity entity = mapper.domainToEntity(conversation);
+    Tuple tuple = sectionJpaRepo.countSectionsRequestsResponses(entity);
+    ConversationData conversationData = new ConversationData();
+    conversationData.setSectionCount(tuple.get("sectionCount", Long.class));
+    conversationData.setRequestCount(tuple.get("requestCount", Long.class));
+    conversationData.setResponseCount(tuple.get("responseCount", Long.class));
+    return conversationData;
   }
 }

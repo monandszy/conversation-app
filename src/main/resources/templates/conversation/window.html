@@ -22,9 +22,9 @@
           <script hx-preserve="true" src="/js/window_scripts.js" defer></script>
         </head>
         <div id="window-wrapper">
-          <div id="window-header">
-            <h1>Sticky Header</h1>
-          </div>
+          <div
+            th:replace="~{conversation/window :: header-content(${selectedData})}"
+          ></div>
           <div id="window-content">
             <div
               th:replace="~{conversation/window-content :: fragment(${sectionPage}, ${conversationId})}"
@@ -36,10 +36,27 @@
     </div>
     <div>
       <script th:inline="javascript" defer>
-        globalConversationId = /*[[${conversationId}]]*/ 'null'
+        let globalConversationId = /*[[${conversationId}]]*/
         document.getElementById('generate-form-button').innerText = 'Post_Generate';
       </script>
     </div>
+  </div>
+</th:block>
+<th:block th:fragment="header-fragment">
+  <div
+    th:replace="~{conversation/window :: header-content(${selectedData})}"
+  ></div>
+</th:block>
+<th:block th:fragment="header-content(selectedData)">
+  <div id="window-header">
+    <span> Conversation ID: </span>
+    <span id="header-conversation-id" th:text="${selectedData.conversationId}"></span>
+    <span> Section Count: </span>
+    <span id="header-section-count" th:text="${selectedData.sectionCount}"></span>
+    <span> Request Count: </span>
+    <span id="header-request-count" th:text="${selectedData.requestCount}"></span>
+    <span> Response Count: </span>
+    <span id="header-response-count" th:text="${selectedData.responseCount}"></span>
   </div>
 </th:block>
 </html>

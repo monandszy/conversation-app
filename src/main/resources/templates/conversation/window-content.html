@@ -135,6 +135,7 @@
       hx-target="closest .request-wrapper"
       hx-swap="outerHTML"
       oninput="updateHiddenInput(this)"
+      hx-on--before-request="setRequestPostAfter(this)"
     ></p>
     <input id="hidden-input" type="hidden" name="text"/>
   </div>
@@ -191,6 +192,7 @@
     hx-target="closest .response-wrapper"
     hx-swap="outerHTML"
     class="retry-btn"
+    hx-on--before-request="setResponsePostAfter(this)"
   ></button>
   <button
     th:text="Del_Response"

@@ -2,6 +2,7 @@ package code.modules.conversation.data.jpa;
 
 import code.modules.conversation.data.ConversationEntity;
 import code.modules.conversation.data.SectionEntity;
+import jakarta.persistence.Tuple;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -87,4 +88,12 @@ public interface SectionJpaRepo extends JpaRepository<SectionEntity, UUID> {
   SectionNavigationProjection findBySection(@Param("section") SectionEntity section);
 
   int deleteByIdAndConversationAccountId(UUID sectionId, UUID accountId);
+
+
+
+  @Query("SELECT " +
+    "(SELECT COUNT(s) FROM SectionEntity s WHERE s.conversation = :conversation) AS sectionCount, " +
+    "(SELECT COUNT(r) FROM RequestEntity r WHERE r.section.conversation = :conversation) AS requestCount, " +
+    "(SELECT COUNT(resp) FROM ResponseEntity resp WHERE resp.request.section.conversation = :conversation) AS responseCount")
+  Tuple countSectionsRequestsResponses(@Param("conversation") ConversationEntity conversation);
 }

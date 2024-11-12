@@ -4,6 +4,8 @@ import code.configuration.Constants;
 import code.modules.conversation.ConversationCommandFacade;
 import code.modules.conversation.ConversationCommandFacade.RequestGenerateDto;
 import code.modules.conversation.ConversationQueryFacade;
+import code.modules.conversation.ConversationQueryFacade.ConversationData;
+import code.modules.conversation.ConversationQueryFacade.ConversationReadDto;
 import code.modules.conversation.ConversationQueryFacade.RequestReadDto;
 import code.modules.conversation.ConversationQueryFacade.ResponseReadDto;
 import code.modules.conversation.ConversationQueryFacade.SectionReadDto;
@@ -52,6 +54,8 @@ public class SectionController implements ControllerUtil {
     PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
     UUID convId = UUID.fromString(conversationId);
     Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
+    ConversationData data = queryFacade.getConversationData(convId);
+    model.addAttribute("selectedData", data);
     model.addAttribute("sectionPage", sectionPage);
     model.addAttribute("requestGenerateDto", getEmptyRequest());
     model.addAttribute("conversationId", convId);
@@ -59,8 +63,10 @@ public class SectionController implements ControllerUtil {
     if (Objects.nonNull(hxRequest)) {
       return "conversation/window :: fragment";
     } else {
-//      TODO LIST THE ACTUAL PAGE WITH THE converastionId
+      UUID accountId = UUID.fromString(principal.getName());
+      ConversationReadDto selected = queryFacade.getConversation(convId, accountId);
       conversationPage.list(0, principal, model);
+      model.addAttribute("selectedConversation", selected);
       return "conversation/window";
     }
   }

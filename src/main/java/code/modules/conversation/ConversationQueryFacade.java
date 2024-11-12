@@ -10,6 +10,7 @@ import code.util.Facade;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,12 @@ public class ConversationQueryFacade {
     return page;
   }
 
+  public ConversationReadDto getConversation(UUID conversationId, UUID accountId) {
+    Conversation conversation = readDao.getConversation(Conversation.builder().id(conversationId).accountId(accountId).build());
+    return mapper.entityToDomain(conversation);
+
+  }
+
   public Page<SectionReadDto> getSectionPage(PageRequest pageRequest, UUID conversationId) {
     Conversation conversation = Conversation.builder().id(conversationId).build();
     Page<Section> sectionPage = readDao.getSectionPage(pageRequest, conversation);
@@ -47,6 +54,20 @@ public class ConversationQueryFacade {
   public ResponseReadDto getResponse(UUID responseId, UUID requestId) {
     Response response = readDao.getResponseWithNavigation(responseId, requestId);
     return mapper.domainToReadDto(response);
+  }
+
+  public ConversationData getConversationData(UUID conversationId) {
+    ConversationData conversationData = readDao.getConversationData(Conversation.builder().id(conversationId).build());
+    conversationData.setConversationId(conversationId);
+    return conversationData;
+  }
+
+  @Data
+  public static class ConversationData {
+    private Long sectionCount;
+    private Long requestCount;
+    private Long responseCount;
+    private UUID conversationId;
   }
 
   @With

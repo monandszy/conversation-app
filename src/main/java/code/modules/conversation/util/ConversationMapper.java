@@ -126,4 +126,5 @@ public interface ConversationMapper {
       .withNavigation(nextResponseNav);
   }
 
+  ConversationReadDto entityToDomain(Conversation conversation);
 }
