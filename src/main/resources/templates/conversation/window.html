@@ -8,7 +8,7 @@
   <title>Conversation</title>
   <link hx-preserve="true" rel="stylesheet" href="/css/conversation_styles.css"/>
   <script hx-preserve="true" src="/js/conversation_scripts.js" defer></script>
-  <script hx-preserve="true" hx-head="re-eval" src="/js/window_scripts.js" defer></script>
+  <script hx-preserve="true" src="/js/window_scripts.js" defer></script>
 </head>
 <th:block layout:fragment="content">
   <div id="content" class="conversation-content">
@@ -19,25 +19,10 @@
           <title>Conversation</title>
           <link hx-preserve="true" rel="stylesheet" href="/css/conversation_styles.css"/>
           <script hx-preserve="true" src="/js/conversation_scripts.js" defer></script>
-          <script hx-preserve="true" hx-head="re-eval" src="/js/window_scripts.js" defer></script>
+          <script hx-preserve="true" src="/js/window_scripts.js" defer></script>
         </head>
         <div id="window-wrapper">
           <div id="window-content">
-            <script>
-              // Prevent "Enter" from creating a new line in any editable paragraph
-              document.addEventListener("keydown", function (event) {
-                if (event.target.classList.contains("request") && event.key === "Enter") {
-                  if (event.ctrlKey) {
-                    event.preventDefault();
-                    event.target.blur()
-                  }
-                }
-              });
-              function updateHiddenInput(paragraph) {
-                var hiddenInput = paragraph.nextElementSibling;
-                hiddenInput.value = paragraph.innerText;
-              }
-            </script>
             <div th:replace="~{conversation/window-content :: fragment(${sectionPage})}"></div>
           </div>
         </div>

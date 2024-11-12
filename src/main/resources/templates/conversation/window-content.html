@@ -28,39 +28,38 @@
     th:hx-delete="@{/conversation/section/{id}(id=${section.id})}"
     hx-swap="outerHTML"
     hx-target="closest .section"
-    class="section-delete-btn"
+    class="section-delBtn"
+    hx-on--before-request="setSectionDeleteAfter(event, this)"
   ></button>
-  <!--    TODO delete conversation on last-->
   <th:block th:each="request : ${section.requests}">
     <div class="request-wrapper">
       <div th:replace="~{conversation/window-content :: request-content-fragment(${request}, ${section.id})}"></div>
-    </div>
-    <div class="response-wrapper">
-      <th:block th:each="response : ${request.responses}">
-        <div
-          th:replace="~{conversation/window-content :: response-content-fragment(${response}, ${request.id})}"
-        ></div>
-      </th:block>
+      <div class="response-wrapper">
+        <th:block th:each="response : ${request.responses}">
+          <div
+            th:replace="~{conversation/window-content :: response-content-fragment(${response}, ${request.id})}"
+          ></div>
+        </th:block>
+      </div>
     </div>
   </th:block>
 </th:block>
 
 <th:block th:fragment="request-fragment">
-  <div class="section">
     <div class="request-wrapper">
       <div
         th:replace="~{conversation/window-content :: request-content-fragment(${requestReadDto}, ${sectionId})}"
       ></div>
+      <div class="response-wrapper">
+        <th:block th:each="response : ${requestReadDto.responses}">
+          <div
+            th:replace="~{conversation/window-content :: response-content-fragment(${response}, ${requestReadDto.id})}"
+          ></div>
+        </th:block>
+      </div>
     </div>
-    <div class="response-wrapper">
-      <th:block th:each="response : ${requestReadDto.responses}">
-        <div
-          th:replace="~{conversation/window-content :: response-content-fragment(${response}, ${requestReadDto.id})}"
-        ></div>
-      </th:block>
-    </div>
-  </div>
 </th:block>
+
 <th:block th:fragment="response-fragment">
   <div class="response-wrapper">
     <div
@@ -88,6 +87,7 @@
       th:hx-get="'/conversation/section/' + ${sectionId} + '/request/' + ${request.navigation.previousId}"
       hx-target="closest .request-wrapper"
       hx-swap="outerHTML"
+      class="previous-btn"
     ></button>
   </th:block>
   <th:block th:if="${request.navigation.nextId != null}">
@@ -96,14 +96,14 @@
       th:hx-get="'/conversation/section/' + ${sectionId} + '/request/' + ${request.navigation.nextId}"
       hx-target="closest .request-wrapper"
       hx-swap="outerHTML"
+      class="next-btn"
     ></button>
   </th:block>
   <button
     th:text="Del_Request"
     th:hx-delete="@{/conversation/request/{id}(id=${request.id})}"
-    hx-swap="outerHTML"
-    hx-target="closest .request-wrapper"
-    class="request-delete-btn"
+    class="req-delBtn"
+    hx-on--before-request="setRequestDeleteAfter(event, this)"
   ></button>
   <!--    TODO delete conversation and section on last-->
 </th:block>
@@ -139,7 +139,7 @@
     th:text="Del_Response"
     th:hx-delete="@{/conversation/response/{id}(id=${response.id})}"
     class="res-delBtn"
+    hx-on--before-request="setResponseDeleteAfter(this)"
   ></button>
-  <!--    TODO retry on last-->
 </th:block>
 </html>

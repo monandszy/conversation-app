@@ -48,10 +48,11 @@ public class SectionController implements ControllerUtil {
     Model model
   ) {
     PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE, Sort.by("created").descending());
-    Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, UUID.fromString(conversationId));
+    UUID convId = UUID.fromString(conversationId);
+    Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
     model.addAttribute("sectionPage", sectionPage);
     model.addAttribute("requestGenerateDto", getEmptyRequest());
-    model.addAttribute("conversationId", conversationId);
+    model.addAttribute("conversationId", convId);
     model.addAttribute("isHxRequest", hxRequest);
     if (Objects.nonNull(hxRequest)) {
       return "conversation/window :: fragment";
@@ -145,7 +146,7 @@ public class SectionController implements ControllerUtil {
   }
 
   @DeleteMapping("/request/{requestId}")
-  String deleteRequest(
+  ResponseEntity<Void> deleteRequest(
     @PathVariable String requestId,
     Principal principal
   ) {
@@ -153,7 +154,7 @@ public class SectionController implements ControllerUtil {
       UUID.fromString(requestId),
       UUID.fromString(principal.getName())
     );
-    return "empty";
+    return ResponseEntity.noContent().build();
   }
 
   @DeleteMapping("/response/{responseId}")

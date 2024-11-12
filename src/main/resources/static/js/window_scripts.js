@@ -1,55 +1,75 @@
-document.querySelectorAll('.retry-btn').forEach(button => {
-  addRetryButtonListener(button)
+// Prevent "Enter" from creating a new line in any editable paragraph
+document.addEventListener("keydown", function (event) {
+  if (event.target.classList.contains("request") && event.key === "Enter") {
+    if (event.ctrlKey) {
+      event.preventDefault();
+      event.target.blur()
+    }
+  }
 });
 
-document.querySelectorAll('.previous-btn').forEach(button => {
-  const closestSection = button.closest('.section');
-  button.addEventListener('htmx:afterRequest', function() {
-    console.log('After Previous')
-    const newDeleteButton = closestSection.querySelector('.res-delBtn');
-    const newDeleteRetry = closestSection.querySelector('.retry-btn');
-    addDeleteButtonListener(newDeleteButton)
-    addRetryButtonListener(newDeleteRetry)
-  });
-});
+function updateHiddenInput(paragraph) {
+  let hiddenInput = paragraph.nextElementSibling;
+  hiddenInput.value = paragraph.innerText;
+}
 
-function addRetryButtonListener(button){
-  console.log('found Retry')
-  console.log(button)
-  const closestSection = button.closest('.section');
-  button.addEventListener('htmx:afterRequest', function() {
-    console.log('After Retry')
-    const newDeleteButton = closestSection.querySelector('.res-delBtn');
-    const newRetryButton = closestSection.querySelector('.retry-btn');
-    addDeleteButtonListener(newDeleteButton)
-    addRetryButtonListener(newRetryButton)
+function setResponseDeleteAfter(button) {
+  const responseWrapper = button.closest('.response-wrapper');
+  const previousButton = responseWrapper.querySelector('.previous-btn');
+  if (previousButton) {
+    button.addEventListener('htmx:afterRequest', function () {
+      previousButton.click();
+    })
+    return;
+  }
+  const nextButton = responseWrapper.querySelector('.next-btn');
+  if (nextButton) {
+    button.addEventListener('htmx:afterRequest', function () {
+      nextButton.click();
+    });
+    return;
+  }
+  const retryButton = responseWrapper.querySelector('.retry-btn');
+  button.addEventListener('htmx:afterRequest', function () {
+    retryButton.click();
   });
 }
 
-document.querySelectorAll('.res-delBtn').forEach(button => {
-  addDeleteButtonListener(button)
-});
-
-function addDeleteButtonListener(button) {
-  console.log('found Delete')
+function setRequestDeleteAfter(event, button) {
+  console.log(event)
   console.log(button)
-  button.addEventListener('htmx:afterRequest', function () {
-    const responseWrapper = button.closest('.response-wrapper');
-    console.log('Delete button clicked.');
-    const previousButton = responseWrapper.querySelector('.previous-btn');
-    if (previousButton) {
-      console.log("previous")
+  const responseWrapper = button.closest('.request-wrapper');
+  const previousButton = responseWrapper.querySelector('.previous-btn');
+  if (previousButton) {
+    button.addEventListener('htmx:afterRequest', function () {
       previousButton.click();
-      return;
-    }
-    const nextButton = responseWrapper.querySelector('.next-btn');
-    if (nextButton) {
-      console.log("next")
+    })
+    return;
+  }
+  const nextButton = responseWrapper.querySelector('.next-btn');
+  if (nextButton) {
+    button.addEventListener('htmx:afterRequest', function () {
       nextButton.click();
-      return;
-    }
-    console.log("regen")
-    const retryButton = responseWrapper.querySelector('.retry-btn');
-    retryButton.click();
-  });
+    })
+    return;
+  }
+  if (event) {
+    event.preventDefault();
+    const section = button.closest('.section');
+    const deleteButton = section.querySelector(".section-delBtn");
+    console.log(deleteButton)
+    deleteButton.click()
+  }
+}
+
+function setSectionDeleteAfter(event, button) {
+  const windowContent = document.querySelector("#window-content");
+  const sections = windowContent.querySelectorAll(".section");
+  if (sections.length === 1) {
+    console.log("setSectionDeleteAfter === 1")
+    event.preventDefault();
+    const element = document.querySelector('#selected-sidebar-item');
+    const deleteButton = element.querySelector('.delete-btn');
+    deleteButton.click();
+  }
 }

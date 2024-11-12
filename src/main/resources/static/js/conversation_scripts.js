@@ -13,10 +13,6 @@ document.getElementById('dynamic-form').addEventListener('submit', function (eve
       document.getElementById('submit-button').innerText = 'Post_Generate';
       htmx.ajax('GET', '/conversation/' + globalConversationId, {target: '#window-wrapper', swap: 'outerHTML'});
       window.history.pushState({}, '', '/conversation/' + globalConversationId);
-      const newSidebarItem = document
-        .querySelector('#sidebar-content .sidebar-item:last-child');
-      const newDeleteButton = newSidebarItem.querySelector('.delete-btn');
-      addDeleteButtonListener(newDeleteButton);
     });
   } else {
     htmx.ajax('POST', '/conversation/' + globalConversationId,
@@ -25,30 +21,34 @@ document.getElementById('dynamic-form').addEventListener('submit', function (eve
 });
 
 function resetGlobal() {
+  console.log("RESET")
+  const element = document.querySelector('#selected-sidebar-item');
+  console.log(element)
+  if (element) {
+    element.removeAttribute('id');
+  }
   globalConversationId = 'null'
   document.getElementById('submit-button').innerText = 'Begin_Generate';
 }
 
-function setGlobal(conversationId) {
+function setGlobal(conversationId, button) {
   globalConversationId = conversationId
+  const element = document.querySelector('#selected-sidebar-item');
+  if (element) {
+    element.removeAttribute('id');
+  }
+  const selected = button.closest(".sidebar-item");
+  selected.id = 'selected-sidebar-item'
   document.getElementById('submit-button').innerText = 'Post_Generate';
 }
 
-document.querySelectorAll('.delete-btn').forEach(button => {
-  addDeleteButtonListener(button)
-});
-
-function addDeleteButtonListener(button) {
-  button.addEventListener('click', function () {
-    const deletedConversationId = button.getAttribute('data-conversation-id');
-    if (deletedConversationId === globalConversationId) {
-      // If the conversation ID matches the global conversation ID, send the additional request
-      resetGlobal()
-      window.history.pushState({}, '', '/conversation');
-      htmx.ajax('GET', '/conversation/introduction', {
-        target: '#window-wrapper',
-        swap: 'outerHTML',
-      });
+function setConversationDeleteAfter(event, button) {
+  console.log("setConversationDeleteAfter")
+  button.addEventListener('htmx:afterRequest', function () {
+    if (button.closest(".sidebar-item").id === 'selected-sidebar-item') {
+      console.log("setConversationDeleteAfter === selected-sidebar-item")
+      const newConversationForm = document.querySelector('#new-conversation-form-button');
+      newConversationForm.click();
     }
   });
 }
