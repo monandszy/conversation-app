@@ -1,31 +1,27 @@
-package code.modules.conversation;
+package code.modules.conversation.service;
 
-import code.modules.conversation.ConversationQueryFacade.ConversationReadDto;
-import code.modules.conversation.ConversationQueryFacade.RequestReadDto;
-import code.modules.conversation.ConversationQueryFacade.ResponseReadDto;
-import code.modules.conversation.ConversationQueryFacade.SectionReadDto;
-import code.modules.conversation.service.CommandConversationDao;
-import code.modules.conversation.service.Conversation;
-import code.modules.conversation.service.ReadConversationDao;
-import code.modules.conversation.service.Request;
-import code.modules.conversation.service.Response;
-import code.modules.conversation.service.Section;
+import code.modules.conversation.ConversationCommandFacadeI;
+import code.modules.conversation.ConversationQueryFacadeI.ConversationReadDto;
+import code.modules.conversation.ConversationQueryFacadeI.RequestReadDto;
+import code.modules.conversation.ConversationQueryFacadeI.ResponseReadDto;
+import code.modules.conversation.ConversationQueryFacadeI.SectionReadDto;
+import code.modules.conversation.service.domain.Conversation;
+import code.modules.conversation.service.domain.Request;
+import code.modules.conversation.service.domain.Response;
+import code.modules.conversation.service.domain.Section;
 import code.modules.conversation.util.ConversationMapper;
 import code.modules.googleApi.GoogleApiAdapter;
 import code.modules.googleApi.GoogleApiAdapter.ApiRequestDto;
 import code.modules.googleApi.GoogleApiAdapter.ApiResponseDto;
 import code.util.Facade;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.With;
 
 @Facade
 @AllArgsConstructor
-public class ConversationCommandFacade {
+public class ConversationCommandFacade implements ConversationCommandFacadeI {
 
   private GoogleApiAdapter googleApiAdapter;
   private ConversationMapper mapper;
@@ -38,16 +34,14 @@ public class ConversationCommandFacade {
     return mapper.domainToReadDto(conversation);
   }
 
-  // creates conversationItem, persists request and response
   public SectionReadDto generate(@Valid RequestGenerateDto generateDto, UUID conversationId) {
-    // call to other module facade, a nested dependency
     ApiRequestDto apiRequest = new ApiRequestDto(generateDto.text());
     ApiResponseDto apiResponse = googleApiAdapter.generate(apiRequest);
 
     OffsetDateTime now = OffsetDateTime.now();
     Conversation dependency = Conversation.builder().id(conversationId).build();
     Section section = Section.builder().conversation(dependency).created(now).build();
-    Request request = Request.builder().text(apiRequest.text()).selected(true).created(now).build();
+    Request request = Request.builder().text(apiRequest.text()).created(now).build();
     Response response = Response.builder().text(apiResponse.text()).selected(true).created(now).build();
     section = commandDao.create(section, request, response);
     return mapper.domainToReadDto(section);
@@ -59,47 +53,42 @@ public class ConversationCommandFacade {
     OffsetDateTime now = OffsetDateTime.now();
 
     Section dependency = Section.builder().id(sectionId).build();
-    Request request = Request.builder().section(dependency).text(apiRequest.text()).selected(true).created(now).build();
-    Response response = Response.builder().text(apiResponse.text()).selected(true).created(now).build();
+    Request request = Request.builder().section(dependency)
+      .text(apiRequest.text()).created(now).build();
+    Response response = Response.builder().text(apiResponse.text()).created(now).build();
     request = commandDao.create(request, response);
     return mapper.domainToReadDto(request);
   }
 
   public ResponseReadDto retry(UUID requestId) {
-    Request dependency = readDao.getRequest(requestId);
+    Request request = Request.builder().id(requestId).build();
+    Request dependency = readDao.getRequest(request);
     ApiRequestDto apiRequest = new ApiRequestDto(dependency.getText());
     ApiResponseDto apiResponse = googleApiAdapter.generate(apiRequest);
     OffsetDateTime now = OffsetDateTime.now();
-    Response response = Response.builder().request(dependency).text(apiResponse.text()).selected(true).created(now)
-      .build();
+    Response response = Response.builder().request(dependency)
+      .text(apiResponse.text()).created(now).build();
     response = commandDao.create(response);
     return mapper.domainToReadDto(response);
   }
 
   public void deleteConversation(UUID conversationId, UUID accountId) {
-    commandDao.deleteConversation(conversationId, accountId);
+    Conversation conversation = Conversation.builder().id(conversationId).build();
+    commandDao.deleteConversation(conversation, accountId);
   }
 
   public void deleteSection(UUID sectionId, UUID accountId) {
-    commandDao.deleteSection(sectionId, accountId);
+    Section section = Section.builder().id(sectionId).build();
+    commandDao.deleteSection(section, accountId);
   }
 
   public void deleteRequest(UUID requestId, UUID accountId) {
-    commandDao.deleteRequest(requestId, accountId);
+    Request request = Request.builder().id(requestId).build();
+    commandDao.deleteRequest(request, accountId);
   }
 
   public void deleteResponse(UUID responseId, UUID accountId) {
-    commandDao.deleteResponse(responseId, accountId);
+    Response response = Response.builder().id(responseId).build();
+    commandDao.deleteResponse(response, accountId);
   }
-
-  public record ConversationBeginDto(
-    @NotNull
-    UUID accountId
-  ) {}
-
-  @With
-  public record RequestGenerateDto(
-    @NotBlank
-    String text
-  ) {}
 }

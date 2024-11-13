@@ -1,17 +1,14 @@
-package code.modules.conversation;
+package code.modules.conversation.service;
 
-import code.modules.conversation.service.Conversation;
-import code.modules.conversation.service.ReadConversationDao;
-import code.modules.conversation.service.Request;
-import code.modules.conversation.service.Response;
-import code.modules.conversation.service.Section;
+import code.modules.conversation.ConversationQueryFacadeI;
+import code.modules.conversation.service.domain.Conversation;
+import code.modules.conversation.service.domain.Request;
+import code.modules.conversation.service.domain.Response;
+import code.modules.conversation.service.domain.Section;
 import code.modules.conversation.util.ConversationMapper;
 import code.util.Facade;
-import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +16,7 @@ import org.springframework.data.domain.PageRequest;
 @Facade
 @Slf4j
 @AllArgsConstructor
-public class ConversationQueryFacade {
+public class ConversationQueryFacade implements ConversationQueryFacadeI {
 
   private ReadConversationDao readDao;
   private ConversationMapper mapper;
@@ -32,9 +29,10 @@ public class ConversationQueryFacade {
   }
 
   public ConversationReadDto getConversation(UUID conversationId, UUID accountId) {
-    Conversation conversation = readDao.getConversation(Conversation.builder().id(conversationId).accountId(accountId).build());
+    Conversation conversation = Conversation.builder().id(conversationId)
+      .accountId(accountId).build();
+    conversation = readDao.getConversation(conversation);
     return mapper.entityToDomain(conversation);
-
   }
 
   public Page<SectionReadDto> getSectionPage(PageRequest pageRequest, UUID conversationId) {
@@ -45,60 +43,24 @@ public class ConversationQueryFacade {
     return page;
   }
 
-
   public RequestReadDto getRequest(UUID requestId, UUID sectionId) {
-    Request request = readDao.getRequestWithNavigation(requestId, sectionId);
+    Request request = Request.builder().id(requestId).build();
+    Section section = Section.builder().id(sectionId).build();
+    request = readDao.getRequestWithNavigation(request, section);
     return mapper.domainToReadDto(request);
   }
 
   public ResponseReadDto getResponse(UUID responseId, UUID requestId) {
-    Response response = readDao.getResponseWithNavigation(responseId, requestId);
+    Response response = Response.builder().id(responseId).build();
+    Request request = Request.builder().id(requestId).build();
+    response = readDao.getResponseWithNavigation(response, request);
     return mapper.domainToReadDto(response);
   }
 
   public ConversationData getConversationData(UUID conversationId) {
-    ConversationData conversationData = readDao.getConversationData(Conversation.builder().id(conversationId).build());
+    Conversation conversation = Conversation.builder().id(conversationId).build();
+    ConversationData conversationData = readDao.getConversationData(conversation);
     conversationData.setConversationId(conversationId);
     return conversationData;
   }
-
-  @Data
-  public static class ConversationData {
-    private Long sectionCount;
-    private Long requestCount;
-    private Long responseCount;
-    private UUID conversationId;
-  }
-
-  @With
-  public record ConversationReadDto(
-    UUID id
-  ) {}
-
-  @With
-  public record SectionReadDto(
-    UUID id,
-    List<RequestReadDto> requests
-  ) {}
-
-  @With
-  public record RequestReadDto(
-    UUID id,
-    String text,
-    List<ResponseReadDto> responses,
-    NavigationDto navigation
-  ) {}
-
-  @With
-  public record ResponseReadDto(
-    UUID id,
-    String text,
-    NavigationDto navigation
-  ) {}
-
-  @With
-  public record NavigationDto(
-    UUID nextId,
-    UUID previousId
-  ) {}
 }

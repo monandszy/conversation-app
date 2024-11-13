@@ -1,8 +1,8 @@
-package code.modules.conversation.data.jpa;
+package code.modules.conversation.data.jpa.projection;
 
-import code.modules.conversation.data.RequestEntity;
-import code.modules.conversation.data.ResponseEntity;
-import code.modules.conversation.data.SectionEntity;
+import code.modules.conversation.data.entity.RequestEntity;
+import code.modules.conversation.data.entity.ResponseEntity;
+import code.modules.conversation.data.entity.SectionEntity;
 import java.util.UUID;
 
 public interface SectionNavigationProjection {

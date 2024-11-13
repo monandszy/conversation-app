@@ -1,22 +1,25 @@
 package code.modules.conversation.data;
 
+import code.modules.conversation.data.entity.ConversationEntity;
+import code.modules.conversation.data.entity.RequestEntity;
+import code.modules.conversation.data.entity.ResponseEntity;
+import code.modules.conversation.data.entity.SectionEntity;
 import code.modules.conversation.data.jpa.ConversationJpaRepo;
 import code.modules.conversation.data.jpa.RequestJpaRepo;
-import code.modules.conversation.data.jpa.RequestNavigationProjection;
 import code.modules.conversation.data.jpa.ResponseJpaRepo;
-import code.modules.conversation.data.jpa.ResponseNavigationProjection;
 import code.modules.conversation.data.jpa.SectionJpaRepo;
-import code.modules.conversation.data.jpa.SectionNavigationProjection;
+import code.modules.conversation.data.jpa.projection.RequestNavigationProjection;
+import code.modules.conversation.data.jpa.projection.ResponseNavigationProjection;
+import code.modules.conversation.data.jpa.projection.SectionNavigationProjection;
 import code.modules.conversation.service.CommandConversationDao;
-import code.modules.conversation.service.Conversation;
-import code.modules.conversation.service.Request;
-import code.modules.conversation.service.Response;
-import code.modules.conversation.service.Section;
+import code.modules.conversation.service.domain.Conversation;
+import code.modules.conversation.service.domain.Request;
+import code.modules.conversation.service.domain.Response;
+import code.modules.conversation.service.domain.Section;
 import code.modules.conversation.util.ConversationMapper;
 import code.util.CommandRepositoryAdapter;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
 @CommandRepositoryAdapter
 @AllArgsConstructor
@@ -29,6 +32,13 @@ public class CommandConversationRepo implements CommandConversationDao {
   private ConversationMapper mapper;
 
   @Override
+  public Conversation create(Conversation conversation) {
+    ConversationEntity entity = mapper.domainToEntity(conversation);
+    ConversationEntity saved = conversationJpaRepo.save(entity);
+    return mapper.entityToDomain(saved);
+  }
+
+  @Override
   public Section create(Section section, Request request, Response response) {
     SectionEntity sectionEntity = mapper.domainToEntity(section);
     RequestEntity requestEntity = mapper.domainToEntity(request);
@@ -38,73 +48,66 @@ public class CommandConversationRepo implements CommandConversationDao {
     responseEntity.setRequest(requestEntity);
     requestEntity.getResponses().add(responseEntity);
     SectionEntity saved = sectionJpaRepo.save(sectionEntity);
-    SectionNavigationProjection projection = sectionJpaRepo.findBySection(saved);
+    SectionNavigationProjection projection = sectionJpaRepo.findProjectionBySection(saved);
     return mapper.entityToDomain(projection);
   }
 
   @Override
   public Request create(Request request, Response response) {
     RequestEntity requestEntity = mapper.domainToEntity(request);
-    requestJpaRepo.deselectOther(requestEntity.getSection());
+    SectionEntity section = requestEntity.getSection();
     ResponseEntity responseEntity = mapper.domainToEntity(response);
     responseEntity.setRequest(requestEntity);
     requestEntity.getResponses().add(responseEntity);
     RequestEntity saved = requestJpaRepo.save(requestEntity);
-    RequestNavigationProjection projection = requestJpaRepo.findByRequest(saved);
+    requestJpaRepo.deselectAndSelect(section, saved);
+    RequestNavigationProjection projection = requestJpaRepo.findProjectionByRequest(saved);
     return mapper.entityToDomain(projection);
   }
 
   @Override
   public Response create(Response response) {
     ResponseEntity entity = mapper.domainToEntity(response);
-    responseJpaRepo.deselectOther(entity.getRequest());
+    RequestEntity request = entity.getRequest();
     ResponseEntity saved = responseJpaRepo.save(entity);
+    responseJpaRepo.deselectAndSelect(request, saved);
     ResponseNavigationProjection projection = responseJpaRepo.findByResponse(saved);
     return mapper.entityToDomain(projection);
   }
 
   @Override
-  public void deleteConversation(UUID conversationId, UUID accountId) {
-    int rowsDeleted = conversationJpaRepo.deleteByIdAndAccountId(conversationId, accountId);
+  public void deleteConversation(Conversation conversation, UUID accountId) {
+    int rowsDeleted = conversationJpaRepo
+      .deleteByIdAndAccountId(conversation.getId(), accountId);
     if (rowsDeleted == 0) {
-      // Handle case where no deletion occurred, meaning no match was found
       throw new IllegalArgumentException("Conversation does not exist or is not associated with the given account.");
     }
   }
 
   @Override
-  public void deleteSection(UUID sectionId, UUID accountId) {
-    int rowsDeleted = sectionJpaRepo.deleteByIdAndConversationAccountId(sectionId, accountId);
+  public void deleteSection(Section section, UUID accountId) {
+    int rowsDeleted = sectionJpaRepo
+      .deleteByIdAndConversationAccountId(section.getId(), accountId);
     if (rowsDeleted == 0) {
       throw new IllegalArgumentException("Section does not exist or is not associated with the given account.");
     }
   }
 
   @Override
-  public void deleteRequest(UUID requestId, UUID accountId) {
+  public void deleteRequest(Request request, UUID accountId) {
     int rowsDeleted = requestJpaRepo
-      .deleteByIdAndSectionConversationAccountId(requestId, accountId);
+      .deleteByIdAndSectionConversationAccountId(request.getId(), accountId);
     if (rowsDeleted == 0) {
       throw new IllegalArgumentException("Request does not exist or is not associated with the given account.");
     }
   }
 
   @Override
-  public void deleteResponse(UUID responseId, UUID accountId) {
+  public void deleteResponse(Response response, UUID accountId) {
     int rowsDeleted = responseJpaRepo
-      .deleteByIdAndRequestSectionConversationAccountId(responseId, accountId);
+      .deleteByIdAndRequestSectionConversationAccountId(response.getId(), accountId);
     if (rowsDeleted == 0) {
       throw new IllegalArgumentException("Response does not exist or is not associated with the given account.");
     }
   }
-
-  @Override
-  @Transactional
-  public Conversation create(Conversation conversation) {
-    ConversationEntity entity = mapper.domainToEntity(conversation);
-    ConversationEntity saved = conversationJpaRepo.save(entity);
-    return mapper.entityToDomain(saved);
-  }
-
-
 }

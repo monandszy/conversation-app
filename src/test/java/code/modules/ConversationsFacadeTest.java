@@ -4,19 +4,19 @@ import code.configuration.Constants;
 import code.configuration.ContextConfig;
 import code.configuration.FacadeAbstract;
 import code.configuration.UtilBeanConfig;
-import code.modules.conversation.ConversationCommandFacade;
-import code.modules.conversation.ConversationCommandFacade.ConversationBeginDto;
-import code.modules.conversation.ConversationCommandFacade.RequestGenerateDto;
-import code.modules.conversation.ConversationQueryFacade;
-import code.modules.conversation.ConversationQueryFacade.ConversationReadDto;
-import code.modules.conversation.ConversationQueryFacade.RequestReadDto;
-import code.modules.conversation.ConversationQueryFacade.ResponseReadDto;
-import code.modules.conversation.ConversationQueryFacade.SectionReadDto;
+import code.modules.conversation.ConversationCommandFacadeI;
+import code.modules.conversation.ConversationCommandFacadeI.ConversationBeginDto;
+import code.modules.conversation.ConversationCommandFacadeI.RequestGenerateDto;
+import code.modules.conversation.ConversationQueryFacadeI;
+import code.modules.conversation.ConversationQueryFacadeI.ConversationReadDto;
+import code.modules.conversation.ConversationQueryFacadeI.RequestReadDto;
+import code.modules.conversation.ConversationQueryFacadeI.ResponseReadDto;
+import code.modules.conversation.ConversationQueryFacadeI.SectionReadDto;
 import code.modules.conversation.data.CommandConversationRepo;
-import code.modules.conversation.data.ConversationEntity;
+import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.jpa.ConversationJpaRepo;
 import code.modules.conversation.data.jpa.SectionJpaRepo;
-import code.modules.conversation.service.Conversation;
+import code.modules.conversation.service.domain.Conversation;
 import code.modules.googleApi.GoogleApiAdapter;
 import code.modules.googleApi.GoogleApiAdapter.ApiRequestDto;
 import static code.modules.googleApi.GoogleApiAdapter.ApiResponseDto;
@@ -40,8 +40,8 @@ import org.springframework.data.domain.PageRequest;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 class ConversationsFacadeTest extends FacadeAbstract {
 
-  private ConversationQueryFacade queryFacade;
-  private ConversationCommandFacade commandFacade;
+  private ConversationQueryFacadeI queryFacade;
+  private ConversationCommandFacadeI commandFacade;
 
   private CommandConversationRepo repository;
   private ConversationJpaRepo conversationJpaRepo;

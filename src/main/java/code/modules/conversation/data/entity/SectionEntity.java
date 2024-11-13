@@ -1,5 +1,6 @@
-package code.modules.conversation.data;
+package code.modules.conversation.data.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,8 +9,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +29,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "responses")
-public class ResponseEntity {
+@Table(name = "sections")
+public class SectionEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
@@ -35,13 +39,10 @@ public class ResponseEntity {
   @Column(name = "created", updatable = false)
   private OffsetDateTime created;
 
-  @Column(name = "selected")
-  private Boolean selected;
-
-  @Column(name = "text")
-  private String text;
-
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "request_id")
-  private RequestEntity request;
+  @JoinColumn(name = "conversation_id")
+  private ConversationEntity conversation;
+
+  @OneToMany(mappedBy = "section", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  private final List<RequestEntity> requests = new ArrayList<>();
 }

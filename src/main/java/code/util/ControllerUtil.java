@@ -1,6 +1,6 @@
 package code.util;
 
-import code.modules.conversation.ConversationCommandFacade.RequestGenerateDto;
+import code.modules.conversation.ConversationCommandFacadeI.RequestGenerateDto;
 import jakarta.servlet.http.HttpSession;
 import java.util.Objects;
 

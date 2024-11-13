@@ -1,7 +1,7 @@
 package code.util;
 
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Controller;
 
-@Configuration
+@Controller
 public class EmptyController {
 }

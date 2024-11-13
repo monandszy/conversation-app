@@ -1,4 +1,4 @@
-package code.modules.conversation.data;
+package code.modules.conversation.data.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -1,8 +1,14 @@
 package code.modules.conversation.service;
 
+import code.modules.conversation.service.domain.Conversation;
+import code.modules.conversation.service.domain.Request;
+import code.modules.conversation.service.domain.Response;
+import code.modules.conversation.service.domain.Section;
 import java.util.UUID;
 
 public interface CommandConversationDao {
+
+  Conversation create(Conversation conversation);
 
   Section create(Section section, Request request, Response response);
 
@@ -10,13 +16,11 @@ public interface CommandConversationDao {
 
   Response create(Response response);
 
-  Conversation create(Conversation conversation);
+  void deleteConversation(Conversation conversation, UUID accountId);
 
-  void deleteConversation(UUID conversationId, UUID accountId);
+  void deleteSection(Section section, UUID accountId);
 
-  void deleteSection(UUID sectionId, UUID accountId);
+  void deleteRequest(Request request, UUID accountId);
 
-  void deleteRequest(UUID requestId, UUID accountId);
-
-  void deleteResponse(UUID responseId, UUID accountId);
+  void deleteResponse(Response response, UUID accountId);
 }

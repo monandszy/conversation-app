@@ -1,4 +1,4 @@
-package code.modules.conversation.service;
+package code.modules.conversation.service.domain;
 
 import java.util.UUID;
 import lombok.Builder;

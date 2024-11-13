@@ -1,14 +1,14 @@
 package code.frontend.conversation;
 
 import code.configuration.Constants;
-import code.modules.conversation.ConversationCommandFacade;
-import code.modules.conversation.ConversationCommandFacade.RequestGenerateDto;
-import code.modules.conversation.ConversationQueryFacade;
-import code.modules.conversation.ConversationQueryFacade.ConversationData;
-import code.modules.conversation.ConversationQueryFacade.ConversationReadDto;
-import code.modules.conversation.ConversationQueryFacade.RequestReadDto;
-import code.modules.conversation.ConversationQueryFacade.ResponseReadDto;
-import code.modules.conversation.ConversationQueryFacade.SectionReadDto;
+import code.modules.conversation.ConversationCommandFacadeI;
+import code.modules.conversation.ConversationCommandFacadeI.RequestGenerateDto;
+import code.modules.conversation.ConversationQueryFacadeI;
+import code.modules.conversation.ConversationQueryFacadeI.ConversationData;
+import code.modules.conversation.ConversationQueryFacadeI.ConversationReadDto;
+import code.modules.conversation.ConversationQueryFacadeI.RequestReadDto;
+import code.modules.conversation.ConversationQueryFacadeI.ResponseReadDto;
+import code.modules.conversation.ConversationQueryFacadeI.SectionReadDto;
 import code.util.ControllerUtil;
 import java.security.Principal;
 import java.util.Objects;
@@ -38,8 +38,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Slf4j
 public class SectionController implements ControllerUtil {
 
-  private ConversationQueryFacade queryFacade;
-  private ConversationCommandFacade commandFacade;
+  private ConversationQueryFacadeI queryFacade;
+  private ConversationCommandFacadeI commandFacade;
   private ConversationPage conversationPage;
 
   @GetMapping("/{conversationId}")
