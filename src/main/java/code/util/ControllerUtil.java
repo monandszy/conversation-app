@@ -1,5 +1,6 @@
 package code.util;
 
+import code.modules.conversation.IConversationCommandFacade.RequestGenerateDto;
 import jakarta.servlet.http.HttpSession;
 import java.util.Objects;
 
@@ -23,5 +24,9 @@ public interface ControllerUtil {
       session.setAttribute(attrName, value);
       return value;
     }
+  }
+
+  default RequestGenerateDto getEmptyRequest() {
+    return new RequestGenerateDto(null);
   }
 }

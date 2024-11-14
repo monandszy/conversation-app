@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<UUID> handle(IllegalArgumentException ex) {
     UUID uuid = UUID.randomUUID();
     log.error("IllegalArgument: {} | Exception UUID: {}", ex, uuid);
-    return new ResponseEntity<>(uuid, HttpStatus.BAD_REQUEST);
+    return  new ResponseEntity<>(uuid, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(PropertyReferenceException.class)
@@ -49,5 +49,4 @@ public class GlobalExceptionHandler {
     log.error("InternalApiException: {} | Exception UUID: {}", ex, uuid);
     return new ResponseEntity<>(uuid, HttpStatus.FAILED_DEPENDENCY);
   }
-
 }

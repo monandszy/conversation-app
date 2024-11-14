@@ -1,4 +1,4 @@
-package code.modules.conversation.service;
+package code.modules.conversation.service.domain;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -14,10 +14,9 @@ import lombok.With;
 @Builder
 @EqualsAndHashCode(of = {"id"})
 @ToString(of = {"id"})
-public class Request {
+public class Section {
   UUID id;
-  String text;
   OffsetDateTime created;
   Conversation conversation;
-  List<Response> responses;
+  List<Request> requests;
 }

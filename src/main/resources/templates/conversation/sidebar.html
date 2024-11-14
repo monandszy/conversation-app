@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html
   lang="en"
-  xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot"
   xmlns:th="http://www.thymeleaf.org"
 >
 <head>
@@ -9,18 +8,9 @@
 </head>
 <th:block th:fragment="fragment">
   <div id="sidebar-wrapper">
-    <nav
-      id="sidebar-content"
-      hx-push-url="true" hx-swap="outerHTML" hx-target="#window-wrapper"
-    >
-      <div th:each="conversation : ${conversationPage.content}" th:classappend="sidebar-item">
-        <button
-          th:text="${conversation.id}"
-          hx:get="@{/conversation/{id}(id=${conversation.id})}"
-          th:hx-on--after-request="|setGlobal('${conversation.id}')|"
-        ></button>
-      </div>
-    </nav>
+    <div
+      th:replace="~{conversation/sidebar-content :: fragment}"
+    ></div>
     <div id="new-conversation-form">
       <form
         hx-push-url="/conversation"
@@ -31,10 +21,24 @@
         hx-on--after-request="resetGlobal()"
       >
         <button
+          id="new-conversation-form-button"
           type="submit" th:text="New_Conversation"
         ></button>
       </form>
     </div>
   </div>
 </th:block>
-</html>
+
+<th:block th:fragment="singular-fragment">
+  <head>
+    <script th:inline="javascript" hx-head="merge">
+      globalConversationId = /*[[${conversationReadDto.id}]]*/ 'null'
+    </script>
+  </head>
+  <div class="sidebar-item">
+    <div
+      th:replace="~{conversation/sidebar-content :: sidebar-item(${conversationReadDto.id})}"
+    >
+    </div>
+  </div>
+</th:block>

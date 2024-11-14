@@ -13,6 +13,11 @@ plugins {
 group = "code"
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+
+application {
+  mainClass = "code.ConversationApp"
+}
+
 try {
   apply(from = rootProject.file("gradle/util/misc.gradle.kts"))
   apply(from = rootProject.file("gradle/util/git.gradle.kts"))
@@ -99,19 +104,18 @@ openApiGenerate {
   )
 }
 
-sass {
-  cssPath = "static/css"
-  sassPath = "static/scss"
-  // --rerun-tasks
-}
 
 tasks {
 
-  compileSass {
-    outputs.upToDateWhen { false }
+  sass {
+    cssPath = "static/css"
+    sassPath = "static/scss"
+    // --rerun-tasks
+    compileSass {
+      outputs.upToDateWhen { false }
+    }
   }
   compileJava {
-//    dependsOn(openApiGenerate)
     dependsOn(compileSass)
     options.encoding = "UTF-8"
   }

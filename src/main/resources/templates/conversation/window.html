@@ -8,26 +8,27 @@
   <title>Conversation</title>
   <link hx-preserve="true" rel="stylesheet" href="/css/conversation_styles.css"/>
   <script hx-preserve="true" src="/js/conversation_scripts.js" defer></script>
+  <script hx-preserve="true" src="/js/window_scripts.js" defer></script>
 </head>
 <th:block layout:fragment="content">
-  <head th:if="${isHxRequest == 'true'}" hx-head="merge">
-    <title>Conversation</title>
-    <link hx-preserve="true" rel="stylesheet" href="/css/conversation_styles.css"/>
-    <script hx-preserve="true" src="/js/conversation_scripts.js" defer></script>
-  </head>
-  <div id="content" class="conversation-content">
+  <div id="content" class="conversation-wrapper">
     <div th:replace="~{conversation/sidebar :: fragment}"></div>
     <div id="conversation-wrapper">
       <th:block th:fragment="fragment">
+        <head th:if="${isHxRequest == 'true'}" hx-head="merge">
+          <title>Conversation</title>
+          <link hx-preserve="true" rel="stylesheet" href="/css/conversation_styles.css"/>
+          <script hx-preserve="true" src="/js/conversation_scripts.js" defer></script>
+          <script hx-preserve="true" src="/js/window_scripts.js" defer></script>
+        </head>
         <div id="window-wrapper">
+          <div
+            th:replace="~{conversation/window :: header-content(${selectedData})}"
+          ></div>
           <div id="window-content">
-            <h1>Some Responses and requests content</h1>
-            <div th:each="request : ${requestPage.content}" th:classappend="window-item">
-              <p th:text="${request.text}" class="request"></p>
-              <th:block th:each="response : ${request.responses}">
-                <p th:text="${response.text}" class="response"></p>
-              </th:block>
-            </div>
+            <div
+              th:replace="~{conversation/window-content :: fragment(${sectionPage}, ${conversationId})}"
+            ></div>
           </div>
         </div>
       </th:block>
@@ -35,20 +36,37 @@
     </div>
     <div>
       <script th:inline="javascript" defer>
-        /*<![CDATA[*/
-        globalConversationId = /*[[${conversationId}]]*/ 'null'
-        document.getElementById('submit-button').innerText = 'Post_Generate';
-        /*]]>*/
+        let globalConversationId = /*[[${conversationId}]]*/
+        document.getElementById('generate-form-button').innerText = 'Post_Generate';
       </script>
     </div>
   </div>
 </th:block>
-<th:block th:fragment="singular-fragment">
-  <div class="window-item">
-    <p th:text="${requestReadDto.text}"></p>
-    <th:block th:each="response : ${requestReadDto.responses}">
-      <p th:text="${response.text}"></p>
-    </th:block>
+<th:block th:fragment="header-fragment">
+  <div
+    th:replace="~{conversation/window :: header-content(${selectedData})}"
+  ></div>
+</th:block>
+<th:block th:fragment="header-content(selectedData)">
+  <div id="window-header">
+    <span> Conversation ID: </span>
+    <span id="header-conversation-id" th:text="${selectedData.conversationId}"></span>
+    <span> Section Count: </span>
+    <span id="header-section-count" th:text="${selectedData.sectionCount}"></span>
+    <span> Request Count: </span>
+    <span id="header-request-count" th:text="${selectedData.requestCount}"></span>
+    <span> Response Count: </span>
+    <span id="header-response-count" th:text="${selectedData.responseCount}"></span>
+    <button
+      th:text="Del"
+      th:hx-delete="@{/conversation/{id}(id=${conversationId})}"
+      id="selected-conv-DelBtn"
+      hx-swap="outerHTML"
+      hx-target="closest .sidebar-item"
+      class="conv-delBtn"
+      hx-push-url="false"
+      hx-on--before-request="redirectToIntroduction()"
+    ></button>
   </div>
 </th:block>
 </html>

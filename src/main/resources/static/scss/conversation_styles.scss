@@ -1,40 +1,48 @@
-.conversation-content {
+#content {
   display: flex;
   flex: 1;
   flex-direction: row;
   height: 100vh;
-  width: 100vh;
   overflow: hidden;
   #sidebar-wrapper {
-    border-right: 1px solid #ccc;
     display: flex;
     flex-direction: column;
-    height: 100vh;
     justify-content: space-between;
+    width: 150px;
+    flex-shrink: 0;
+    height: 100vh;
+    border-right: 1px solid #ccc;
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
-    width: 150px;
     #sidebar-content {
       display: flex;
       flex: 1;
       flex-direction: column;
       .sidebar-item {
-        align-items: center;
         display: flex;
+        align-items: center;
         button {
-          width: 150px;
+          width: 100%;
         }
+        .conv-delBtn {
+        }
+        .conv-getBtn {
+        }
+        #selected-sidebar-item {
+        }
+      }
+      .load-button {
       }
     }
     #new-conversation-form {
-      align-items: center;
-      bottom: 0;
       display: flex;
-      flex: 0;
+      align-items: center;
+      flex-shrink: 0;
       position: sticky;
-      button {
-        width: 150px;
+      bottom: 0;
+      #new-conversation-form-button {
+        width: 100%;
       }
     }
   }
@@ -42,7 +50,6 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    height: 100vh;
     min-width: 0;
     overflow: hidden;
     #window-wrapper {
@@ -51,41 +58,64 @@
       flex-direction: column;
       min-height: 0;
       overflow: hidden;
+      #window-header {
+        position: sticky;
+        top: 0;
+        width: 100%;
+      }
       #window-content {
         display: flex;
         flex: 1;
         flex-direction: column;
         min-height: 0;
         overflow-y: auto;
-        .window-item {
-          p {
-            &.request {
+        .section {
+          .request-wrapper {
+            display: flex;
+            flex-direction: column;
+            .request {
             }
-            &.response {
+            .previous-btn {
+            }
+            .next-btn {
+            }
+            .req-delBtn {
+            }
+            .response-wrapper {
+              display: flex;
+              flex-direction: column;
+              .response {
+              }
+              .previous-btn {
+              }
+              .next-btn {
+              }
+              .res-delBtn {
+              }
+              .retry-btn {
+              }
             }
           }
+        }
+        .load-button {
         }
       }
     }
     #generate-form-wrapper {
-      align-items: center;
-      border-top: 1px solid #ccc;
-      bottom: 0;
       display: flex;
+      align-items: center;
       flex-shrink: 0;
       position: sticky;
-      #generate-form {
+      bottom: 0;
+      border-top: 1px solid #ccc;
+      #dynamic-form {
         display: flex;
         flex: 1;
-        #dynamic-form {
-          display: flex;
+        input[type="text"] {
           flex: 1;
-          input[type="text"] {
-            flex: 1;
-          }
         }
-        button {
-        }
+      }
+      #generate-form-button {
       }
     }
   }

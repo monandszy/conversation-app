@@ -8,7 +8,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.modulith.Modulithic;
 
 @Modulithic
-@SpringBootApplication
+@SpringBootApplication()
 public class ConversationApp extends SpringBootServletInitializer {
 
   public static void main(String[] args) {

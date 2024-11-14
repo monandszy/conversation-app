@@ -1,4 +1,4 @@
-package code.modules.conversation.service;
+package code.modules.conversation.service.domain;
 
 import java.util.UUID;
 import lombok.Builder;
@@ -10,10 +10,9 @@ import lombok.With;
 @Value
 @With
 @Builder
-@EqualsAndHashCode(of = {"id"})
-@ToString(of = {"id"})
-public class Response {
-  UUID id;
-  String text;
-  Request request;
+@EqualsAndHashCode(of = {})
+@ToString
+public class Navigation {
+  UUID nextId;
+  UUID previousId;
 }

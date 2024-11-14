@@ -11,5 +11,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RepositoryAdapter {
+public @interface CommandRepositoryAdapter {
 }

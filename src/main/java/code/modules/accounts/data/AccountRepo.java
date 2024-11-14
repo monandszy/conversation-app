@@ -4,13 +4,12 @@ import code.modules.accounts.service.AccountDao;
 import code.modules.accounts.service.domain.Account;
 import code.modules.accounts.service.domain.AuthorityName;
 import code.modules.accounts.util.AccountMapper;
-import code.util.RepositoryAdapter;
-import lombok.AllArgsConstructor;
-
+import code.util.ReadRepositoryAdapter;
 import java.util.Optional;
 import java.util.Set;
+import lombok.AllArgsConstructor;
 
-@RepositoryAdapter
+@ReadRepositoryAdapter
 @AllArgsConstructor
 public class AccountRepo implements AccountDao {
 

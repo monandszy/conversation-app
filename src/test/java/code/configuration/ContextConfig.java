@@ -1,7 +1,7 @@
 package code.configuration;
 
 import code.modules.accounts.AccountQueryFacade;
-import code.modules.conversation.ConversationQueryFacade;
+import code.modules.conversation.service.ConversationQueryFacade;
 import code.modules.googleApi.GoogleApiAdapter;
 import code.openApi.ApiClient;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,7 @@ public class ContextConfig {
   @ComponentScan(basePackageClasses = AccountQueryFacade.class)
   public static class AccountModuleContext {
     @Bean // Enables method validation
-    public MethodValidationPostProcessor methodValidationPostProcessor() {
+    public static MethodValidationPostProcessor methodValidationPostProcessor() {
       return new MethodValidationPostProcessor();
     }
   }
