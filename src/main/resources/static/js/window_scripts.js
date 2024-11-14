@@ -25,19 +25,18 @@ function setResponseDeleteAfter(button) {
     button.addEventListener('htmx:afterRequest', function () {
       nextButton.click();
     });
-  } else {
-    const retryButton = responseWrapper.querySelector('.retry-btn');
-    button.addEventListener('htmx:afterRequest', function () {
-      retryButton.click();
-    });
   }
+  const retryButton = responseWrapper.querySelector('.retry-btn');
+  button.addEventListener('htmx:afterRequest', function () {
+    retryButton.click();
+  });
   decrementCount('header-response-count')
 }
 
 function setRequestDeleteAfter(event, button) {
   const requestWrapper = button.closest('.request-wrapper');
-  const previousButton = requestWrapper.querySelector('.previous-btn');
-  const nextButton = requestWrapper.querySelector('.next-btn');
+  const previousButton = requestWrapper.querySelector('.previous-btn:not(.nested)');
+  const nextButton = requestWrapper.querySelector('.next-btn:not(.nested)');
   if (previousButton) {
     button.addEventListener('htmx:afterRequest', function () {
       previousButton.click();
@@ -49,12 +48,11 @@ function setRequestDeleteAfter(event, button) {
       nextButton.click();
       updateCount()
     })
-  } else if (event) {
-    event.preventDefault();
-    const section = button.closest('.section');
-    const deleteButton = section.querySelector(".section-delBtn");
-    deleteButton.click()
   }
+  event.preventDefault();
+  const section = button.closest('.section');
+  const deleteButton = section.querySelector(".section-delBtn");
+  deleteButton.click()
 }
 
 function setSectionDeleteAfter(event, button) {
@@ -91,4 +89,20 @@ function updateCount() {
     target: '#window-header',
     swap: 'outerHTML'
   });
+}
+
+function correctPreviousScroll(button) {
+  const container = document.querySelector("#window-content")
+  const scrollPositionBefore = container.scrollTop;
+  button.addEventListener('htmx:afterRequest', function () {
+    container.scrollTop = scrollPositionBefore;
+  })
+}
+
+function correctNextScroll(button) {
+  const container = document.querySelector("#window-content")
+  const scrollPositionBefore = container.scrollHeight;
+  button.addEventListener('htmx:afterRequest', function () {
+    container.scrollTop = container.scrollHeight - scrollPositionBefore;
+  })
 }

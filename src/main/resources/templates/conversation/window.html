@@ -29,6 +29,10 @@
             <div
               th:replace="~{conversation/window-content :: fragment(${sectionPage}, ${conversationId})}"
             ></div>
+            <script defer>
+              container = document.querySelector("#window-content");
+              container.scrollTop = container.scrollHeight;
+            </script>
           </div>
         </div>
       </th:block>
@@ -61,11 +65,10 @@
       th:text="Del"
       th:hx-delete="@{/conversation/{id}(id=${conversationId})}"
       id="selected-conv-DelBtn"
-      hx-swap="outerHTML"
-      hx-target="closest .sidebar-item"
+      hx-swap="none"
       class="conv-delBtn"
       hx-push-url="false"
-      hx-on--before-request="redirectToIntroduction()"
+      hx-on--before-request="setSelectedDeleteAfter(this)"
     ></button>
   </div>
 </th:block>

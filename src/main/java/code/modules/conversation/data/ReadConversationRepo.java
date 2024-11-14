@@ -44,7 +44,7 @@ public class ReadConversationRepo implements ReadConversationDao {
   public Page<Section> getSectionPage(PageRequest pageRequest, Conversation conversation) {
     ConversationEntity entity = mapper.domainToEntity(conversation);
     Page<SectionNavigationProjection> page = sectionJpaRepo
-      .findProjectinoPageByConversation(entity, pageRequest);
+      .findProjectionPageByConversation(entity, pageRequest);
     return page.map(projection -> mapper.entityToDomain(projection));
   }
 

@@ -48,7 +48,7 @@ public interface SectionJpaRepo extends JpaRepository<SectionEntity, UUID> {
         LEFT JOIN ResponseEntity resSelected ON resSelected.request = reqSelected AND resSelected.selected = true
         WHERE s.conversation = :conversation
     """)
-  Page<SectionNavigationProjection> findProjectinoPageByConversation(
+  Page<SectionNavigationProjection> findProjectionPageByConversation(
     @Param("conversation") ConversationEntity conversation,
     Pageable pageable
   );

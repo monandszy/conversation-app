@@ -1,6 +1,6 @@
 package code.frontend.exception;
 
-import code.modules.googleApi.InternalApiException;
+import code.modules.googleApi.internal.InternalApiException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;

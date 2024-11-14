@@ -8,49 +8,65 @@
 </head>
 <th:block th:fragment="fragment(sectionPage, conversationId)">
   <div
-    th:replace="~{conversation/window-content :: previous-content(${sectionPage}, ${conversationId})}"
+    th:replace="~{conversation/window-content :: next-content(${sectionPage}, ${conversationId})}"
   ></div>
-  <div th:each="section : ${sectionPage.content}" th:classappend="section">
+  <div
+    th:each="i : ${#numbers.sequence(sectionPage.content.size() - 1, 0, -1)}"
+    th:with="section=${sectionPage.content.get(i)}" th:classappend="section"
+  >
     <div
       th:replace="~{conversation/window-content :: section-fragment(${section})}"
     ></div>
   </div>
   <div
-    th:replace="~{conversation/window-content :: next-content(${sectionPage}, ${conversationId})}"
+    th:replace="~{conversation/window-content :: previous-content(${sectionPage}, ${conversationId})}"
   ></div>
 </th:block>
 
 <th:block th:fragment="previous-fragment">
+  <head hx-head="merge">
+    <script hx-head="re-eval" defer>
+      container = document.querySelector("#window-content");
+      container.scrollTop = container.scrollHeight - container.clientHeight;
+    </script>
+  </head>
   <div
-    th:replace="~{conversation/window-content :: previous-content(${section}, ${conversationId})}"
-  ></div>
-  <div th:each="section : ${sectionPage.content}" th:classappend="section">
-    <div
-      th:replace="~{conversation/window-content :: section-fragment(${sectionPage})}"
-    ></div>
-  </div>
-</th:block>
-
-<th:block th:fragment="next-fragment">
-  <div th:each="section : ${sectionPage.content}" th:classappend="section">
+    th:each="i : ${#numbers.sequence(sectionPage.content.size() - 1, 0, -1)}"
+    th:with="section=${sectionPage.content.get(i)}" th:classappend="section"
+  >
     <div
       th:replace="~{conversation/window-content :: section-fragment(${section})}"
     ></div>
   </div>
   <div
-    th:replace="~{conversation/window-content :: next-content(${sectionPage}, ${conversationId})}"
+    th:replace="~{conversation/window-content :: previous-content(${section}, ${conversationId})}"
   ></div>
 </th:block>
 
-<th:block th:fragment="previous-content(sectionPage, conversationId)">
-  <div th:if="${sectionPage.hasPrevious()}">
+<th:block th:fragment="next-fragment">
+  <div
+    th:replace="~{conversation/window-content :: next-content(${sectionPage}, ${conversationId})}"
+  ></div>
+  <div
+    th:each="i : ${#numbers.sequence(sectionPage.content.size() - 1, 0, -1)}"
+    th:with="section=${sectionPage.content.get(i)}" th:classappend="section"
+  >
+    <div
+      th:replace="~{conversation/window-content :: section-fragment(${section})}"
+    ></div>
+  </div>
+</th:block>
+
+<th:block th:fragment="next-content(sectionPage, conversationId)">
+  <div th:if="${sectionPage.hasNext()}">
     <button
-      th:hx-get="@{/conversation/{conversationId}/previous(conversationId=${conversationId}, page=${sectionPage.number - 1})}"
+      th:hx-get="@{/conversation/{conversationId}/next(conversationId=${conversationId}, page=${sectionPage.number + 1})}"
       hx-trigger="intersect"
       hx-target="this"
       hx-swap="outerHTML"
       class="load-button"
-    >Load Previous
+      hx-on--before-request="correctNextScroll(this)"
+    >Load Next
     </button>
   </div>
 </th:block>
@@ -81,15 +97,16 @@
   </th:block>
 </th:block>
 
-<th:block th:fragment="next-content(sectionPage, conversationId)">
-  <div th:if="${sectionPage.hasNext()}">
+<th:block th:fragment="previous-content(sectionPage, conversationId)">
+  <div th:if="${sectionPage.hasPrevious()}">
     <button
-      th:hx-get="@{/conversation/{conversationId}/next(conversationId=${conversationId}, page=${sectionPage.number + 1})}"
+      th:hx-get="@{/conversation/{conversationId}/previous(conversationId=${conversationId}, page=${sectionPage.number - 1})}"
       hx-trigger="intersect"
       hx-target="this"
       hx-swap="outerHTML"
       class="load-button"
-    >Load Next
+      hx-on--before-request="correctPreviousScroll(this)"
+    >Load Previous
     </button>
   </div>
 </th:block>
@@ -163,7 +180,6 @@
     class="req-delBtn"
     hx-on--before-request="setRequestDeleteAfter(event, this)"
   ></button>
-  <!--    TODO delete conversation and section on last-->
 </th:block>
 
 <th:block th:fragment="response-content-fragment(response, requestId)">

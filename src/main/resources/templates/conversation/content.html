@@ -21,12 +21,10 @@
       <div th:replace="~{conversation/introduction-window :: fragment}"></div>
       <div th:replace="~{conversation/generate-form :: fragment}"></div>
     </div>
-    <div>
-      <script th:inline="javascript" defer>
-        globalConversationId = 'null'
-        document.getElementById('generate-form-button').innerText = 'Begin_Generate';
-      </script>
-    </div>
+    <script th:inline="javascript" defer>
+      globalConversationId = 'null'
+      document.getElementById('generate-form-button').innerText = 'Begin_Generate';
+    </script>
   </div>
 </th:block>
 </html>

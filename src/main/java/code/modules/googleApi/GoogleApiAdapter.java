@@ -2,6 +2,7 @@ package code.modules.googleApi;
 
 import code.modules.googleApi.internal.ApiCallService;
 import code.modules.googleApi.internal.ApiModelMapper;
+import code.modules.googleApi.internal.InternalApiException;
 import code.openApi.model.GenerateContentResponse;
 import code.openApi.model.ListModelsResponse;
 import code.openApi.model.Model;
