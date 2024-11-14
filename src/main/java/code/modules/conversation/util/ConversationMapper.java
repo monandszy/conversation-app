@@ -1,11 +1,11 @@
 package code.modules.conversation.util;
 
 import code.configuration.SpringMapperConfig;
-import code.modules.conversation.ConversationCommandFacadeI.ConversationBeginDto;
-import code.modules.conversation.ConversationQueryFacadeI.ConversationReadDto;
-import static code.modules.conversation.ConversationQueryFacadeI.RequestReadDto;
-import code.modules.conversation.ConversationQueryFacadeI.ResponseReadDto;
-import static code.modules.conversation.ConversationQueryFacadeI.SectionReadDto;
+import code.modules.conversation.IConversationCommandFacade.ConversationBeginDto;
+import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
+import static code.modules.conversation.IConversationQueryFacade.RequestReadDto;
+import code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
+import static code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.entity.RequestEntity;
 import code.modules.conversation.data.entity.ResponseEntity;

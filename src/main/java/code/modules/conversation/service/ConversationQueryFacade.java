@@ -1,6 +1,6 @@
 package code.modules.conversation.service;
 
-import code.modules.conversation.ConversationQueryFacadeI;
+import code.modules.conversation.IConversationQueryFacade;
 import code.modules.conversation.service.domain.Conversation;
 import code.modules.conversation.service.domain.Request;
 import code.modules.conversation.service.domain.Response;
@@ -16,7 +16,7 @@ import org.springframework.data.domain.PageRequest;
 @Facade
 @Slf4j
 @AllArgsConstructor
-public class ConversationQueryFacade implements ConversationQueryFacadeI {
+public class ConversationQueryFacade implements IConversationQueryFacade {
 
   private ReadConversationDao readDao;
   private ConversationMapper mapper;

@@ -42,32 +42,28 @@ function setResponsePostAfter(button) {
 function resetGlobal() {
   console.log('reset')
   console.log(globalConversationId)
-  const element = document.querySelector('#selected-sidebar-item');
-  if (element) {
-    element.removeAttribute('id');
-  }
   globalConversationId = 'null'
   document.getElementById('generate-form-button').innerText = 'Begin_Generate';
 }
 
-function setGlobal(conversationId, button) {
+function setGlobal(conversationId) {
   console.log('set')
   console.log(conversationId)
   globalConversationId = conversationId
-  const element = document.querySelector('#selected-sidebar-item');
-  if (element) {
-    element.removeAttribute('id');
-  }
-  const selected = button.closest(".sidebar-item");
-  selected.id = 'selected-sidebar-item'
   document.getElementById('generate-form-button').innerText = 'Post_Generate';
 }
 
 function setConversationDeleteAfter(event, button) {
   button.addEventListener('htmx:afterRequest', function () {
-    if (button.closest(".sidebar-item").id === 'selected-sidebar-item') {
-      const newConversationForm = document.querySelector('#new-conversation-form-button');
-      newConversationForm.click();
+    const selectedButton = document.querySelector('selected-conv-DelBtn')
+    const clickedDeletePath = button.getAttribute('hx-delete');
+    const selectedDeletePath = selectedButton.getAttribute('hx-delete');
+    if (clickedDeletePath === selectedDeletePath) {
+      redirectToIntroduction()
     }
   });
+}
+function redirectToIntroduction() {
+  const newConversationForm = document.querySelector('#new-conversation-form-button');
+  newConversationForm.click();
 }

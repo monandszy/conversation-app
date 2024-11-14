@@ -62,7 +62,7 @@ function setSectionDeleteAfter(event, button) {
   const sections = windowContent.querySelectorAll(".section");
   if (sections.length === 1) {
     event.preventDefault();
-    const element = document.querySelector('#selected-sidebar-item');
+    const element = document.querySelector('#selected-conv-DelBtn-wrapper');
     const deleteButton = element.querySelector('.conv-delBtn');
     deleteButton.click();
     return;

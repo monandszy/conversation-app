@@ -8,17 +8,6 @@
 </head>
 <th:block th:fragment="fragment">
   <nav id="sidebar-content">
-    <th:block th:if="${selectedConversation != null}">
-      <div
-        class="sidebar-item" id="selected-sidebar-item"
-        th:include="~{conversation/sidebar-content :: sidebar-item(${selectedConversation.id})}"
-      >
-      </div>
-      <div>
-        <!--        This is temp ofc... TODO when added it appends before this..-->
-        <p>-----------------------------</p>
-      </div>
-    </th:block>
     <div
       th:replace="~{conversation/sidebar-content :: previous-content(${conversationPage})}"
     >
@@ -108,7 +97,7 @@
   <button
     th:text="${conversationId}"
     th:hx-get="@{/conversation/{id}(id=${conversationId})}"
-    th:hx-on--after-request="|setGlobal('${conversationId}', this)|"
+    th:hx-on--after-request="|setGlobal('${conversationId}')|"
     hx-push-url="true" hx-swap="outerHTML" hx-target="#window-wrapper"
     class="conv-getBtn"
   ></button>

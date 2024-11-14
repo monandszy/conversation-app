@@ -1,10 +1,10 @@
 package code.modules.conversation.service;
 
-import code.modules.conversation.ConversationCommandFacadeI;
-import code.modules.conversation.ConversationQueryFacadeI.ConversationReadDto;
-import code.modules.conversation.ConversationQueryFacadeI.RequestReadDto;
-import code.modules.conversation.ConversationQueryFacadeI.ResponseReadDto;
-import code.modules.conversation.ConversationQueryFacadeI.SectionReadDto;
+import code.modules.conversation.IConversationCommandFacade;
+import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
+import code.modules.conversation.IConversationQueryFacade.RequestReadDto;
+import code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
+import code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 import code.modules.conversation.service.domain.Conversation;
 import code.modules.conversation.service.domain.Request;
 import code.modules.conversation.service.domain.Response;
@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 
 @Facade
 @AllArgsConstructor
-public class ConversationCommandFacade implements ConversationCommandFacadeI {
+public class ConversationCommandFacade implements IConversationCommandFacade {
 
   private GoogleApiAdapter googleApiAdapter;
   private ConversationMapper mapper;
@@ -41,7 +41,7 @@ public class ConversationCommandFacade implements ConversationCommandFacadeI {
     OffsetDateTime now = OffsetDateTime.now();
     Conversation dependency = Conversation.builder().id(conversationId).build();
     Section section = Section.builder().conversation(dependency).created(now).build();
-    Request request = Request.builder().text(apiRequest.text()).created(now).build();
+    Request request = Request.builder().text(apiRequest.text()).selected(true).created(now).build();
     Response response = Response.builder().text(apiResponse.text()).selected(true).created(now).build();
     section = commandDao.create(section, request, response);
     return mapper.domainToReadDto(section);
@@ -54,8 +54,9 @@ public class ConversationCommandFacade implements ConversationCommandFacadeI {
 
     Section dependency = Section.builder().id(sectionId).build();
     Request request = Request.builder().section(dependency)
-      .text(apiRequest.text()).created(now).build();
-    Response response = Response.builder().text(apiResponse.text()).created(now).build();
+      .text(apiRequest.text()).selected(true).created(now).build();
+    Response response = Response.builder().text(apiResponse.text())
+      .selected(true).created(now).build();
     request = commandDao.create(request, response);
     return mapper.domainToReadDto(request);
   }
@@ -67,7 +68,7 @@ public class ConversationCommandFacade implements ConversationCommandFacadeI {
     ApiResponseDto apiResponse = googleApiAdapter.generate(apiRequest);
     OffsetDateTime now = OffsetDateTime.now();
     Response response = Response.builder().request(dependency)
-      .text(apiResponse.text()).created(now).build();
+      .text(apiResponse.text()).selected(true).created(now).build();
     response = commandDao.create(response);
     return mapper.domainToReadDto(response);
   }

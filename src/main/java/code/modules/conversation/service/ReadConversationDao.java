@@ -1,6 +1,6 @@
 package code.modules.conversation.service;
 
-import code.modules.conversation.ConversationQueryFacadeI.ConversationData;
+import code.modules.conversation.IConversationQueryFacade.ConversationData;
 import code.modules.conversation.service.domain.Conversation;
 import code.modules.conversation.service.domain.Request;
 import code.modules.conversation.service.domain.Response;

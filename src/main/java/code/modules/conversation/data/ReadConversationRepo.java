@@ -1,6 +1,6 @@
 package code.modules.conversation.data;
 
-import static code.modules.conversation.ConversationQueryFacadeI.ConversationData;
+import static code.modules.conversation.IConversationQueryFacade.ConversationData;
 import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.entity.RequestEntity;
 import code.modules.conversation.data.entity.ResponseEntity;

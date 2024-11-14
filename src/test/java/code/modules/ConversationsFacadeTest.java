@@ -4,14 +4,14 @@ import code.configuration.Constants;
 import code.configuration.ContextConfig;
 import code.configuration.FacadeAbstract;
 import code.configuration.UtilBeanConfig;
-import code.modules.conversation.ConversationCommandFacadeI;
-import code.modules.conversation.ConversationCommandFacadeI.ConversationBeginDto;
-import code.modules.conversation.ConversationCommandFacadeI.RequestGenerateDto;
-import code.modules.conversation.ConversationQueryFacadeI;
-import code.modules.conversation.ConversationQueryFacadeI.ConversationReadDto;
-import code.modules.conversation.ConversationQueryFacadeI.RequestReadDto;
-import code.modules.conversation.ConversationQueryFacadeI.ResponseReadDto;
-import code.modules.conversation.ConversationQueryFacadeI.SectionReadDto;
+import code.modules.conversation.IConversationCommandFacade;
+import code.modules.conversation.IConversationCommandFacade.ConversationBeginDto;
+import code.modules.conversation.IConversationCommandFacade.RequestGenerateDto;
+import code.modules.conversation.IConversationQueryFacade;
+import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
+import code.modules.conversation.IConversationQueryFacade.RequestReadDto;
+import code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
+import code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 import code.modules.conversation.data.CommandConversationRepo;
 import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.jpa.ConversationJpaRepo;
@@ -40,8 +40,8 @@ import org.springframework.data.domain.PageRequest;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 class ConversationsFacadeTest extends FacadeAbstract {
 
-  private ConversationQueryFacadeI queryFacade;
-  private ConversationCommandFacadeI commandFacade;
+  private IConversationQueryFacade queryFacade;
+  private IConversationCommandFacade commandFacade;
 
   private CommandConversationRepo repository;
   private ConversationJpaRepo conversationJpaRepo;

@@ -1,12 +1,12 @@
 package code.frontend.conversation;
 
 import code.configuration.Constants;
-import code.modules.conversation.ConversationCommandFacadeI;
-import code.modules.conversation.ConversationCommandFacadeI.ConversationBeginDto;
-import code.modules.conversation.ConversationCommandFacadeI.RequestGenerateDto;
-import code.modules.conversation.ConversationQueryFacadeI;
-import code.modules.conversation.ConversationQueryFacadeI.ConversationData;
-import code.modules.conversation.ConversationQueryFacadeI.ConversationReadDto;
+import code.modules.conversation.IConversationCommandFacade;
+import code.modules.conversation.IConversationCommandFacade.ConversationBeginDto;
+import code.modules.conversation.IConversationCommandFacade.RequestGenerateDto;
+import code.modules.conversation.IConversationQueryFacade;
+import code.modules.conversation.IConversationQueryFacade.ConversationData;
+import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
 import code.util.ControllerUtil;
 import java.security.Principal;
 import java.util.Objects;
@@ -35,8 +35,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Slf4j
 public class ConversationPage implements ControllerUtil {
 
-  private ConversationQueryFacadeI queryFacade;
-  private ConversationCommandFacadeI commandFacade;
+  private IConversationQueryFacade queryFacade;
+  private IConversationCommandFacade commandFacade;
 
   @GetMapping("")
   @ResponseStatus(HttpStatus.OK)
