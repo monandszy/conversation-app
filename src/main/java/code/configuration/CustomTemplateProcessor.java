@@ -22,7 +22,12 @@ public class CustomTemplateProcessor implements IPostProcessorDialect {
   @Override
   public Set<IPostProcessor> getPostProcessors() {
     Set<IPostProcessor> processors = new HashSet<>();
-    processors.add(new PostProcessor(TemplateMode.HTML, CustomTemplateHandler.class, Integer.MAX_VALUE));
+    PostProcessor processor = new PostProcessor(
+      TemplateMode.HTML,
+      CustomTemplateHandler.class,
+      Integer.MAX_VALUE
+    );
+    processors.add(processor);
     return processors;
   }
 
@@ -34,7 +39,11 @@ public class CustomTemplateProcessor implements IPostProcessorDialect {
   public static class CustomTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleText(IText text) {
-      if (text.getText() != null && !text.getText().isEmpty() && text.getText().trim().isEmpty()) {
+      if (
+        text.getText() != null
+          && !text.getText().isEmpty()
+          && text.getText().trim().isEmpty()
+      ) {
         return;
       } else {
         super.handleText(text);
@@ -45,6 +54,7 @@ public class CustomTemplateProcessor implements IPostProcessorDialect {
   @Configuration
   public static class ThymeleafConfig {
     SpringTemplateEngine templateEngine;
+
     @Autowired
     public ThymeleafConfig(SpringTemplateEngine templateEngine) {
       this.templateEngine = templateEngine;

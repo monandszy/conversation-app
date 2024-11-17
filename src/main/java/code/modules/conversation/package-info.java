@@ -1,5 +1,5 @@
 /**
- * This package is responsible for the management and retrieval of conversation data
+ * This package is responsible for the management and retrieval of conversation data.
  */
 
 @ApplicationModule(displayName = "conversationModule")

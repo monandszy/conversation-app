@@ -1,8 +1,8 @@
-package code.modules.googleApi.internal;
+package code.modules.google_api.internal;
 
 import code.configuration.SpringMapperConfig;
-import code.modules.googleApi.GoogleApiAdapter.ApiRequestDto;
-import code.modules.googleApi.GoogleApiAdapter.ApiResponseDto;
+import code.modules.google_api.GoogleApiAdapter.ApiRequestDto;
+import code.modules.google_api.GoogleApiAdapter.ApiResponseDto;
 import code.openApi.model.Candidate;
 import code.openApi.model.Content;
 import code.openApi.model.GenerateContentRequest;
@@ -25,8 +25,9 @@ public interface ApiModelMapper {
 
   @Named("contentMapping")
   default List<Content> contentMapping(String text) {
-    if (Objects.isNull(text)) return null;
-
+    if (Objects.isNull(text)) {
+      return List.of();
+    }
     Part part = new Part();
     part.setText(text);
 

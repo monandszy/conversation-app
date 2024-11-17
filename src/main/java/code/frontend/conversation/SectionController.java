@@ -10,6 +10,7 @@ import code.modules.conversation.IConversationQueryFacade.RequestReadDto;
 import code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
 import code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 import code.util.ControllerUtil;
+import code.util.ModelAttr;
 import java.security.Principal;
 import java.util.Objects;
 import java.util.UUID;
@@ -51,22 +52,22 @@ public class SectionController implements ControllerUtil {
     Principal principal,
     Model model
   ) {
-    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
+    PageRequest pageRequest = getPageRequest(page);
     UUID convId = UUID.fromString(conversationId);
     Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
     ConversationData data = queryFacade.getConversationData(convId);
-    model.addAttribute("selectedData", data);
-    model.addAttribute("sectionPage", sectionPage);
-    model.addAttribute("requestGenerateDto", getEmptyRequest());
-    model.addAttribute("conversationId", convId);
-    model.addAttribute("isHxRequest", hxRequest);
+    model.addAttribute(ModelAttr.selectedData, data);
+    model.addAttribute(ModelAttr.sectionPage, sectionPage);
+    model.addAttribute(ModelAttr.requestGenerateDto, getEmptyRequest());
+    model.addAttribute(ModelAttr.conversationId, convId);
+    model.addAttribute(ModelAttr.isHxRequest, hxRequest);
     if (Objects.nonNull(hxRequest)) {
       return "conversation/window :: fragment";
     } else {
       UUID accountId = UUID.fromString(principal.getName());
       ConversationReadDto selected = queryFacade.getConversation(convId, accountId);
       conversationPage.list(0, principal, model);
-      model.addAttribute("selectedConversation", selected);
+      model.addAttribute(ModelAttr.selectedConversation, selected);
       return "conversation/window";
     }
   }
@@ -78,11 +79,11 @@ public class SectionController implements ControllerUtil {
     @PathVariable String conversationId,
     Model model
   ) {
-    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
+    PageRequest pageRequest = getPageRequest(page);
     UUID convId = UUID.fromString(conversationId);
     Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
-    model.addAttribute("sectionPage", sectionPage);
-    model.addAttribute("conversationId", convId);
+    model.addAttribute(ModelAttr.sectionPage, sectionPage);
+    model.addAttribute(ModelAttr.conversationId, convId);
     return "conversation/window-content :: previous-fragment";
   }
 
@@ -93,11 +94,11 @@ public class SectionController implements ControllerUtil {
     @PathVariable String conversationId,
     Model model
   ) {
-    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
+    PageRequest pageRequest = getPageRequest(page);
     UUID convId = UUID.fromString(conversationId);
     Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
-    model.addAttribute("sectionPage", sectionPage);
-    model.addAttribute("conversationId", convId);
+    model.addAttribute(ModelAttr.sectionPage, sectionPage);
+    model.addAttribute(ModelAttr.conversationId, convId);
     return "conversation/window-content :: next-fragment";
   }
 
@@ -110,7 +111,7 @@ public class SectionController implements ControllerUtil {
   ) {
     SectionReadDto readDto = commandFacade
       .generate(generateDto, UUID.fromString(conversationId));
-    model.addAttribute("sectionReadDto", readDto);
+    model.addAttribute(ModelAttr.sectionReadDto, readDto);
     return "conversation/window-content :: singular-fragment";
   }
 
@@ -123,8 +124,8 @@ public class SectionController implements ControllerUtil {
   ) {
     RequestReadDto readDto = commandFacade.regenerate(
       generateDto, UUID.fromString(sectionId));
-    model.addAttribute("requestReadDto", readDto);
-    model.addAttribute("sectionId", sectionId);
+    model.addAttribute(ModelAttr.requestReadDto, readDto);
+    model.addAttribute(ModelAttr.sectionId, sectionId);
     return "conversation/window-content :: request-fragment";
   }
 
@@ -135,8 +136,8 @@ public class SectionController implements ControllerUtil {
     Model model
   ) {
     ResponseReadDto readDto = commandFacade.retry(UUID.fromString(requestId));
-    model.addAttribute("responseReadDto", readDto);
-    model.addAttribute("requestId", requestId);
+    model.addAttribute(ModelAttr.responseReadDto, readDto);
+    model.addAttribute(ModelAttr.requestId, requestId);
     return "conversation/window-content :: response-fragment";
   }
 
@@ -151,8 +152,8 @@ public class SectionController implements ControllerUtil {
       UUID.fromString(requestId),
       UUID.fromString(sectionId)
     );
-    model.addAttribute("requestReadDto", requestDto);
-    model.addAttribute("sectionId", sectionId);
+    model.addAttribute(ModelAttr.requestReadDto, requestDto);
+    model.addAttribute(ModelAttr.sectionId, sectionId);
     return "conversation/window-content :: request-fragment";
   }
 
@@ -167,8 +168,8 @@ public class SectionController implements ControllerUtil {
       UUID.fromString(responseId),
       UUID.fromString(requestId)
     );
-    model.addAttribute("responseReadDto", responseDto);
-    model.addAttribute("requestId", requestId);
+    model.addAttribute(ModelAttr.responseReadDto, responseDto);
+    model.addAttribute(ModelAttr.requestId, requestId);
     return "conversation/window-content :: response-fragment";
   }
 
@@ -206,5 +207,9 @@ public class SectionController implements ControllerUtil {
       UUID.fromString(principal.getName())
     );
     return ResponseEntity.noContent().build();
+  }
+
+  private static PageRequest getPageRequest(Integer page) {
+    return PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
   }
 }

@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout.html}"
-      xmlns:th="http://www.thymeleaf.org"
+<html
+  lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout.html}"
+  xmlns:th="http://www.thymeleaf.org"
 >
 <head>
   <title>Register</title>
 </head>
-<div layout:fragment="content" th:fragment="content" id="content" hx-push-url="true"
-     hx-target="#content" hx-swap="outerHTML">
+<div
+  layout:fragment="content" th:fragment="content" id="content" hx-push-url="true"
+  hx-target="#content" hx-swap="outerHTML"
+>
   <div class="authentication-form">
-    <form hx-post="/register" th:object="${accountCreateDto}" >
+    <form hx-post="/register" th:object="${accountCreateDto}">
       <label>
         <input type="text" th:field="*{email}" placeholder="Email"/>
       </label>
@@ -20,8 +23,9 @@
     </form>
   </div>
   <div>
-    <button hx-get="/login"
-            hx-trigger="click"
+    <button
+      hx-get="/login"
+      hx-trigger="click"
     >Login?
     </button>
   </div>

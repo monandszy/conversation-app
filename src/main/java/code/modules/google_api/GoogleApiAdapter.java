@@ -1,8 +1,8 @@
-package code.modules.googleApi;
+package code.modules.google_api;
 
-import code.modules.googleApi.internal.ApiCallService;
-import code.modules.googleApi.internal.ApiModelMapper;
-import code.modules.googleApi.internal.InternalApiException;
+import code.modules.google_api.internal.ApiCallService;
+import code.modules.google_api.internal.ApiModelMapper;
+import code.modules.google_api.internal.InternalApiException;
 import code.openApi.model.GenerateContentResponse;
 import code.openApi.model.ListModelsResponse;
 import code.openApi.model.Model;
@@ -21,7 +21,8 @@ public class GoogleApiAdapter {
 
   public ApiResponseDto generate(ApiRequestDto request) {
     try {
-      GenerateContentResponse response = apiCallService.modelsGenerateContent(apiModelMapper.dtoToApiModel(request));
+      GenerateContentResponse response = apiCallService
+        .modelsGenerateContent(apiModelMapper.dtoToApiModel(request));
       return apiModelMapper.apiModelToDto(response);
     } catch (Exception e) {
       throw new InternalApiException(e.getMessage(), e.getCause());

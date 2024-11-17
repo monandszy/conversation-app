@@ -1,4 +1,4 @@
-package code.modules.googleApi.internal;
+package code.modules.google_api.internal;
 
 import code.openApi.ApiClient;
 import code.openApi.infrastructure.CachedContentsApi;
@@ -55,13 +55,13 @@ public class ApiCallService {
     MediaApi mediaApi = new MediaApi(apiClient);
     CachedContentsApi cachedContentsApi = new CachedContentsApi(apiClient);
     CorporaApi corporaApi = new CorporaApi(apiClient);
-    
+
   }
 
   private void attemptCommunication(CachedContentsApi cachedContentsApi) {
     CachedContent block = cachedContentsApi.generativelanguageCachedContentsGet(
       "", null, null, null, null, null, apiToken, null, null, null, null, null
-      ).block();
+    ).block();
     System.out.println(block);
   }
 

@@ -1,5 +1,7 @@
 package code.frontend.account;
 
+import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +14,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -31,7 +32,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
   }
 
   @Override
-  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+  public Authentication attemptAuthentication(
+    HttpServletRequest request,
+    HttpServletResponse response
+  ) {
     String email = request.getParameter("email");
     String password = request.getParameter("password");
     log.info("Attempting to authenticate user: [{}], [{}]", email, password);

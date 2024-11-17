@@ -1,27 +1,31 @@
 package code.modules;
 
+import static code.modules.accounts.AccountCommandFacade.AccountCreateDto;
+import static code.modules.accounts.AccountCommandFacade.AccountReadDto;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import code.configuration.ContextConfig;
 import code.configuration.DataInitializer;
 import code.configuration.FacadeAbstract;
 import code.configuration.SecurityConfig;
 import code.modules.accounts.AccountCommandFacade;
-import static code.modules.accounts.AccountCommandFacade.AccountCreateDto;
-import static code.modules.accounts.AccountCommandFacade.AccountReadDto;
 import code.modules.accounts.data.AccountEntity;
 import code.modules.accounts.data.AccountJpaRepo;
 import code.modules.accounts.service.domain.AuthorityName;
 import code.util.TestFixtures;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Assertions;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Slf4j
 @Import({ContextConfig.AccountModuleContext.class, SecurityConfig.class, DataInitializer.class})
@@ -31,6 +35,11 @@ class AccountFacadeTest extends FacadeAbstract {
   private AccountCommandFacade commandFacade;
   private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
   private AccountJpaRepo accountJpaRepo;
+
+  @MockBean
+  private SpringTemplateEngine templateEngine;
+  @MockBean
+  private ObjectMapper mapper;
 
   @Test
   void should_register_account() {

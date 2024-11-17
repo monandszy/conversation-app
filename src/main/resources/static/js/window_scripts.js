@@ -42,8 +42,7 @@ function setRequestDeleteAfter(event, button) {
       previousButton.click();
       updateCount()
     })
-  }
-  else if (nextButton) {
+  } else if (nextButton) {
     button.addEventListener('htmx:afterRequest', function () {
       nextButton.click();
       updateCount()

@@ -9,10 +9,14 @@ public interface SectionNavigationProjection {
   SectionEntity getSection();
 
   RequestEntity getSelectedRequest();
+
   UUID getPrevRequestId();
+
   UUID getNextRequestId();
 
   ResponseEntity getSelectedResponse();
+
   UUID getPrevResponseId();
+
   UUID getNextResponseId();
 }

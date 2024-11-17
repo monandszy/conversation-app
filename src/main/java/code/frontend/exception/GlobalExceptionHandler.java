@@ -1,6 +1,6 @@
 package code.frontend.exception;
 
-import code.modules.googleApi.internal.InternalApiException;
+import code.modules.google_api.internal.InternalApiException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<UUID> handle(IllegalArgumentException ex) {
     UUID uuid = UUID.randomUUID();
     log.error("IllegalArgument: {} | Exception UUID: {}", ex, uuid);
-    return  new ResponseEntity<>(uuid, HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(uuid, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(PropertyReferenceException.class)

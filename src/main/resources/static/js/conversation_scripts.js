@@ -65,11 +65,12 @@ function setConversationDeleteAfter(event, button) {
     }
   });
 }
+
 function setSelectedDeleteAfter(button) {
   const selector = '#sidebar-content .sidebar-item .conv-delBtn[hx-delete="' + button.getAttribute('hx-delete') + '"]'
   const pairButton = document.querySelector(selector);
   if (pairButton)
-  pairButton.closest('.sidebar-item').remove();
+    pairButton.closest('.sidebar-item').remove();
   button.addEventListener('htmx:afterRequest', function () {
     const newConversationForm = document.querySelector('#new-conversation-form-button');
     newConversationForm.click();

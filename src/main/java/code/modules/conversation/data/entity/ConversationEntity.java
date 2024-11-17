@@ -41,7 +41,9 @@ public class ConversationEntity {
   @Column(name = "account_id")
   private UUID accountId;
 
-  @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY,
+    cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+  )
   private final List<SectionEntity> requests = new ArrayList<>();
 
 }

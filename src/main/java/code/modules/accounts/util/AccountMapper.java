@@ -1,8 +1,9 @@
 package code.modules.accounts.util;
 
+import static code.modules.accounts.AccountCommandFacade.AccountReadDto;
+
 import code.configuration.SpringMapperConfig;
 import code.modules.accounts.AccountCommandFacade.AccountCreateDto;
-import static code.modules.accounts.AccountCommandFacade.AccountReadDto;
 import code.modules.accounts.data.AccountEntity;
 import code.modules.accounts.service.domain.Account;
 import code.modules.accounts.service.domain.Authority;
@@ -30,7 +31,9 @@ public interface AccountMapper {
 
   @Named("authorityMapping")
   default Set<String> authorityMapping(Set<Authority> authorities) {
-    if (Objects.isNull(authorities)) return null;
+    if (Objects.isNull(authorities)) {
+      return Set.of();
+    }
     return authorities.stream().map(e -> e.getName().name()).collect(Collectors.toSet());
   }
 }

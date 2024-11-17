@@ -123,11 +123,18 @@ public class SecurityConfig {
             flushView(request, variables, outputStream);
           }
         }))
-      .addFilterBefore(new CustomAuthenticationFilter(auth), UsernamePasswordAuthenticationFilter.class)
-      .build();
+      .addFilterBefore(
+        new CustomAuthenticationFilter(auth),
+        UsernamePasswordAuthenticationFilter.class
+      ).build();
   }
 
-  private void flushView(HttpServletRequest request, Map<String, Object> variables, ServletOutputStream outputStream) throws IOException {
+  private void flushView(
+    HttpServletRequest request,
+    Map<String,
+      Object> variables,
+    ServletOutputStream outputStream
+  ) throws IOException {
     Context context = new Context();
     context.setVariables(variables);
     String renderedHtml;

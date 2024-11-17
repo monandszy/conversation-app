@@ -21,6 +21,7 @@ public class ConversationQueryFacade implements IConversationQueryFacade {
   private ReadConversationDao readDao;
   private ConversationMapper mapper;
 
+  @Override
   public Page<ConversationReadDto> getConversationPage(PageRequest pageRequest, UUID accountId) {
     Page<ConversationReadDto> page = readDao.getConversationPage(pageRequest, accountId)
       .map(e -> mapper.domainToReadDto(e));
@@ -28,6 +29,7 @@ public class ConversationQueryFacade implements IConversationQueryFacade {
     return page;
   }
 
+  @Override
   public ConversationReadDto getConversation(UUID conversationId, UUID accountId) {
     Conversation conversation = Conversation.builder().id(conversationId)
       .accountId(accountId).build();
@@ -35,6 +37,7 @@ public class ConversationQueryFacade implements IConversationQueryFacade {
     return mapper.entityToDomain(conversation);
   }
 
+  @Override
   public Page<SectionReadDto> getSectionPage(PageRequest pageRequest, UUID conversationId) {
     Conversation conversation = Conversation.builder().id(conversationId).build();
     Page<Section> sectionPage = readDao.getSectionPage(pageRequest, conversation);
@@ -43,6 +46,7 @@ public class ConversationQueryFacade implements IConversationQueryFacade {
     return page;
   }
 
+  @Override
   public RequestReadDto getRequest(UUID requestId, UUID sectionId) {
     Request request = Request.builder().id(requestId).build();
     Section section = Section.builder().id(sectionId).build();
@@ -50,6 +54,7 @@ public class ConversationQueryFacade implements IConversationQueryFacade {
     return mapper.domainToReadDto(request);
   }
 
+  @Override
   public ResponseReadDto getResponse(UUID responseId, UUID requestId) {
     Response response = Response.builder().id(responseId).build();
     Request request = Request.builder().id(requestId).build();
@@ -57,6 +62,7 @@ public class ConversationQueryFacade implements IConversationQueryFacade {
     return mapper.domainToReadDto(response);
   }
 
+  @Override
   public ConversationData getConversationData(UUID conversationId) {
     Conversation conversation = Conversation.builder().id(conversationId).build();
     ConversationData conversationData = readDao.getConversationData(conversation);

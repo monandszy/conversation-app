@@ -1,16 +1,17 @@
 package code.api;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import code.configuration.ContextConfig;
 import code.configuration.GoogleApiConfig;
 import code.configuration.TestSecurityConfig;
 import code.configuration.WireMockAbstract;
 import code.configuration.WireMockTestSupport;
-import code.modules.googleApi.GoogleApiAdapter;
-import code.modules.googleApi.GoogleApiAdapter.ApiResponseDto;
+import code.modules.google_api.GoogleApiAdapter;
+import code.modules.google_api.GoogleApiAdapter.ApiResponseDto;
 import code.util.EmptyController;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

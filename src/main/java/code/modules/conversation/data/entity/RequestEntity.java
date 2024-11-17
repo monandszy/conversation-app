@@ -49,6 +49,8 @@ public class RequestEntity {
   @JoinColumn(name = "section_id")
   private SectionEntity section;
 
-  @OneToMany(mappedBy = "request", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(mappedBy = "request", fetch = FetchType.LAZY,
+    cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+  )
   private final List<ResponseEntity> responses = new ArrayList<>();
 }

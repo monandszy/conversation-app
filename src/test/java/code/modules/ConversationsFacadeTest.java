@@ -1,5 +1,8 @@
 package code.modules;
 
+import static code.modules.google_api.GoogleApiAdapter.ApiResponseDto;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import code.configuration.Constants;
 import code.configuration.ContextConfig;
 import code.configuration.FacadeAbstract;
@@ -17,15 +20,13 @@ import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.jpa.ConversationJpaRepo;
 import code.modules.conversation.data.jpa.SectionJpaRepo;
 import code.modules.conversation.service.domain.Conversation;
-import code.modules.googleApi.GoogleApiAdapter;
-import code.modules.googleApi.GoogleApiAdapter.ApiRequestDto;
-import static code.modules.googleApi.GoogleApiAdapter.ApiResponseDto;
+import code.modules.google_api.GoogleApiAdapter;
+import code.modules.google_api.GoogleApiAdapter.ApiRequestDto;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -100,7 +101,7 @@ class ConversationsFacadeTest extends FacadeAbstract {
     //given
     RequestGenerateDto regenerateDto = new RequestGenerateDto(requestText);
     //when
-    commandFacade.regenerate(regenerateDto,  firstSection.id());
+    commandFacade.regenerate(regenerateDto, firstSection.id());
     Page<SectionReadDto> regeneratePage = queryFacade.getSectionPage(pageRequest, conversationId);
     //then
     assertThat(retryPage).isNotNull();

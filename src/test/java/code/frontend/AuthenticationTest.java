@@ -1,5 +1,13 @@
 package code.frontend;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
 import code.configuration.SecurityConfig;
 import code.configuration.TestContainersConfig;
 import code.configuration.UtilBeanConfig;
@@ -20,18 +28,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import org.testcontainers.shaded.com.trilead.ssh2.auth.AuthenticationManager;
 
 @WebMvcTest(controllers = {AuthenticationController.class, RegistrationController.class, CustomAuthenticationFilter.class})
@@ -103,8 +104,8 @@ class AuthenticationTest {
     Mockito.when(authService.loadUserByUsername(loginDto.email()))
       .thenReturn(TestFixtures.user);
     mockMvc.perform(post("/login").with(csrf())
-      .param("email", loginDto.email())
-      .param("password", loginDto.password()))
+        .param("email", loginDto.email())
+        .param("password", loginDto.password()))
       .andExpect(status().is3xxRedirection())
       .andExpect(redirectedUrl("/conversation"));
   }

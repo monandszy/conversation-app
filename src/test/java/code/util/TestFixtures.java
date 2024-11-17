@@ -22,11 +22,11 @@ public class TestFixtures {
   public LoginRequestDto loginRequestDto = new LoginRequestDto("email@email.com", "password");
   public UserDetails user = new User(
     "email@email.com",
-      "$2a$10$oyzMxbxAJfeQs8txIeg7yeapbS1yglbM71LKrAwjF3lt9rXvkw5A6",
-        true,
-        true,
-        true,
-        true,
-        List.of(new SimpleGrantedAuthority(AuthorityName.ROLE_USER.name())
+    "$2a$10$oyzMxbxAJfeQs8txIeg7yeapbS1yglbM71LKrAwjF3lt9rXvkw5A6",
+    true,
+    true,
+    true,
+    true,
+    List.of(new SimpleGrantedAuthority(AuthorityName.ROLE_USER.name())
     ));
 }

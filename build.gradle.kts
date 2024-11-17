@@ -176,6 +176,9 @@ tasks {
     checkstyleMain {
       source("src/main/java")
       classpath = project.files()
+      exclude(
+        "code/openApi/**"
+      )
     }
     checkstyleTest {
       source("src/test/java")
@@ -198,7 +201,9 @@ tasks {
         files(classDirectories.files.map {
           fileTree(it) {
             exclude(
-              "code/openApi/**"
+              "code/openApi/**",
+              "code/util/**",
+              "code/configuration/**"
             )
           }
         })

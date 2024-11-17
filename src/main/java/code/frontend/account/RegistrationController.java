@@ -1,7 +1,8 @@
 package code.frontend.account;
 
-import code.modules.accounts.AccountCommandFacade;
 import static code.modules.accounts.AccountCommandFacade.AccountCreateDto;
+
+import code.modules.accounts.AccountCommandFacade;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Objects;

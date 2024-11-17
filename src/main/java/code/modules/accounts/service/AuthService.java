@@ -17,12 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class AuthService implements UserDetailsService {
 
-  private AccountDao accountDAO;
+  private AccountDao accountDao;
 
   @Override
   @Transactional
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    Account account = accountDAO.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+    Account account = accountDao.findByEmail(email)
+      .orElseThrow(() -> new UsernameNotFoundException(email));
     return buildAccountForAuthentication(account, account.getAuthorities());
   }
 
@@ -36,7 +37,8 @@ public class AuthService implements UserDetailsService {
       true,
       true,
       authorities.stream()
-        .map(authority -> (GrantedAuthority) new SimpleGrantedAuthority(authority.getName().name()))
+        .map(authority -> (GrantedAuthority)
+          new SimpleGrantedAuthority(authority.getName().name()))
         .toList()
     );
   }

@@ -1,11 +1,12 @@
 package code.modules.conversation.util;
 
+import static code.modules.conversation.IConversationQueryFacade.RequestReadDto;
+import static code.modules.conversation.IConversationQueryFacade.SectionReadDto;
+
 import code.configuration.SpringMapperConfig;
 import code.modules.conversation.IConversationCommandFacade.ConversationBeginDto;
 import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
-import static code.modules.conversation.IConversationQueryFacade.RequestReadDto;
 import code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
-import static code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.entity.RequestEntity;
 import code.modules.conversation.data.entity.ResponseEntity;
@@ -32,6 +33,10 @@ public interface ConversationMapper {
 
   SectionReadDto domainToReadDto(Section domain);
 
+  ResponseReadDto domainToReadDto(Response response);
+
+  RequestReadDto domainToReadDto(Request request);
+
   Conversation createDtoToDomain(ConversationBeginDto domain);
 
   ConversationEntity domainToEntity(Conversation domain);
@@ -53,9 +58,7 @@ public interface ConversationMapper {
 
   Conversation entityToDomain(ConversationEntity entity);
 
-  ResponseReadDto domainToReadDto(Response response);
-
-  RequestReadDto domainToReadDto(Request request);
+  ConversationReadDto entityToDomain(Conversation conversation);
 
   default Section entityToDomain(SectionNavigationProjection entityDto) {
     SectionEntity section = entityDto.getSection();
@@ -77,9 +80,11 @@ public interface ConversationMapper {
       .build();
 
     return entityToDomain(section)
-      .withRequests(selectedRequest == null ? List.of() : List.of(entityToDomain(selectedRequest)
+      .withRequests(selectedRequest == null
+        ? List.of() : List.of(entityToDomain(selectedRequest)
         .withNavigation(nextRequestNav)
-        .withResponses(selectedResponse == null ? List.of() : List.of(entityToDomain(selectedResponse)
+        .withResponses(selectedResponse == null
+          ? List.of() : List.of(entityToDomain(selectedResponse)
           .withNavigation(nextResponseNav))
         ))
       );
@@ -105,7 +110,8 @@ public interface ConversationMapper {
 
     return entityToDomain(selectedRequest)
       .withNavigation(nextRequestNav)
-      .withResponses(selectedResponse == null ? List.of() : List.of(entityToDomain(selectedResponse)
+      .withResponses(selectedResponse == null
+        ? List.of() : List.of(entityToDomain(selectedResponse)
         .withNavigation(nextResponseNav)
       ));
   }
@@ -126,5 +132,4 @@ public interface ConversationMapper {
       .withNavigation(nextResponseNav);
   }
 
-  ConversationReadDto entityToDomain(Conversation conversation);
 }

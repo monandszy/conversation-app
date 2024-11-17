@@ -5,6 +5,8 @@ import java.util.UUID;
 
 public interface ResponseNavigationProjection {
   ResponseEntity getSelectedResponse();
+
   UUID getPrevResponseId();
+
   UUID getNextResponseId();
 }

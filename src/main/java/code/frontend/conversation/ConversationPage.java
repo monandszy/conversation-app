@@ -8,6 +8,7 @@ import code.modules.conversation.IConversationQueryFacade;
 import code.modules.conversation.IConversationQueryFacade.ConversationData;
 import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
 import code.util.ControllerUtil;
+import code.util.ModelAttr;
 import java.security.Principal;
 import java.util.Objects;
 import java.util.UUID;
@@ -46,8 +47,8 @@ public class ConversationPage implements ControllerUtil {
     Model model
   ) {
     list(0, principal, model);
-    model.addAttribute("requestGenerateDto", getEmptyRequest());
-    model.addAttribute("isHxRequest", hxRequest);
+    model.addAttribute(ModelAttr.requestGenerateDto, getEmptyRequest());
+    model.addAttribute(ModelAttr.isHxRequest, hxRequest);
     if (Objects.nonNull(hxRequest)) {
       return "conversation/content :: fragment";
     } else {
@@ -62,10 +63,11 @@ public class ConversationPage implements ControllerUtil {
     Principal principal,
     Model model
   ) {
-    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
+    PageRequest pageRequest = getPageRequest(page);
     UUID accountId = UUID.fromString(principal.getName());
-    Page<ConversationReadDto> conversationPage = queryFacade.getConversationPage(pageRequest, accountId);
-    model.addAttribute("conversationPage", conversationPage);
+    Page<ConversationReadDto> conversationPage =
+      queryFacade.getConversationPage(pageRequest, accountId);
+    model.addAttribute(ModelAttr.conversationPage, conversationPage);
     return "conversation/sidebar :: fragment";
   }
 
@@ -75,10 +77,11 @@ public class ConversationPage implements ControllerUtil {
     Principal principal,
     Model model
   ) {
-    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
+    PageRequest pageRequest = getPageRequest(page);
     UUID accountId = UUID.fromString(principal.getName());
-    Page<ConversationReadDto> conversationPage = queryFacade.getConversationPage(pageRequest, accountId);
-    model.addAttribute("conversationPage", conversationPage);
+    Page<ConversationReadDto> conversationPage =
+      queryFacade.getConversationPage(pageRequest, accountId);
+    model.addAttribute(ModelAttr.conversationPage, conversationPage);
     return "conversation/sidebar-content :: next-fragment";
   }
 
@@ -88,10 +91,11 @@ public class ConversationPage implements ControllerUtil {
     Principal principal,
     Model model
   ) {
-    PageRequest pageRequest = PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
+    PageRequest pageRequest = getPageRequest(page);
     UUID accountId = UUID.fromString(principal.getName());
-    Page<ConversationReadDto> conversationPage = queryFacade.getConversationPage(pageRequest, accountId);
-    model.addAttribute("conversationPage", conversationPage);
+    Page<ConversationReadDto> conversationPage =
+      queryFacade.getConversationPage(pageRequest, accountId);
+    model.addAttribute(ModelAttr.conversationPage, conversationPage);
 
     return "conversation/sidebar-content :: previous-fragment";
   }
@@ -101,7 +105,7 @@ public class ConversationPage implements ControllerUtil {
   String introduction(
     Model model
   ) {
-    model.addAttribute("requestGenerateDto", getEmptyRequest());
+    model.addAttribute(ModelAttr.requestGenerateDto, getEmptyRequest());
     return "conversation/introduction-window :: fragment";
   }
 
@@ -112,7 +116,7 @@ public class ConversationPage implements ControllerUtil {
     Model model
   ) {
     ConversationData data = queryFacade.getConversationData(UUID.fromString(conversationId));
-    model.addAttribute("selectedData", data);
+    model.addAttribute(ModelAttr.selectedData, data);
     return "conversation/window :: header-fragment";
   }
 
@@ -125,7 +129,7 @@ public class ConversationPage implements ControllerUtil {
     ConversationBeginDto beginDto = new ConversationBeginDto(UUID.fromString(principal.getName()));
     ConversationReadDto readDto = commandFacade.begin(beginDto);
     commandFacade.generate(generateDto, readDto.id());
-    model.addAttribute("conversationReadDto", readDto);
+    model.addAttribute(ModelAttr.conversationReadDto, readDto);
     return "conversation/sidebar :: singular-fragment";
   }
 
@@ -140,5 +144,9 @@ public class ConversationPage implements ControllerUtil {
       UUID.fromString(principal.getName())
     );
     return "empty";
+  }
+
+  private static PageRequest getPageRequest(Integer page) {
+    return PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
   }
 }

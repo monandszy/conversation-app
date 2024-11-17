@@ -80,7 +80,8 @@ public class CommandConversationRepo implements CommandConversationDao {
     int rowsDeleted = conversationJpaRepo
       .deleteByIdAndAccountId(conversation.getId(), accountId);
     if (rowsDeleted == 0) {
-      throw new IllegalArgumentException("Conversation does not exist or is not associated with the given account.");
+      throw new IllegalArgumentException(
+        "Conversation does not exist or is not associated with the given account.");
     }
   }
 
@@ -89,7 +90,8 @@ public class CommandConversationRepo implements CommandConversationDao {
     int rowsDeleted = sectionJpaRepo
       .deleteByIdAndConversationAccountId(section.getId(), accountId);
     if (rowsDeleted == 0) {
-      throw new IllegalArgumentException("Section does not exist or is not associated with the given account.");
+      throw new IllegalArgumentException(
+        "Section does not exist or is not associated with the given account.");
     }
   }
 
@@ -98,7 +100,8 @@ public class CommandConversationRepo implements CommandConversationDao {
     int rowsDeleted = requestJpaRepo
       .deleteByIdAndSectionConversationAccountId(request.getId(), accountId);
     if (rowsDeleted == 0) {
-      throw new IllegalArgumentException("Request does not exist or is not associated with the given account.");
+      throw new IllegalArgumentException(
+        "Request does not exist or is not associated with the given account.");
     }
   }
 
@@ -107,7 +110,8 @@ public class CommandConversationRepo implements CommandConversationDao {
     int rowsDeleted = responseJpaRepo
       .deleteByIdAndRequestSectionConversationAccountId(response.getId(), accountId);
     if (rowsDeleted == 0) {
-      throw new IllegalArgumentException("Response does not exist or is not associated with the given account.");
+      throw new IllegalArgumentException(
+        "Response does not exist or is not associated with the given account.");
     }
   }
 }

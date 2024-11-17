@@ -30,8 +30,8 @@ UPDATE requests r
 SET section_id = (SELECT s.id
                   FROM sections s
                   WHERE s.conversation_id = r.conversation_id
-  LIMIT 1 -- Assuming one section per conversation
-  );
+                  LIMIT 1 -- Assuming one section per conversation
+);
 
 -- Step 5: Add foreign key constraint on section_id in requests table
 ALTER TABLE requests
@@ -39,5 +39,6 @@ ALTER TABLE requests
     FOREIGN KEY (section_id) REFERENCES sections (id);
 
 -- Step 6: Remove conversation_id column from requests table
-ALTER TABLE requests DROP COLUMN conversation_id;
+ALTER TABLE requests
+  DROP COLUMN conversation_id;
 --liquibase formatted sql

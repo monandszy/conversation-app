@@ -10,11 +10,9 @@ html, body {
 *::after {
   box-sizing: border-box;
 }
-
 .scaffold {
   display: flex;
   flex: 1;
   background-color: white;
 }
-
 /* Layout Styles */

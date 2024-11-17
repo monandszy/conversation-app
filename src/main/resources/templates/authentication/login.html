@@ -1,12 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout.html}"
-      xmlns:th="http://www.thymeleaf.org"
+<html
+  lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout.html}"
+  xmlns:th="http://www.thymeleaf.org"
 >
 <head>
   <title>Log In</title>
 </head>
-<div layout:fragment="content" th:fragment="content" id="content" hx-push-url="true" hx-target="#content" hx-swap="outerHTML">
+<div
+  layout:fragment="content" th:fragment="content" id="content" hx-push-url="true" hx-target="#content"
+  hx-swap="outerHTML"
+>
   <div th:if="${param.unauthorized}">
     Full authentication is required to access this resource
   </div>
@@ -28,7 +32,8 @@
     </form>
   </div>
   <div>
-    <button hx-get="/register"
+    <button
+      hx-get="/register"
     >Register?
     </button>
   </div>
