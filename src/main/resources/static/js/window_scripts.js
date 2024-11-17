@@ -59,8 +59,7 @@ function setSectionDeleteAfter(event, button) {
   const sections = windowContent.querySelectorAll(".section");
   if (sections.length === 1) {
     event.preventDefault();
-    const element = document.querySelector('#selected-conv-DelBtn-wrapper');
-    const deleteButton = element.querySelector('.conv-delBtn');
+    const deleteButton = document.querySelector('#selected-conv-DelBtn');
     deleteButton.click();
     return;
   }

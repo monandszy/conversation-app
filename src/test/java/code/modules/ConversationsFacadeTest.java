@@ -18,12 +18,10 @@ import code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 import code.modules.conversation.data.CommandConversationRepo;
 import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.jpa.ConversationJpaRepo;
-import code.modules.conversation.data.jpa.SectionJpaRepo;
 import code.modules.conversation.service.domain.Conversation;
 import code.modules.google_api.GoogleApiAdapter;
 import code.modules.google_api.GoogleApiAdapter.ApiRequestDto;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,75 +44,120 @@ class ConversationsFacadeTest extends FacadeAbstract {
 
   private CommandConversationRepo repository;
   private ConversationJpaRepo conversationJpaRepo;
-  private SectionJpaRepo sectionJpaRepo;
 
   @MockBean
   private GoogleApiAdapter googleApiAdapter;
 
-  // God forgive me for I have sinned...
   @Test
   void should_save_and_retrieve_generated() {
-    // given
+    // Setup
     PageRequest pageRequest = PageRequest.of(0, Constants.PAGE_SIZE);
     UUID accountId = UUID.randomUUID();
-    Conversation conversation = repository.create(Conversation.builder().created(OffsetDateTime.now()).accountId(accountId).build());
+    OffsetDateTime now = OffsetDateTime.now();
+
+    // Create conversation
+    Conversation conversation = repository.create(
+      Conversation.builder()
+        .created(now)
+        .accountId(accountId)
+        .build()
+    );
     UUID conversationId = conversation.getId();
+
+    // Initial Request-Response generation
     String requestText = "request";
     String generatedText = "response";
     RequestGenerateDto generateDto = new RequestGenerateDto(requestText);
     ApiRequestDto apiRequestDto = new ApiRequestDto(requestText);
     ApiResponseDto apiResponseDto = new ApiResponseDto(generatedText);
-    // when
+
+    // Mock API response
     Mockito.when(googleApiAdapter.generate(apiRequestDto)).thenReturn(apiResponseDto);
+
+    // Generate the first section
     SectionReadDto firstSection = commandFacade.generate(generateDto, conversationId);
-    // then
+
+    // Verify API call and validate generated content
     Mockito.verify(googleApiAdapter).generate(apiRequestDto);
-    List<RequestReadDto> requests = firstSection.requests();
-    assertThat(requests).isNotEmpty();
-    RequestReadDto firstRequest = requests.getFirst();
-    List<ResponseReadDto> responses = firstRequest.responses();
-    assertThat(responses).isNotEmpty();
-    ResponseReadDto firstResponse = responses.getFirst();
-    Assertions.assertEquals(requestText, firstRequest.text());
-    Assertions.assertEquals(generatedText, firstResponse.text());
+    assertGeneratedSection(firstSection, requestText, generatedText);
 
-    //given
-    RequestReadDto request = firstSection.requests().getFirst();
-    //when
-    commandFacade.retry(request.id());
+    // Retry request and validate changes
+    retryRequestAndValidate(firstSection, pageRequest, conversationId);
+
+    // Regenerate content and validate changes
+    regenerateRequestAndValidate(firstSection, requestText, pageRequest, conversationId);
+  }
+
+  private void assertGeneratedSection(
+    SectionReadDto section,
+    String expectedRequestText,
+    String expectedResponseText
+  ) {
+    assertThat(section.requests()).isNotEmpty();
+    RequestReadDto firstRequest = section.requests().getFirst();
+
+    assertThat(firstRequest.responses()).isNotEmpty();
+    ResponseReadDto firstResponse = firstRequest.responses().getFirst();
+
+    Assertions.assertEquals(expectedRequestText, firstRequest.text());
+    Assertions.assertEquals(expectedResponseText, firstResponse.text());
+  }
+
+  private void retryRequestAndValidate(
+    SectionReadDto initialSection,
+    PageRequest pageRequest,
+    UUID conversationId
+  ) {
+    // Retry
+    RequestReadDto firstRequest = initialSection.requests().getFirst();
+    commandFacade.retry(firstRequest.id());
+
+    // Fetch updated sections
     Page<SectionReadDto> retryPage = queryFacade.getSectionPage(pageRequest, conversationId);
-    //then
     assertThat(retryPage).isNotNull();
-    List<SectionReadDto> retrySections = retryPage.getContent();
-    assertThat(retrySections).isNotEmpty();
-    SectionReadDto retrySection = retrySections.getFirst();
-    assertThat(retrySection.id()).isEqualTo(firstSection.id());
-    List<RequestReadDto> retryRequests = retrySection.requests();
-    assertThat(retryRequests).isNotEmpty();
-    RequestReadDto retryRequest = retryRequests.getFirst();
-    List<ResponseReadDto> retryResponses = retryRequest.responses();
-    assertThat(retryResponses).isNotEmpty();
-    ResponseReadDto retryResponse = retryResponses.getFirst();
-    assertThat(retryResponse.id().equals(firstResponse.id())).isFalse();
-    assertThat(retryResponse.navigation().previousId()).isEqualTo(firstResponse.id());
 
-    //given
+    // Validate retry changes
+    SectionReadDto retrySection = retryPage.getContent().getFirst();
+    assertThat(retrySection.id()).isEqualTo(initialSection.id());
+
+    RequestReadDto retryRequest = retrySection.requests().getFirst();
+    ResponseReadDto retryResponse = retryRequest.responses().getFirst();
+
+    ResponseReadDto initialResponse = firstRequest.responses().getFirst();
+
+    // Ensure the retry produced a new response with navigation linking back to the previous one
+    assertThat(retryResponse.id()).isNotEqualTo(initialResponse.id());
+    assertThat(retryResponse.navigation().previousId()).isEqualTo(initialResponse.id());
+  }
+
+  private void regenerateRequestAndValidate(
+    SectionReadDto initialSection,
+    String requestText,
+    PageRequest pageRequest,
+    UUID conversationId
+  ) {
+    // Regenerate
     RequestGenerateDto regenerateDto = new RequestGenerateDto(requestText);
-    //when
-    commandFacade.regenerate(regenerateDto, firstSection.id());
+    commandFacade.regenerate(regenerateDto, initialSection.id());
+
+    // Fetch updated sections
     Page<SectionReadDto> regeneratePage = queryFacade.getSectionPage(pageRequest, conversationId);
-    //then
-    assertThat(retryPage).isNotNull();
-    List<SectionReadDto> reGenSections = regeneratePage.getContent();
-    SectionReadDto reGenSection = reGenSections.getFirst();
-    assertThat(reGenSection.id()).isEqualTo(firstSection.id());
-    List<RequestReadDto> reGenRequests = reGenSection.requests();
-    RequestReadDto reGenRequest = reGenRequests.getFirst();
-    assertThat(reGenRequest.id().equals(firstRequest.id())).isFalse();
-    List<ResponseReadDto> reGenResponses = reGenRequest.responses();
-    ResponseReadDto reGenResponse = reGenResponses.getFirst();
-    assertThat(reGenResponse.id().equals(firstResponse.id())).isFalse();
-    assertThat(reGenResponse.navigation().previousId()).isNull();
+    assertThat(regeneratePage).isNotNull();
+
+    // Validate regenerated changes
+    SectionReadDto regeneratedSection = regeneratePage.getContent().getFirst();
+    assertThat(regeneratedSection.id()).isEqualTo(initialSection.id());
+
+    RequestReadDto regeneratedRequest = regeneratedSection.requests().getFirst();
+    ResponseReadDto regeneratedResponse = regeneratedRequest.responses().getFirst();
+
+    RequestReadDto initialRequest = initialSection.requests().getFirst();
+    ResponseReadDto initialResponse = initialRequest.responses().getFirst();
+
+    // Ensure the regeneration produced a completely new request and response
+    assertThat(regeneratedRequest.id()).isNotEqualTo(initialRequest.id());
+    assertThat(regeneratedResponse.id()).isNotEqualTo(initialResponse.id());
+    assertThat(regeneratedResponse.navigation().previousId()).isNull();
   }
 
   @Test
