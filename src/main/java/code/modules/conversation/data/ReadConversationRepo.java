@@ -9,8 +9,6 @@ import code.modules.conversation.data.jpa.ConversationJpaRepo;
 import code.modules.conversation.data.jpa.RequestJpaRepo;
 import code.modules.conversation.data.jpa.ResponseJpaRepo;
 import code.modules.conversation.data.jpa.SectionJpaRepo;
-import code.modules.conversation.data.jpa.projection.RequestWindow;
-import code.modules.conversation.data.jpa.projection.ResponseWindow;
 import code.modules.conversation.data.jpa.projection.SectionWindow;
 import code.modules.conversation.service.ReadConversationDao;
 import code.modules.conversation.service.domain.Conversation;
@@ -45,7 +43,7 @@ public class ReadConversationRepo implements ReadConversationDao {
   public Page<Section> getSectionPage(PageRequest pageRequest, Conversation conversation) {
     ConversationEntity entity = mapper.domainToEntity(conversation);
     Page<SectionWindow> page = sectionJpaRepo.findProjectionPageByConversation(entity, pageRequest);
-    return page.map(window -> mapper.entityToDomain(window));
+    return page.map(projection -> mapper.entityToDomain(projection));
   }
 
   @Override
@@ -55,8 +53,8 @@ public class ReadConversationRepo implements ReadConversationDao {
       mapper.domainToEntity(section),
       entity
     );
-    RequestWindow window = requestJpaRepo.findProjectionByRequest(entity);
-    return mapper.entityToDomain(window);
+    Object[] projection = requestJpaRepo.findProjectionByRequest(entity.getId());
+    return mapper.requestProjectionToDomain((Object[]) projection[0]);
   }
 
   @Override
@@ -66,8 +64,8 @@ public class ReadConversationRepo implements ReadConversationDao {
       mapper.domainToEntity(request),
       entity
     );
-    ResponseWindow window = responseJpaRepo.findProjectionByResponse(entity);
-    return mapper.entityToDomain(window);
+    Object[] projection = responseJpaRepo.findProjectionByResponse(entity.getId());
+    return mapper.responseProjectionToDomain((Object[]) projection[0]);
   }
 
   @Override

@@ -11,8 +11,6 @@ import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.entity.RequestEntity;
 import code.modules.conversation.data.entity.ResponseEntity;
 import code.modules.conversation.data.entity.SectionEntity;
-import code.modules.conversation.data.jpa.projection.RequestWindow;
-import code.modules.conversation.data.jpa.projection.ResponseWindow;
 import code.modules.conversation.data.jpa.projection.SectionWindow;
 import code.modules.conversation.service.domain.Conversation;
 import code.modules.conversation.service.domain.Navigation;
@@ -20,8 +18,11 @@ import code.modules.conversation.service.domain.Request;
 import code.modules.conversation.service.domain.Response;
 import code.modules.conversation.service.domain.Section;
 import code.util.Generated;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
-import java.util.Objects;
+import java.util.UUID;
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -61,9 +62,10 @@ public interface ConversationMapper {
 
   ConversationReadDto entityToDomain(Conversation conversation);
 
+
   default Section entityToDomain(SectionWindow entityDto) {
     SectionEntity section = entityDto.section();
-    if (Objects.isNull(section)) {
+    if (section == null) {
       return null;
     }
 
@@ -91,46 +93,42 @@ public interface ConversationMapper {
       );
   }
 
-  default Request entityToDomain(RequestWindow entityDto) {
-    RequestEntity selectedRequest = entityDto.selectedRequest();
-    ResponseEntity selectedResponse = entityDto.selectedResponse();
-
-    if (Objects.isNull(selectedRequest)) {
-      return null;
-    }
-
-    Navigation nextRequestNav = Navigation.builder()
-      .nextId(entityDto.nextRequestId())
-      .previousId(entityDto.prevRequestId())
+  default Request requestProjectionToDomain(Object[] projection) {
+    Response response = responseProjectionToDomain(projection);
+    UUID requestId = (UUID) projection[5];
+    Instant requestCreated = (Instant) projection[6];
+    String requestText = (String) projection[7];
+    UUID prevRequestId = (UUID) projection[8];
+    UUID nextRequestId = (UUID) projection[9];
+    Navigation reqNavigation = Navigation.builder()
+      .nextId(nextRequestId)
+      .previousId(prevRequestId)
       .build();
-
-    Navigation nextResponseNav = Navigation.builder()
-      .nextId(entityDto.nextResponseId())
-      .previousId(entityDto.prevResponseId())
+    return Request.builder()
+      .responses(List.of(response))
+      .id(requestId)
+      .created(OffsetDateTime.ofInstant(requestCreated, ZoneId.systemDefault()))
+      .text(requestText)
+      .navigation(reqNavigation)
       .build();
-
-    return entityToDomain(selectedRequest)
-      .withNavigation(nextRequestNav)
-      .withResponses(selectedResponse == null
-        ? List.of() : List.of(entityToDomain(selectedResponse)
-        .withNavigation(nextResponseNav)
-      ));
   }
 
-  default Response entityToDomain(ResponseWindow entityDto) {
-    ResponseEntity selectedResponse = entityDto.selectedResponse();
-
-    if (Objects.isNull(selectedResponse)) {
-      return null;
-    }
-
-    Navigation nextResponseNav = Navigation.builder()
-      .nextId(entityDto.nextResponseId())
-      .previousId(entityDto.prevResponseId())
+  default Response responseProjectionToDomain(Object[] projection) {
+    UUID responseId = (UUID) projection[0];
+    Instant responseCreated = (Instant) projection[1];
+    String responseText = (String) projection[2];
+    UUID prevResponseId = (UUID) projection[3];
+    UUID nextResponseId = (UUID) projection[4];
+    Navigation resNavigation = Navigation.builder()
+      .nextId(nextResponseId)
+      .previousId(prevResponseId)
       .build();
-
-    return entityToDomain(selectedResponse)
-      .withNavigation(nextResponseNav);
+    return Response.builder()
+      .id(responseId)
+      .text(responseText)
+      .created(OffsetDateTime.ofInstant(responseCreated, ZoneId.systemDefault()))
+      .navigation(resNavigation)
+      .build();
   }
 
 }

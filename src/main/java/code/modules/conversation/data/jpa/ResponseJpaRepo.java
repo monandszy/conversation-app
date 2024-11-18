@@ -2,7 +2,6 @@ package code.modules.conversation.data.jpa;
 
 import code.modules.conversation.data.entity.RequestEntity;
 import code.modules.conversation.data.entity.ResponseEntity;
-import code.modules.conversation.data.jpa.projection.ResponseWindow;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,17 +12,22 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResponseJpaRepo extends JpaRepository<ResponseEntity, UUID> {
 
-  @Query("""
-      SELECT
-      new code.modules.conversation.data.jpa.projection.ResponseWindow(
-        res,
-        LAG(res.id) OVER (PARTITION BY res.request ORDER BY res.created),
-        LEAD(res.id) OVER (PARTITION BY res.request ORDER BY res.created)
-      )
-      FROM ResponseEntity res
-      WHERE res = :selectedResponse
-    """)
-  ResponseWindow findProjectionByResponse(@Param("selectedResponse") ResponseEntity selectedResponse);
+  @Query(value = """
+      WITH response_window AS (
+          SELECT
+            res.id AS sResId,
+            res.created,
+            res.text,
+            LAG(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id),
+            LEAD(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id)
+          FROM responses res
+          )
+        SELECT
+            rw.*
+        FROM response_window rw
+        WHERE rw.sResId = :selectedResponseId
+    """, nativeQuery = true)
+  Object[] findProjectionByResponse(@Param("selectedResponseId") UUID selectedResponseId);
 
   int deleteByIdAndRequestSectionConversationAccountId(UUID responseId, UUID accountId);
 
