@@ -8,9 +8,9 @@ import code.modules.conversation.data.jpa.ConversationJpaRepo;
 import code.modules.conversation.data.jpa.RequestJpaRepo;
 import code.modules.conversation.data.jpa.ResponseJpaRepo;
 import code.modules.conversation.data.jpa.SectionJpaRepo;
-import code.modules.conversation.data.jpa.projection.RequestNavigationProjection;
-import code.modules.conversation.data.jpa.projection.ResponseNavigationProjection;
-import code.modules.conversation.data.jpa.projection.SectionNavigationProjection;
+import code.modules.conversation.data.jpa.projection.RequestWindow;
+import code.modules.conversation.data.jpa.projection.ResponseWindow;
+import code.modules.conversation.data.jpa.projection.SectionWindow;
 import code.modules.conversation.service.CommandConversationDao;
 import code.modules.conversation.service.domain.Conversation;
 import code.modules.conversation.service.domain.Request;
@@ -48,8 +48,8 @@ public class CommandConversationRepo implements CommandConversationDao {
     responseEntity.setRequest(requestEntity);
     requestEntity.getResponses().add(responseEntity);
     SectionEntity saved = sectionJpaRepo.save(sectionEntity);
-    SectionNavigationProjection projection = sectionJpaRepo.findProjectionBySection(saved);
-    return mapper.entityToDomain(projection);
+    SectionWindow window = sectionJpaRepo.findProjectionBySection(saved);
+    return mapper.entityToDomain(window);
   }
 
   @Override
@@ -61,8 +61,8 @@ public class CommandConversationRepo implements CommandConversationDao {
     requestEntity.getResponses().add(responseEntity);
     RequestEntity saved = requestJpaRepo.save(requestEntity);
     requestJpaRepo.deselectAndSelect(section, saved);
-    RequestNavigationProjection projection = requestJpaRepo.findProjectionByRequest(saved);
-    return mapper.entityToDomain(projection);
+    RequestWindow window = requestJpaRepo.findProjectionByRequest(saved);
+    return mapper.entityToDomain(window);
   }
 
   @Override
@@ -71,8 +71,8 @@ public class CommandConversationRepo implements CommandConversationDao {
     RequestEntity request = entity.getRequest();
     ResponseEntity saved = responseJpaRepo.save(entity);
     responseJpaRepo.deselectAndSelect(request, saved);
-    ResponseNavigationProjection projection = responseJpaRepo.findByResponse(saved);
-    return mapper.entityToDomain(projection);
+    ResponseWindow window = responseJpaRepo.findProjectionByResponse(saved);
+    return mapper.entityToDomain(window);
   }
 
   @Override

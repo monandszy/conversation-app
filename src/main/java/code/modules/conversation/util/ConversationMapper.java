@@ -11,9 +11,9 @@ import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.entity.RequestEntity;
 import code.modules.conversation.data.entity.ResponseEntity;
 import code.modules.conversation.data.entity.SectionEntity;
-import code.modules.conversation.data.jpa.projection.RequestNavigationProjection;
-import code.modules.conversation.data.jpa.projection.ResponseNavigationProjection;
-import code.modules.conversation.data.jpa.projection.SectionNavigationProjection;
+import code.modules.conversation.data.jpa.projection.RequestWindow;
+import code.modules.conversation.data.jpa.projection.ResponseWindow;
+import code.modules.conversation.data.jpa.projection.SectionWindow;
 import code.modules.conversation.service.domain.Conversation;
 import code.modules.conversation.service.domain.Navigation;
 import code.modules.conversation.service.domain.Request;
@@ -21,6 +21,7 @@ import code.modules.conversation.service.domain.Response;
 import code.modules.conversation.service.domain.Section;
 import code.util.Generated;
 import java.util.List;
+import java.util.Objects;
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -60,23 +61,23 @@ public interface ConversationMapper {
 
   ConversationReadDto entityToDomain(Conversation conversation);
 
-  default Section entityToDomain(SectionNavigationProjection entityDto) {
-    SectionEntity section = entityDto.getSection();
-    if (section == null) {
+  default Section entityToDomain(SectionWindow entityDto) {
+    SectionEntity section = entityDto.section();
+    if (Objects.isNull(section)) {
       return null;
     }
 
-    RequestEntity selectedRequest = entityDto.getSelectedRequest();
-    ResponseEntity selectedResponse = entityDto.getSelectedResponse();
+    RequestEntity selectedRequest = entityDto.selectedRequest();
+    ResponseEntity selectedResponse = entityDto.selectedResponse();
 
     Navigation nextRequestNav = Navigation.builder()
-      .nextId(entityDto.getNextRequestId())
-      .previousId(entityDto.getPrevRequestId())
+      .nextId(entityDto.nextRequestId())
+      .previousId(entityDto.prevRequestId())
       .build();
 
     Navigation nextResponseNav = Navigation.builder()
-      .nextId(entityDto.getNextResponseId())
-      .previousId(entityDto.getPrevResponseId())
+      .nextId(entityDto.nextResponseId())
+      .previousId(entityDto.prevResponseId())
       .build();
 
     return entityToDomain(section)
@@ -90,22 +91,22 @@ public interface ConversationMapper {
       );
   }
 
-  default Request entityToDomain(RequestNavigationProjection entityDto) {
-    RequestEntity selectedRequest = entityDto.getSelectedRequest();
-    ResponseEntity selectedResponse = entityDto.getSelectedResponse();
+  default Request entityToDomain(RequestWindow entityDto) {
+    RequestEntity selectedRequest = entityDto.selectedRequest();
+    ResponseEntity selectedResponse = entityDto.selectedResponse();
 
-    if (selectedRequest == null) {
+    if (Objects.isNull(selectedRequest)) {
       return null;
     }
 
     Navigation nextRequestNav = Navigation.builder()
-      .nextId(entityDto.getNextRequestId())
-      .previousId(entityDto.getPrevRequestId())
+      .nextId(entityDto.nextRequestId())
+      .previousId(entityDto.prevRequestId())
       .build();
 
     Navigation nextResponseNav = Navigation.builder()
-      .nextId(entityDto.getNextResponseId())
-      .previousId(entityDto.getPrevResponseId())
+      .nextId(entityDto.nextResponseId())
+      .previousId(entityDto.prevResponseId())
       .build();
 
     return entityToDomain(selectedRequest)
@@ -116,16 +117,16 @@ public interface ConversationMapper {
       ));
   }
 
-  default Response entityToDomain(ResponseNavigationProjection entityDto) {
-    ResponseEntity selectedResponse = entityDto.getSelectedResponse();
+  default Response entityToDomain(ResponseWindow entityDto) {
+    ResponseEntity selectedResponse = entityDto.selectedResponse();
 
-    if (selectedResponse == null) {
+    if (Objects.isNull(selectedResponse)) {
       return null;
     }
 
     Navigation nextResponseNav = Navigation.builder()
-      .nextId(entityDto.getNextResponseId())
-      .previousId(entityDto.getPrevResponseId())
+      .nextId(entityDto.nextResponseId())
+      .previousId(entityDto.prevResponseId())
       .build();
 
     return entityToDomain(selectedResponse)

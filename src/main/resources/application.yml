@@ -32,6 +32,9 @@ spring:
     hibernate:
       ddl-auto: none
     open-in-view: false
+    properties.hibernate.jdbc.batch_size: 5
+    properties.hibernate.order_inserts: true
+    properties.hibernate.order_updates: true
   modulith:
     republish-outstanding-events-on-restart: true
     events:

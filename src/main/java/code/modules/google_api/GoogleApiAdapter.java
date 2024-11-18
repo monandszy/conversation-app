@@ -3,7 +3,6 @@ package code.modules.google_api;
 import code.modules.google_api.internal.ApiCallService;
 import code.modules.google_api.internal.ApiModelMapper;
 import code.modules.google_api.internal.InternalApiException;
-import code.openApi.model.GenerateContentResponse;
 import code.openApi.model.ListModelsResponse;
 import code.openApi.model.Model;
 import code.util.Facade;
@@ -20,13 +19,14 @@ public class GoogleApiAdapter {
   private ApiCallService apiCallService;
 
   public ApiResponseDto generate(ApiRequestDto request) {
-    try {
-      GenerateContentResponse response = apiCallService
-        .modelsGenerateContent(apiModelMapper.dtoToApiModel(request));
-      return apiModelMapper.apiModelToDto(response);
-    } catch (Exception e) {
-      throw new InternalApiException(e.getMessage(), e.getCause());
-    }
+//    try {
+//      GenerateContentResponse response = apiCallService
+//        .modelsGenerateContent(apiModelMapper.dtoToApiModel(request));
+//      return apiModelMapper.apiModelToDto(response);
+//    } catch (Exception e) {
+//      throw new InternalApiException(e.getMessage(), e.getCause());
+//    }
+    return new ApiResponseDto("RESPONSE STUB");
   }
 
   public List<String> getModelList() {

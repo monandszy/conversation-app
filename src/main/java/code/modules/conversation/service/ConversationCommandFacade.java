@@ -48,7 +48,7 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
       .text(apiRequest.text()).selected(true).created(now).build();
     Response response = Response.builder()
       .text(apiResponse.text()).selected(true).created(now).build();
-    section = commandDao.create(section, request, response);
+      section = commandDao.create(section, request, response);
     return mapper.domainToReadDto(section);
   }
 

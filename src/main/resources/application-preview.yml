@@ -29,12 +29,12 @@ spring:
 logging:
   level:
     org:
-      springframework:
-        modulith: debug
-        security: debug
-      apache:
-        coyote:
-          http11: debug
+#      springframework:
+#        modulith: debug
+#        security: debug
+#      apache:
+#        coyote:
+#          http11: debug
       hibernate:
         orm:
           jdbc:
