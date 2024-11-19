@@ -20,7 +20,6 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 
 @Facade
-
 @AllArgsConstructor
 public class ConversationCommandFacade implements IConversationCommandFacade {
 

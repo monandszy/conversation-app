@@ -51,36 +51,36 @@ public class CreateAndDeleteController {
   @DeleteMapping("/{conversationId}")
   @ResponseStatus(HttpStatus.ACCEPTED)
   String deleteConversation(
-    @PathVariable String conversationId
+    @PathVariable UUID conversationId
   ) {
-    commandFacade.deleteConversation(UUID.fromString(conversationId));
+    commandFacade.deleteConversation(conversationId);
     return "empty";
   }
 
   @PreAuthorize("@ownershipValidator.validateSection(principal, #sectionId)")
   @DeleteMapping("/section/{sectionId}")
   String deleteSection(
-    @PathVariable String sectionId
+    @PathVariable UUID sectionId
   ) {
-    commandFacade.deleteSection(UUID.fromString(sectionId));
+    commandFacade.deleteSection(sectionId);
     return "empty";
   }
 
   @PreAuthorize("@ownershipValidator.validateRequest(principal, #requestId)")
   @DeleteMapping("/request/{requestId}")
   ResponseEntity<Void> deleteRequest(
-    @PathVariable String requestId
+    @PathVariable UUID requestId
   ) {
-    commandFacade.deleteRequest(UUID.fromString(requestId));
+    commandFacade.deleteRequest(requestId);
     return ResponseEntity.noContent().build();
   }
 
   @PreAuthorize("@ownershipValidator.validateResponse(principal, #responseId)")
   @DeleteMapping("/response/{responseId}")
   ResponseEntity<Void> deleteResponse(
-    @PathVariable String responseId
+    @PathVariable UUID responseId
   ) {
-    commandFacade.deleteResponse(UUID.fromString(responseId));
+    commandFacade.deleteResponse(responseId);
     return ResponseEntity.noContent().build();
   }
 
@@ -89,11 +89,10 @@ public class CreateAndDeleteController {
   @ResponseStatus(HttpStatus.CREATED)
   String generate(
     @ModelAttribute RequestGenerateDto generateDto,
-    @PathVariable String conversationId,
+    @PathVariable UUID conversationId,
     Model model
   ) {
-    SectionReadDto readDto = commandFacade
-      .generate(generateDto, UUID.fromString(conversationId));
+    SectionReadDto readDto = commandFacade.generate(generateDto, conversationId);
     model.addAttribute(ModelAttr.sectionReadDto, readDto);
     return "conversation/window-content :: singular-fragment";
   }
@@ -103,11 +102,10 @@ public class CreateAndDeleteController {
   @ResponseStatus(HttpStatus.CREATED)
   String regenerate(
     @ModelAttribute RequestGenerateDto generateDto,
-    @PathVariable String sectionId,
+    @PathVariable UUID sectionId,
     Model model
   ) {
-    RequestReadDto readDto = commandFacade.regenerate(
-      generateDto, UUID.fromString(sectionId));
+    RequestReadDto readDto = commandFacade.regenerate(generateDto, sectionId);
     model.addAttribute(ModelAttr.requestReadDto, readDto);
     model.addAttribute(ModelAttr.sectionId, sectionId);
     return "conversation/window-content :: request-fragment";
@@ -117,10 +115,10 @@ public class CreateAndDeleteController {
   @PostMapping("/request/{requestId}")
   @ResponseStatus(HttpStatus.CREATED)
   String retry(
-    @PathVariable String requestId,
+    @PathVariable UUID requestId,
     Model model
   ) {
-    ResponseReadDto readDto = commandFacade.retry(UUID.fromString(requestId));
+    ResponseReadDto readDto = commandFacade.retry(requestId);
     model.addAttribute(ModelAttr.responseReadDto, readDto);
     model.addAttribute(ModelAttr.requestId, requestId);
     return "conversation/window-content :: response-fragment";

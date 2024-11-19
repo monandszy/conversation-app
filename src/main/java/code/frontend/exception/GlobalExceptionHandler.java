@@ -17,6 +17,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<UUID> handle(IllegalArgumentException ex) {
+    ex.printStackTrace();
     UUID uuid = UUID.randomUUID();
     log.error("IllegalArgument: {} | Exception UUID: {}", ex, uuid);
     return new ResponseEntity<>(uuid, HttpStatus.BAD_REQUEST);
@@ -24,6 +25,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(PropertyReferenceException.class)
   public ResponseEntity<UUID> handle(PropertyReferenceException ex) {
+    ex.printStackTrace();
     UUID uuid = UUID.randomUUID();
     log.error("PropertyReference: {} | Exception UUID: {}", ex, uuid);
     return new ResponseEntity<>(uuid, HttpStatus.BAD_REQUEST);
@@ -31,6 +33,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<UUID> handle(MethodArgumentNotValidException ex) {
+    ex.printStackTrace();
     UUID uuid = UUID.randomUUID();
     log.error("ArgumentNotValid: {} | Exception UUID: {}", ex, uuid);
     return new ResponseEntity<>(uuid, HttpStatus.BAD_REQUEST);
@@ -38,6 +41,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<UUID> handle(ConstraintViolationException ex) {
+    ex.printStackTrace();
     UUID uuid = UUID.randomUUID();
     log.error("ConstraintViolation: {} | Exception UUID: {}", ex, uuid);
     return new ResponseEntity<>(uuid, HttpStatus.BAD_REQUEST);
@@ -45,6 +49,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(InternalApiException.class)
   public ResponseEntity<UUID> handle(InternalApiException ex) {
+    ex.printStackTrace();
     UUID uuid = UUID.randomUUID();
     log.error("InternalApiException: {} | Exception UUID: {}", ex, uuid);
     return new ResponseEntity<>(uuid, HttpStatus.FAILED_DEPENDENCY);

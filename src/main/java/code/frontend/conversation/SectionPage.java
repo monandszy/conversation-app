@@ -41,18 +41,17 @@ public class SectionPage implements ControllerUtil {
   String window(
     @RequestHeader(value = "HX-Request", required = false) String hxRequest,
     @RequestParam(defaultValue = "0") Integer page,
-    @PathVariable String conversationId,
+    @PathVariable UUID conversationId,
     Principal principal,
     Model model
   ) {
     PageRequest pageRequest = getPageRequest(page);
-    UUID convId = UUID.fromString(conversationId);
-    Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
-    ConversationData data = queryFacade.getConversationData(convId);
+    Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, conversationId);
+    ConversationData data = queryFacade.getConversationData(conversationId);
     model.addAttribute(ModelAttr.selectedData, data);
     model.addAttribute(ModelAttr.sectionPage, sectionPage);
     model.addAttribute(ModelAttr.requestGenerateDto, getEmptyRequest());
-    model.addAttribute(ModelAttr.conversationId, convId);
+    model.addAttribute(ModelAttr.conversationId, conversationId);
     model.addAttribute(ModelAttr.isHxRequest, hxRequest);
     if (Objects.nonNull(hxRequest)) {
       return "conversation/window :: fragment";
@@ -67,14 +66,13 @@ public class SectionPage implements ControllerUtil {
   @ResponseStatus(HttpStatus.OK)
   String windowPrevious(
     @RequestParam(defaultValue = "0") Integer page,
-    @PathVariable String conversationId,
+    @PathVariable UUID conversationId,
     Model model
   ) {
     PageRequest pageRequest = getPageRequest(page);
-    UUID convId = UUID.fromString(conversationId);
-    Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
+    Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, conversationId);
     model.addAttribute(ModelAttr.sectionPage, sectionPage);
-    model.addAttribute(ModelAttr.conversationId, convId);
+    model.addAttribute(ModelAttr.conversationId, conversationId);
     return "conversation/window-content :: previous-fragment";
   }
 
@@ -83,14 +81,13 @@ public class SectionPage implements ControllerUtil {
   @ResponseStatus(HttpStatus.OK)
   String windowNext(
     @RequestParam(defaultValue = "0") Integer page,
-    @PathVariable String conversationId,
+    @PathVariable UUID conversationId,
     Model model
   ) {
     PageRequest pageRequest = getPageRequest(page);
-    UUID convId = UUID.fromString(conversationId);
-    Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, convId);
+    Page<SectionReadDto> sectionPage = queryFacade.getSectionPage(pageRequest, conversationId);
     model.addAttribute(ModelAttr.sectionPage, sectionPage);
-    model.addAttribute(ModelAttr.conversationId, convId);
+    model.addAttribute(ModelAttr.conversationId, conversationId);
     return "conversation/window-content :: next-fragment";
   }
 
@@ -98,14 +95,11 @@ public class SectionPage implements ControllerUtil {
   @GetMapping("/section/{sectionId}/request/{requestId}")
   @ResponseStatus(HttpStatus.OK)
   String getRequest(
-    @PathVariable String sectionId,
-    @PathVariable String requestId,
+    @PathVariable UUID sectionId,
+    @PathVariable UUID requestId,
     Model model
   ) {
-    RequestReadDto requestDto = queryFacade.getRequest(
-      UUID.fromString(requestId),
-      UUID.fromString(sectionId)
-    );
+    RequestReadDto requestDto = queryFacade.getRequest(requestId, sectionId);
     model.addAttribute(ModelAttr.requestReadDto, requestDto);
     model.addAttribute(ModelAttr.sectionId, sectionId);
     return "conversation/window-content :: request-fragment";
@@ -115,14 +109,11 @@ public class SectionPage implements ControllerUtil {
   @GetMapping("/request/{requestId}/response/{responseId}")
   @ResponseStatus(HttpStatus.OK)
   String getResponse(
-    @PathVariable String requestId,
-    @PathVariable String responseId,
+    @PathVariable UUID requestId,
+    @PathVariable UUID responseId,
     Model model
   ) {
-    ResponseReadDto responseDto = queryFacade.getResponse(
-      UUID.fromString(responseId),
-      UUID.fromString(requestId)
-    );
+    ResponseReadDto responseDto = queryFacade.getResponse(responseId, requestId);
     model.addAttribute(ModelAttr.responseReadDto, responseDto);
     model.addAttribute(ModelAttr.requestId, requestId);
     return "conversation/window-content :: response-fragment";

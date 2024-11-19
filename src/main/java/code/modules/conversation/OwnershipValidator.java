@@ -1,38 +1,34 @@
 package code.modules.conversation;
 
 import code.modules.conversation.data.ValidationRepo;
-import java.security.Principal;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Service;
 
-@Component("ownershipValidator")
+@Service("ownershipValidator")
 @AllArgsConstructor
 public class OwnershipValidator {
 
   private ValidationRepo validationRepo;
 
-  public boolean validateConversation(Principal principal, String provided) {
-    UUID conversationId = UUID.fromString(provided);
-    UUID accountId = UUID.fromString(principal.getName());
-    return validationRepo.validateConversation(conversationId, accountId);
+  public boolean validateConversation(User principal, UUID provided) {
+    UUID accountId = UUID.fromString(principal.getUsername());
+    return validationRepo.validateConversation(provided, accountId);
   }
 
-  public boolean validateSection(Principal principal, String provided) {
-    UUID sectionId = UUID.fromString(provided);
-    UUID accountId = UUID.fromString(principal.getName());
-    return validationRepo.validateSection(sectionId, accountId);
+  public boolean validateSection(org.springframework.security.core.userdetails.User principal, UUID provided) {
+    UUID accountId = UUID.fromString(principal.getUsername());
+    return validationRepo.validateSection(provided, accountId);
   }
 
-  public boolean validateRequest(Principal principal, String provided) {
-    UUID requestId = UUID.fromString(provided);
-    UUID accountId = UUID.fromString(principal.getName());
-    return validationRepo.validateRequest(requestId, accountId);
+  public boolean validateRequest(User principal, UUID provided) {
+    UUID accountId = UUID.fromString(principal.getUsername());
+    return validationRepo.validateRequest(provided, accountId);
   }
 
-  public boolean validateResponse(Principal principal, String provided) {
-    UUID responseId = UUID.fromString(provided);
-    UUID accountId = UUID.fromString(principal.getName());
-    return validationRepo.validateResponse(responseId, accountId);
+  public boolean validateResponse(User principal, UUID provided) {
+    UUID accountId = UUID.fromString(principal.getUsername());
+    return validationRepo.validateResponse(provided, accountId);
   }
 }

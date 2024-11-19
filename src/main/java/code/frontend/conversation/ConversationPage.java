@@ -107,10 +107,10 @@ public class ConversationPage implements ControllerUtil {
   @GetMapping("/{conversationId}/header")
   @ResponseStatus(HttpStatus.OK)
   String header(
-    @PathVariable String conversationId,
+    @PathVariable UUID conversationId,
     Model model
   ) {
-    ConversationData data = queryFacade.getConversationData(UUID.fromString(conversationId));
+    ConversationData data = queryFacade.getConversationData(conversationId);
     model.addAttribute(ModelAttr.selectedData, data);
     return "conversation/window :: header-fragment";
   }
