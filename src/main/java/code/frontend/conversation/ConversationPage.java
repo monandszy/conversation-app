@@ -1,5 +1,7 @@
 package code.frontend.conversation;
 
+import static code.modules.conversation.IConversationCommandFacade.GenerateDto.getEmptyRequest;
+
 import code.configuration.Constants;
 import code.modules.conversation.IConversationQueryFacade;
 import code.modules.conversation.IConversationQueryFacade.ConversationData;

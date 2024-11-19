@@ -43,6 +43,6 @@ public class ConversationEntity {
   @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY,
     cascade = {CascadeType.REMOVE}
   )
-  private final List<SectionEntity> requests = new ArrayList<>();
+  private final List<SectionEntity> sections = new ArrayList<>();
 
 }

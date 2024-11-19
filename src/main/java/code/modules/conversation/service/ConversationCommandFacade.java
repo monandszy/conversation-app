@@ -46,7 +46,7 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
 
   @Override
   public SectionReadDto generate(
-    RequestGenerateDto generateDto,
+    GenerateDto generateDto,
     UUID conversationId
   ) {
     ApiRequestDto apiRequest = new ApiRequestDto(generateDto.text());
@@ -69,7 +69,7 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
 
   @Override
   public RequestReadDto regenerate(
-    RequestGenerateDto generateDto,
+    GenerateDto generateDto,
     UUID sectionId
   ) {
     ApiRequestDto apiRequest = new ApiRequestDto(generateDto.text());

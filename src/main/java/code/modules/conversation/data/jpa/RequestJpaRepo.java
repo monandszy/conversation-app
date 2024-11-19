@@ -14,26 +14,26 @@ import org.springframework.data.repository.query.Param;
 public interface RequestJpaRepo extends JpaRepository<RequestEntity, RequestId> {
 
   @Query(value = """
-    WITH request_window AS (
+      WITH request_window AS (
+        SELECT
+          res.id,
+          res.created\\:\\:timestampz,
+          res.text,
+          LAG(res.id) OVER (PARTITION BY req.id ORDER BY res.created),
+          LEAD(res.id) OVER (PARTITION BY req.id ORDER BY res.created),
+          req.id AS sreqid,
+          req.created\\:\\:timestampz,
+          req.text,
+          LAG(req.id) OVER (PARTITION BY req.section_id ORDER BY req.created),
+          LEAD(req.id) OVER (PARTITION BY req.section_id ORDER BY req.created)
+        FROM requests req
+        LEFT JOIN responses res ON res.request_id = req.id AND res.selected = TRUE
+      )
       SELECT
-        res.id,
-        res.created,
-        res.text,
-        LAG(res.id) OVER (PARTITION BY req.id ORDER BY res.created),
-        LEAD(res.id) OVER (PARTITION BY req.id ORDER BY res.created),
-        req.id AS sReqId,
-        req.created,
-        req.text,
-        LAG(req.id) OVER (PARTITION BY req.section_id ORDER BY req.created),
-        LEAD(req.id) OVER (PARTITION BY req.section_id ORDER BY req.created)
-      FROM requests req
-      LEFT JOIN responses res ON res.request_id = req.id AND res.selected = true
-    )
-    SELECT
-        rw.*
-    FROM request_window rw
-    WHERE rw.sReqId = :selectedRequestId
-""", nativeQuery = true)
+          rw.*
+      FROM request_window rw
+      WHERE rw.sreqid = :selectedRequestId
+    """, nativeQuery = true)
   Object[] findProjectionByRequest(@Param("selectedRequestId") UUID selectedRequestId);
 
   @Modifying

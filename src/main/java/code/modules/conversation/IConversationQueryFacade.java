@@ -9,6 +9,8 @@ public interface IConversationQueryFacade {
 
   Page<ConversationReadDto> getConversationPage(PageRequest pageRequest, UUID accountId);
 
+  Page<ConversationReadDto> getFilteredConversationPage(UUID conversationId, UUID accountId);
+
   Page<SectionReadDto> getSectionPage(PageRequest pageRequest, UUID conversationId);
 
   RequestReadDto getRequest(UUID requestId, UUID sectionId);

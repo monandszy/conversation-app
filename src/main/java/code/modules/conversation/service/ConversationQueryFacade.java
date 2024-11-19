@@ -32,6 +32,15 @@ public class ConversationQueryFacade implements IConversationQueryFacade {
   }
 
   @Override
+  public Page<ConversationReadDto> getFilteredConversationPage(UUID conversationId, UUID accountId) {
+    Page<ConversationReadDto> page = readDao.getConversationPageWithFilter(
+      new ConversationId(conversationId), new AccountId(accountId)
+    ).map(e -> mapper.domainToReadDto(e));
+    log.info("Conversation Page: {}", page);
+    return page;
+  }
+
+  @Override
   public Page<SectionReadDto> getSectionPage(PageRequest pageRequest, UUID conversationId) {
     Page<Section> sectionPage = readDao.getSectionPage(
       pageRequest, new ConversationId(conversationId)

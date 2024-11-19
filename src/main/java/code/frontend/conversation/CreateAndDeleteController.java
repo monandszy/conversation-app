@@ -4,7 +4,7 @@ import static code.modules.conversation.IConversationQueryFacade.ConversationRea
 import static code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
 
 import code.modules.conversation.IConversationCommandFacade;
-import code.modules.conversation.IConversationCommandFacade.RequestGenerateDto;
+import code.modules.conversation.IConversationCommandFacade.GenerateDto;
 import code.modules.conversation.IConversationQueryFacade.RequestReadDto;
 import code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 import code.util.ModelAttr;
@@ -35,7 +35,7 @@ public class CreateAndDeleteController {
 
   @PostMapping("")
   String beginConversation(
-    @ModelAttribute RequestGenerateDto generateDto,
+    @ModelAttribute GenerateDto generateDto,
     Principal principal,
     Model model
   ) {
@@ -86,7 +86,7 @@ public class CreateAndDeleteController {
   @PostMapping("/{conversationId}")
   @ResponseStatus(HttpStatus.CREATED)
   String generate(
-    @ModelAttribute RequestGenerateDto generateDto,
+    @ModelAttribute GenerateDto generateDto,
     @PathVariable UUID conversationId,
     Model model
   ) {
@@ -99,7 +99,7 @@ public class CreateAndDeleteController {
   @PostMapping("/section/{sectionId}")
   @ResponseStatus(HttpStatus.CREATED)
   String regenerate(
-    @ModelAttribute RequestGenerateDto generateDto,
+    @ModelAttribute GenerateDto generateDto,
     @PathVariable UUID sectionId,
     Model model
   ) {

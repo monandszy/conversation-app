@@ -32,6 +32,7 @@ public class Response {
 
   public record ResponseNavigation(
     Response.ResponseId nextId,
-    Response.ResponseId previousId) {
+    Response.ResponseId previousId
+  ) {
   }
 }

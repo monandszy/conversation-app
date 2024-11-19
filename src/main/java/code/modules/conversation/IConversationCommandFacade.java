@@ -7,15 +7,14 @@ import code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
-import lombok.With;
 
 public interface IConversationCommandFacade {
 
   ConversationReadDto begin(UUID accountId);
 
-  SectionReadDto generate(@Valid RequestGenerateDto generateDto, UUID conversationId);
+  SectionReadDto generate(@Valid GenerateDto generateDto, UUID conversationId);
 
-  RequestReadDto regenerate(@Valid RequestGenerateDto generateDto, UUID sectionId);
+  RequestReadDto regenerate(@Valid GenerateDto generateDto, UUID sectionId);
 
   ResponseReadDto retry(UUID requestId);
 
@@ -27,9 +26,12 @@ public interface IConversationCommandFacade {
 
   void deleteResponse(UUID responseId);
 
-  @With
-  record RequestGenerateDto(
+  record GenerateDto(
     @NotBlank
     String text
-  ) {}
+  ) {
+    public static GenerateDto getEmptyRequest() {
+      return new GenerateDto(null);
+    }
+  }
 }

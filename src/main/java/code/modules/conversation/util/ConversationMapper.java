@@ -3,6 +3,7 @@ package code.modules.conversation.util;
 import static code.modules.conversation.IConversationQueryFacade.RequestReadDto;
 import static code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 
+import code.configuration.Constants;
 import code.configuration.SpringMapperConfig;
 import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
 import code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
@@ -17,14 +18,18 @@ import code.modules.conversation.service.domain.Response;
 import code.modules.conversation.service.domain.Response.ResponseId;
 import code.modules.conversation.service.domain.Section;
 import code.util.Generated;
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @Mapper(config = SpringMapperConfig.class)
 @AnnotateWith(Generated.class)
@@ -80,7 +85,7 @@ public interface ConversationMapper {
   default Request requestProjectionToDomain(Object[] projection) {
     Response response = responseProjectionToDomain(projection);
     UUID requestId = (UUID) projection[5];
-    OffsetDateTime requestCreated = convertToOffsetDateTime(projection[6]);
+    OffsetDateTime requestCreated = (OffsetDateTime) projection[6];
     String requestText = (String) projection[7];
     UUID prevRequestId = (UUID) projection[8];
     UUID nextRequestId = (UUID) projection[9];
@@ -99,7 +104,7 @@ public interface ConversationMapper {
 
   default Response responseProjectionToDomain(Object[] projection) {
     UUID responseId = (UUID) projection[0];
-    OffsetDateTime responseCreated = convertToOffsetDateTime(projection[1]);
+    OffsetDateTime responseCreated = (OffsetDateTime) projection[1];
     String responseText = (String) projection[2];
     UUID prevResponseId = (UUID) projection[3];
     UUID nextResponseId = (UUID) projection[4];
@@ -115,21 +120,23 @@ public interface ConversationMapper {
       .build();
   }
 
-  /**
-   * Converts an object representing a timestamp to an {@link OffsetDateTime}.
-   * This method handles cases where the input object may be an instance of either
-   * {@link Instant} in case of a native query or {@link OffsetDateTime} in case of hql query.
-   * @param obj The object to be converted. This can be an {@link Instant} or {@link OffsetDateTime}.
-   * @return An {@link OffsetDateTime} representing the same point in time as the input object.
-   *         If the input is an {@link Instant}, it is converted to {@link OffsetDateTime} with UTC offset.
-   * @throws IllegalArgumentException if the input object is neither an {@link Instant} nor an {@link OffsetDateTime}.
-   */
-  private OffsetDateTime convertToOffsetDateTime(Object obj) {
-    if (obj instanceof Instant) {
-      return ((Instant) obj).atOffset(ZoneOffset.UTC);
-    } else if (obj instanceof OffsetDateTime) {
-      return (OffsetDateTime) obj;
-    }
-    throw new IllegalArgumentException("Unexpected type: " + obj.getClass());
+  default Page<Conversation> conversationProjectionToDomain(Object[] projection) {
+    Integer pageNumber = (Integer) projection[0];
+    Long totalAmount = (Long) projection[1];
+    String[] concatenatedDataArray = (String[]) projection[2];
+    List<Conversation> content = Arrays.stream(concatenatedDataArray)
+      .map(concatenated -> {
+        String[] parts = concatenated.split(","); // Split by comma
+        UUID id = UUID.fromString(parts[0]);
+        OffsetDateTime created = OffsetDateTime.parse(parts[1], DB_FORMATTER);
+        return Conversation.builder()
+          .id(new Conversation.ConversationId(id))
+          .created(created)
+          .build();
+      }).toList();
+    PageRequest pageRequest = PageRequest.of(pageNumber, Constants.PAGE_SIZE, Sort.by("created").descending());
+    return new PageImpl<>(content, pageRequest, totalAmount);
   }
+
+  DateTimeFormatter DB_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSX");
 }

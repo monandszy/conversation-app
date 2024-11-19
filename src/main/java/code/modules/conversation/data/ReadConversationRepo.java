@@ -1,7 +1,9 @@
 package code.modules.conversation.data;
 
 import static code.modules.conversation.IConversationQueryFacade.ConversationData;
+import static code.modules.conversation.service.domain.Conversation.ConversationId;
 
+import code.configuration.Constants;
 import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.entity.RequestEntity;
 import code.modules.conversation.data.jpa.ConversationJpaRepo;
@@ -38,7 +40,14 @@ public class ReadConversationRepo implements ReadConversationDao {
   }
 
   @Override
-  public Page<Section> getSectionPage(PageRequest pageRequest, Conversation.ConversationId conversationId) {
+  public Page<Conversation> getConversationPageWithFilter(ConversationId conversationId, AccountId accountId) {
+    Object[] projection = conversationJpaRepo.findByAccountIdWithFiler(
+      accountId.value(), conversationId.value(), Constants.PAGE_SIZE);
+    return mapper.conversationProjectionToDomain((Object[]) projection[0]);
+  }
+
+  @Override
+  public Page<Section> getSectionPage(PageRequest pageRequest, ConversationId conversationId) {
     Page<Object[]> page = sectionJpaRepo
       .findProjectionPageByConversationId(conversationId, pageRequest);
     return page.map(projection -> mapper.projectionToDomain(projection));
@@ -73,7 +82,7 @@ public class ReadConversationRepo implements ReadConversationDao {
 
   @Override
   public ConversationData getConversationData(
-    Conversation.ConversationId conversationId
+    ConversationId conversationId
   ) {
     Tuple tuple = sectionJpaRepo.countSectionsRequestsResponses(conversationId);
     return new ConversationData(

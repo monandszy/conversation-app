@@ -34,6 +34,7 @@ public class Request {
 
   public record RequestNavigation(
     Request.RequestId nextId,
-    Request.RequestId previousId) {
+    Request.RequestId previousId
+  ) {
   }
 }

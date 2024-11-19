@@ -1,8 +1,11 @@
 package code.frontend.conversation;
 
+import static code.modules.conversation.IConversationCommandFacade.GenerateDto.getEmptyRequest;
+
 import code.configuration.Constants;
 import code.modules.conversation.IConversationQueryFacade;
 import code.modules.conversation.IConversationQueryFacade.ConversationData;
+import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
 import code.modules.conversation.IConversationQueryFacade.RequestReadDto;
 import code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
 import code.modules.conversation.IConversationQueryFacade.SectionReadDto;
@@ -56,7 +59,10 @@ public class SectionPage implements ControllerUtil {
     if (Objects.nonNull(hxRequest)) {
       return "conversation/window :: fragment";
     } else {
-      conversationPage.list(0, principal, model);
+      UUID accountId = UUID.fromString(principal.getName());
+      Page<ConversationReadDto> conversationPage =
+        queryFacade.getFilteredConversationPage(conversationId, accountId);
+      model.addAttribute(ModelAttr.conversationPage, conversationPage);
       return "conversation/window";
     }
   }

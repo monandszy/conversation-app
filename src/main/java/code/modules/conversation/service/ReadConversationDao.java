@@ -12,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 public interface ReadConversationDao {
   Page<Conversation> getConversationPage(PageRequest pageRequest, AccountId accountId);
 
+  Page<Conversation> getConversationPageWithFilter(Conversation.ConversationId conversationId, AccountId accountId);
+
   Page<Section> getSectionPage(PageRequest pageRequest, Conversation.ConversationId conversationId);
 
   Request getRequestWithNavigation(Request.RequestId requestId, Section.SectionId sectionId);
