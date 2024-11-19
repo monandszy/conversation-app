@@ -20,7 +20,5 @@ public interface ReadConversationDao {
 
   Request getRequest(Request request);
 
-  Conversation getConversation(Conversation conversation);
-
   ConversationData getConversationData(Conversation conversation);
 }

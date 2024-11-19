@@ -20,13 +20,13 @@ public interface IConversationCommandFacade {
 
   ResponseReadDto retry(UUID requestId);
 
-  void deleteConversation(UUID conversationId, UUID accountId);
+  void deleteConversation(UUID conversationId);
 
-  void deleteSection(UUID sectionId, UUID accountId);
+  void deleteSection(UUID sectionId);
 
-  void deleteRequest(UUID requestId, UUID accountId);
+  void deleteRequest(UUID requestId);
 
-  void deleteResponse(UUID responseId, UUID accountId);
+  void deleteResponse(UUID responseId);
 
   record ConversationBeginDto(
     @NotNull

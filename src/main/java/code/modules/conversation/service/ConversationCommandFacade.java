@@ -81,26 +81,26 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
   }
 
   @Override
-  public void deleteConversation(UUID conversationId, UUID accountId) {
+  public void deleteConversation(UUID conversationId) {
     Conversation conversation = Conversation.builder().id(conversationId).build();
-    commandDao.deleteConversation(conversation, accountId);
+    commandDao.deleteConversation(conversation);
   }
 
   @Override
-  public void deleteSection(UUID sectionId, UUID accountId) {
+  public void deleteSection(UUID sectionId) {
     Section section = Section.builder().id(sectionId).build();
-    commandDao.deleteSection(section, accountId);
+    commandDao.deleteSection(section);
   }
 
   @Override
-  public void deleteRequest(UUID requestId, UUID accountId) {
+  public void deleteRequest(UUID requestId) {
     Request request = Request.builder().id(requestId).build();
-    commandDao.deleteRequest(request, accountId);
+    commandDao.deleteRequest(request);
   }
 
   @Override
-  public void deleteResponse(UUID responseId, UUID accountId) {
+  public void deleteResponse(UUID responseId) {
     Response response = Response.builder().id(responseId).build();
-    commandDao.deleteResponse(response, accountId);
+    commandDao.deleteResponse(response);
   }
 }

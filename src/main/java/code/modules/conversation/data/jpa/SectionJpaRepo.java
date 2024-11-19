@@ -54,7 +54,7 @@ public interface SectionJpaRepo extends JpaRepository<SectionEntity, UUID> {
     """)
   SectionWindow findProjectionBySection(@Param("section") SectionEntity section);
 
-  int deleteByIdAndConversationAccountId(UUID sectionId, UUID accountId);
+  boolean existsByIdAndConversationAccountId(UUID sectionId, UUID accountId);
 
   @Query("SELECT " +
     "(SELECT COUNT(s) FROM SectionEntity s WHERE s.conversation = :conversation) AS sectionCount, " +

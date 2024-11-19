@@ -29,7 +29,7 @@ public interface ResponseJpaRepo extends JpaRepository<ResponseEntity, UUID> {
     """, nativeQuery = true)
   Object[] findProjectionByResponse(@Param("selectedResponseId") UUID selectedResponseId);
 
-  int deleteByIdAndRequestSectionConversationAccountId(UUID responseId, UUID accountId);
+  boolean existsByIdAndRequestSectionConversationAccountId(UUID responseId, UUID accountId);
 
   @Modifying
   @Query("UPDATE ResponseEntity e " +

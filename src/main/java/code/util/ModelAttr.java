@@ -8,7 +8,6 @@ public interface ModelAttr {
   String conversationReadDto = "conversationReadDto";
   String sectionPage = "sectionPage";
   String conversationId = "conversationId";
-  String selectedConversation = "selectedConversation";
   String sectionReadDto = "sectionReadDto";
   String requestReadDto = "requestReadDto";
   String sectionId = "sectionId";

@@ -76,13 +76,6 @@ public class ReadConversationRepo implements ReadConversationDao {
   }
 
   @Override
-  public Conversation getConversation(Conversation conversation) {
-    ConversationEntity entity = conversationJpaRepo
-      .findById(conversation.getId()).orElseThrow();
-    return mapper.entityToDomain(entity);
-  }
-
-  @Override
   public ConversationData getConversationData(
     Conversation conversation
   ) {

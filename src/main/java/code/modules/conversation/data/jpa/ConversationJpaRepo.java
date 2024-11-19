@@ -12,6 +12,6 @@ public interface ConversationJpaRepo extends JpaRepository<ConversationEntity, U
 
   Page<ConversationEntity> findByAccountId(UUID accountId, Pageable pageRequest);
 
-  int deleteByIdAndAccountId(UUID conversationId, UUID accountId);
+  boolean existsByIdAndAccountId(UUID conversationId, UUID accountId);
 
 }

@@ -39,6 +39,6 @@ public interface RequestJpaRepo extends JpaRepository<RequestEntity, UUID> {
     "WHERE e.selected = true OR e = :request AND e.section = :section")
   void deselectAndSelect(SectionEntity section, RequestEntity request);
 
-  int deleteByIdAndSectionConversationAccountId(UUID requestId, UUID accountId);
+  boolean existsByIdAndSectionConversationAccountId(UUID requestId, UUID accountId);
 
 }

@@ -30,14 +30,6 @@ public class ConversationQueryFacade implements IConversationQueryFacade {
   }
 
   @Override
-  public ConversationReadDto getConversation(UUID conversationId, UUID accountId) {
-    Conversation conversation = Conversation.builder().id(conversationId)
-      .accountId(accountId).build();
-    conversation = readDao.getConversation(conversation);
-    return mapper.entityToDomain(conversation);
-  }
-
-  @Override
   public Page<SectionReadDto> getSectionPage(PageRequest pageRequest, UUID conversationId) {
     Conversation conversation = Conversation.builder().id(conversationId).build();
     Page<Section> sectionPage = readDao.getSectionPage(pageRequest, conversation);
