@@ -36,7 +36,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class SectionPage implements ControllerUtil {
 
   private IConversationQueryFacade queryFacade;
-  private ConversationPage conversationPage;
 
   @PreAuthorize("@ownershipValidator.validateConversation(principal, #conversationId)")
   @GetMapping("/{conversationId}")

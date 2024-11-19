@@ -22,8 +22,8 @@ public interface ConversationJpaRepo extends JpaRepository<ConversationEntity, C
   @Query(value = """
     WITH position_range AS (
       SELECT
-        CEIL(selected_position / :pageSize)\\:\\:int AS page_number,
-        (GREATEST(CEIL(selected_position / :pageSize) - 1, 0) * :pageSize) AS min_position,
+        FLOOR(selected_position / :pageSize)\\:\\:int AS page_number,
+        (FLOOR(selected_position / :pageSize) * :pageSize) AS min_position,
         (LEAST(CEIL(selected_position / :pageSize) * :pageSize, total_amount)) AS max_position,
         total_amount,
         selected_position
