@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface RequestJpaRepo extends JpaRepository<RequestEntity, UUID> {
+public interface RequestJpaRepo extends JpaRepository<RequestEntity, RequestId> {
 
   @Query(value = """
     WITH request_window AS (
@@ -38,7 +38,7 @@ public interface RequestJpaRepo extends JpaRepository<RequestEntity, UUID> {
 
   @Modifying
   @Query("UPDATE RequestEntity e " +
-    "SET e.selected = CASE WHEN e = :request THEN true ELSE false END " +
+    "SET e.selected = CASE WHEN e.id = :requestId THEN true ELSE false END " +
     "WHERE e.selected = true OR e.id = :requestId AND e.section.id = :sectionId")
   void deselectAndSelect(@Param("sectionId") SectionId sectionId, @Param("requestId") RequestId requestId);
 

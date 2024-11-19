@@ -8,3 +8,4 @@ CREATE INDEX idx_response_request_created ON responses (request_id, created);
 
 -- Section entity index
 CREATE INDEX idx_section_conversation ON sections (conversation_id);
+--liquibase formatted sql

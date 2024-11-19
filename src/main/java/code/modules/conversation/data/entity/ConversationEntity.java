@@ -8,8 +8,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
@@ -33,7 +31,6 @@ import lombok.ToString;
 public class ConversationEntity {
 
   @EmbeddedId
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @AttributeOverride(name = "value", column = @Column(name = "id"))
   private ConversationId id;
 
@@ -44,7 +41,7 @@ public class ConversationEntity {
   private AccountId accountId;
 
   @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY,
-    cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    cascade = {CascadeType.REMOVE}
   )
   private final List<SectionEntity> requests = new ArrayList<>();
 

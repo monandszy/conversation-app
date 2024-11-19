@@ -10,7 +10,6 @@ import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.data.entity.RequestEntity;
 import code.modules.conversation.data.entity.ResponseEntity;
 import code.modules.conversation.data.entity.SectionEntity;
-import code.modules.conversation.data.jpa.projection.SectionWindow;
 import code.modules.conversation.service.domain.Conversation;
 import code.modules.conversation.service.domain.Request;
 import code.modules.conversation.service.domain.Request.RequestId;
@@ -20,7 +19,7 @@ import code.modules.conversation.service.domain.Section;
 import code.util.Generated;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 import org.mapstruct.AnnotateWith;
@@ -66,40 +65,22 @@ public interface ConversationMapper {
 
   Conversation entityToDomain(ConversationEntity entity);
 
-  default Section entityToDomain(SectionWindow entityDto) {
-    SectionEntity section = entityDto.section();
-    if (section == null) {
-      return null;
-    }
 
-    RequestEntity selectedRequest = entityDto.selectedRequest();
-    ResponseEntity selectedResponse = entityDto.selectedResponse();
-
-    Request.RequestNavigation requestNav = new Request.RequestNavigation(
-      entityDto.nextRequestId(),
-      entityDto.prevRequestId()
-    );
-
-    Response.ResponseNavigation responseNav = new Response.ResponseNavigation(
-      entityDto.nextResponseId(),
-      entityDto.prevResponseId()
-    );
-
-    return entityToDomain(section)
-      .withRequests(selectedRequest == null
-        ? List.of() : List.of(entityToDomain(selectedRequest)
-        .withNavigation(requestNav)
-        .withResponses(selectedResponse == null
-          ? List.of() : List.of(entityToDomain(selectedResponse)
-          .withNavigation(responseNav))
-        ))
-      );
+  default Section projectionToDomain(Object[] projection) {
+    Request request = requestProjectionToDomain(projection);
+    UUID sectionId = (UUID) projection[10];
+    OffsetDateTime sectionCreated = (OffsetDateTime) projection[11];
+    return Section.builder()
+      .requests(List.of(request))
+      .id(new Section.SectionId(sectionId))
+      .created(sectionCreated)
+      .build();
   }
 
   default Request requestProjectionToDomain(Object[] projection) {
     Response response = responseProjectionToDomain(projection);
     UUID requestId = (UUID) projection[5];
-    Instant requestCreated = (Instant) projection[6];
+    OffsetDateTime requestCreated = convertToOffsetDateTime(projection[6]);
     String requestText = (String) projection[7];
     UUID prevRequestId = (UUID) projection[8];
     UUID nextRequestId = (UUID) projection[9];
@@ -110,7 +91,7 @@ public interface ConversationMapper {
     return Request.builder()
       .responses(List.of(response))
       .id(new RequestId(requestId))
-      .created(OffsetDateTime.ofInstant(requestCreated, ZoneId.systemDefault()))
+      .created(requestCreated)
       .text(requestText)
       .navigation(requestNav)
       .build();
@@ -118,7 +99,7 @@ public interface ConversationMapper {
 
   default Response responseProjectionToDomain(Object[] projection) {
     UUID responseId = (UUID) projection[0];
-    Instant responseCreated = (Instant) projection[1];
+    OffsetDateTime responseCreated = convertToOffsetDateTime(projection[1]);
     String responseText = (String) projection[2];
     UUID prevResponseId = (UUID) projection[3];
     UUID nextResponseId = (UUID) projection[4];
@@ -129,9 +110,26 @@ public interface ConversationMapper {
     return Response.builder()
       .id(new ResponseId(responseId))
       .text(responseText)
-      .created(OffsetDateTime.ofInstant(responseCreated, ZoneId.systemDefault()))
+      .created(responseCreated)
       .navigation(responseNav)
       .build();
   }
 
+  /**
+   * Converts an object representing a timestamp to an {@link OffsetDateTime}.
+   * This method handles cases where the input object may be an instance of either
+   * {@link Instant} in case of a native query or {@link OffsetDateTime} in case of hql query.
+   * @param obj The object to be converted. This can be an {@link Instant} or {@link OffsetDateTime}.
+   * @return An {@link OffsetDateTime} representing the same point in time as the input object.
+   *         If the input is an {@link Instant}, it is converted to {@link OffsetDateTime} with UTC offset.
+   * @throws IllegalArgumentException if the input object is neither an {@link Instant} nor an {@link OffsetDateTime}.
+   */
+  private OffsetDateTime convertToOffsetDateTime(Object obj) {
+    if (obj instanceof Instant) {
+      return ((Instant) obj).atOffset(ZoneOffset.UTC);
+    } else if (obj instanceof OffsetDateTime) {
+      return (OffsetDateTime) obj;
+    }
+    throw new IllegalArgumentException("Unexpected type: " + obj.getClass());
+  }
 }

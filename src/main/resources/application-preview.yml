@@ -39,6 +39,9 @@ logging:
         orm:
           jdbc:
             bind: trace
+            org:
+          query:
+            hql: debug
         SQL: debug
         hql: debug
         jdbc: debug

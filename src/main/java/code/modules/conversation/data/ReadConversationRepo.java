@@ -8,7 +8,6 @@ import code.modules.conversation.data.jpa.ConversationJpaRepo;
 import code.modules.conversation.data.jpa.RequestJpaRepo;
 import code.modules.conversation.data.jpa.ResponseJpaRepo;
 import code.modules.conversation.data.jpa.SectionJpaRepo;
-import code.modules.conversation.data.jpa.projection.SectionWindow;
 import code.modules.conversation.service.ReadConversationDao;
 import code.modules.conversation.service.domain.AccountId;
 import code.modules.conversation.service.domain.Conversation;
@@ -40,9 +39,9 @@ public class ReadConversationRepo implements ReadConversationDao {
 
   @Override
   public Page<Section> getSectionPage(PageRequest pageRequest, Conversation.ConversationId conversationId) {
-    Page<SectionWindow> page = sectionJpaRepo
+    Page<Object[]> page = sectionJpaRepo
       .findProjectionPageByConversationId(conversationId, pageRequest);
-    return page.map(projection -> mapper.entityToDomain(projection));
+    return page.map(projection -> mapper.projectionToDomain(projection));
   }
 
   @Override
@@ -68,7 +67,7 @@ public class ReadConversationRepo implements ReadConversationDao {
   @Override
   public Request getRequest(Request.RequestId requestId) {
     RequestEntity entity = requestJpaRepo
-      .findById(requestId.value()).orElseThrow();
+      .findById(requestId).orElseThrow();
     return mapper.entityToDomain(entity);
   }
 

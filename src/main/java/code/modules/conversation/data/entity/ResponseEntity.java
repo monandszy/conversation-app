@@ -6,8 +6,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -29,7 +27,6 @@ import lombok.ToString;
 @Table(name = "responses")
 public class ResponseEntity {
   @EmbeddedId
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @AttributeOverride(name = "value", column = @Column(name = "id"))
   private Response.ResponseId id;
 

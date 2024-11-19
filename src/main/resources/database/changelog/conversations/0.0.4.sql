@@ -4,3 +4,4 @@ ALTER TABLE responses
 
 ALTER TABLE requests
   ADD COLUMN selected BOOLEAN NOT NULL DEFAULT FALSE;
+--liquibase formatted sql

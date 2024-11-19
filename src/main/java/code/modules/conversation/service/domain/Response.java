@@ -24,7 +24,11 @@ public class Response {
   ResponseNavigation navigation;
 
   @Embeddable
-  public record ResponseId(UUID value) implements Serializable {}
+  public record ResponseId(UUID value) implements Serializable {
+    public static ResponseId generate() {
+      return new ResponseId(UUID.randomUUID());
+    }
+  }
 
   public record ResponseNavigation(
     Response.ResponseId nextId,

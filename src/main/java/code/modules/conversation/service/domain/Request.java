@@ -26,7 +26,11 @@ public class Request {
   RequestNavigation navigation;
 
   @Embeddable
-  public record RequestId(UUID value) implements Serializable {}
+  public record RequestId(UUID value) implements Serializable {
+    public static RequestId generate() {
+      return new RequestId(UUID.randomUUID());
+    }
+  }
 
   public record RequestNavigation(
     Request.RequestId nextId,

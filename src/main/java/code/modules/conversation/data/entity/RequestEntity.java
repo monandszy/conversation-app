@@ -7,8 +7,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -33,7 +31,6 @@ import lombok.ToString;
 @Table(name = "requests")
 public class  RequestEntity {
   @EmbeddedId
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @AttributeOverride(name = "value", column = @Column(name = "id"))
   private Request.RequestId id;
 
@@ -51,7 +48,7 @@ public class  RequestEntity {
   private SectionEntity section;
 
   @OneToMany(mappedBy = "request", fetch = FetchType.LAZY,
-    cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    cascade = {CascadeType.REMOVE}
   )
   private final List<ResponseEntity> responses = new ArrayList<>();
 }

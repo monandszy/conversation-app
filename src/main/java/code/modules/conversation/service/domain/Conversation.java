@@ -21,5 +21,9 @@ public class Conversation {
   AccountId accountId;
 
   @Embeddable
-  public record ConversationId(UUID value) implements Serializable {}
+  public record ConversationId(UUID value) implements Serializable {
+    public static ConversationId generate() {
+      return new ConversationId(UUID.randomUUID());
+    }
+  }
 }

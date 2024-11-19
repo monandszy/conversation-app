@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ResponseJpaRepo extends JpaRepository<ResponseEntity, UUID> {
+public interface ResponseJpaRepo extends JpaRepository<ResponseEntity, ResponseId> {
 
   @Query(value = """
       WITH response_window AS (
@@ -35,10 +35,11 @@ public interface ResponseJpaRepo extends JpaRepository<ResponseEntity, UUID> {
 
   @Modifying
   @Query("UPDATE ResponseEntity e " +
-    "SET e.selected = CASE WHEN e = :response THEN true ELSE false END " +
+    "SET e.selected = CASE WHEN e.id = :responseId THEN true ELSE false END " +
     "WHERE (e.selected = true OR e.id = :responseId) AND e.request.id = :requestId")
   void deselectAndSelect(
     @Param("requestId") RequestId requestId,
     @Param("responseId") ResponseId responseId
   );
+
 }

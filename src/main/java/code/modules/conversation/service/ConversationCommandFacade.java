@@ -38,6 +38,7 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
     Conversation conversation = Conversation.builder()
       .accountId(new AccountId(accountId))
       .created(OffsetDateTime.now())
+      .id(ConversationId.generate())
       .build();
     conversation = commandDao.create(conversation);
     return mapper.domainToReadDto(conversation);
@@ -53,10 +54,14 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
 
     OffsetDateTime now = OffsetDateTime.now();
     Conversation dependency = Conversation.builder().id(new ConversationId(conversationId)).build();
-    Section section = Section.builder().conversation(dependency).created(now).build();
+    Section section = Section.builder()
+      .id(SectionId.generate())
+      .conversation(dependency).created(now).build();
     Request request = Request.builder()
+      .id(RequestId.generate())
       .text(apiRequest.text()).selected(true).created(now).build();
     Response response = Response.builder()
+      .id(ResponseId.generate())
       .text(apiResponse.text()).selected(true).created(now).build();
     section = commandDao.create(section, request, response);
     return mapper.domainToReadDto(section);
@@ -73,8 +78,10 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
 
     Section dependency = Section.builder().id(new SectionId(sectionId)).build();
     Request request = Request.builder().section(dependency)
+      .id(RequestId.generate())
       .text(apiRequest.text()).selected(true).created(now).build();
     Response response = Response.builder().text(apiResponse.text())
+      .id(ResponseId.generate())
       .selected(true).created(now).build();
     request = commandDao.create(request, response);
     return mapper.domainToReadDto(request);
@@ -87,6 +94,7 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
     ApiResponseDto apiResponse = googleApiAdapter.generate(apiRequest);
     OffsetDateTime now = OffsetDateTime.now();
     Response response = Response.builder().request(dependency)
+      .id(new ResponseId(UUID.randomUUID()))
       .text(apiResponse.text()).selected(true).created(now).build();
     response = commandDao.create(response);
     return mapper.domainToReadDto(response);

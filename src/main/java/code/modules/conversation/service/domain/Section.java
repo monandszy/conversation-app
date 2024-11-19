@@ -23,5 +23,9 @@ public class Section {
   List<Request> requests;
 
   @Embeddable
-  public record SectionId(UUID value) implements Serializable {}
+  public record SectionId(UUID value) implements Serializable {
+    public static SectionId generate() {
+      return new SectionId(UUID.randomUUID());
+    }
+  }
 }
