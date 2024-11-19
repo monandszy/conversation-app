@@ -1,7 +1,9 @@
 package code.modules.conversation.data.jpa;
 
-import code.modules.conversation.data.entity.RequestEntity;
 import code.modules.conversation.data.entity.ResponseEntity;
+import code.modules.conversation.service.domain.AccountId;
+import code.modules.conversation.service.domain.Request.RequestId;
+import code.modules.conversation.service.domain.Response.ResponseId;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -29,11 +31,14 @@ public interface ResponseJpaRepo extends JpaRepository<ResponseEntity, UUID> {
     """, nativeQuery = true)
   Object[] findProjectionByResponse(@Param("selectedResponseId") UUID selectedResponseId);
 
-  boolean existsByIdAndRequestSectionConversationAccountId(UUID responseId, UUID accountId);
+  boolean existsByIdAndRequestSectionConversationAccountId(ResponseId responseId, AccountId accountId);
 
   @Modifying
   @Query("UPDATE ResponseEntity e " +
     "SET e.selected = CASE WHEN e = :response THEN true ELSE false END " +
-    "WHERE (e.selected = true OR e = :response) AND e.request = :request")
-  void deselectAndSelect(RequestEntity request, ResponseEntity response);
+    "WHERE (e.selected = true OR e.id = :responseId) AND e.request.id = :requestId")
+  void deselectAndSelect(
+    @Param("requestId") RequestId requestId,
+    @Param("responseId") ResponseId responseId
+  );
 }

@@ -1,7 +1,10 @@
 package code.modules.conversation.data.jpa;
 
+import static code.modules.conversation.service.domain.Request.RequestId;
+
 import code.modules.conversation.data.entity.RequestEntity;
-import code.modules.conversation.data.entity.SectionEntity;
+import code.modules.conversation.service.domain.AccountId;
+import code.modules.conversation.service.domain.Section.SectionId;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -36,9 +39,9 @@ public interface RequestJpaRepo extends JpaRepository<RequestEntity, UUID> {
   @Modifying
   @Query("UPDATE RequestEntity e " +
     "SET e.selected = CASE WHEN e = :request THEN true ELSE false END " +
-    "WHERE e.selected = true OR e = :request AND e.section = :section")
-  void deselectAndSelect(SectionEntity section, RequestEntity request);
+    "WHERE e.selected = true OR e.id = :requestId AND e.section.id = :sectionId")
+  void deselectAndSelect(@Param("sectionId") SectionId sectionId, @Param("requestId") RequestId requestId);
 
-  boolean existsByIdAndSectionConversationAccountId(UUID requestId, UUID accountId);
+  boolean existsByIdAndSectionConversationAccountId(RequestId requestId, AccountId accountId);
 
 }

@@ -3,14 +3,15 @@ package code.modules.conversation.data.jpa.projection;
 import code.modules.conversation.data.entity.RequestEntity;
 import code.modules.conversation.data.entity.ResponseEntity;
 import code.modules.conversation.data.entity.SectionEntity;
-import java.util.UUID;
+import code.modules.conversation.service.domain.Request;
+import code.modules.conversation.service.domain.Response;
 
 public record SectionWindow(
-  SectionEntity section,
   RequestEntity selectedRequest,
-  UUID prevRequestId,
-  UUID nextRequestId,
+  SectionEntity section,
+  Request.RequestId prevRequestId,
+  Request.RequestId nextRequestId,
   ResponseEntity selectedResponse,
-  UUID prevResponseId,
-  UUID nextResponseId
+  Response.ResponseId prevResponseId,
+  Response.ResponseId nextResponseId
 ) {}

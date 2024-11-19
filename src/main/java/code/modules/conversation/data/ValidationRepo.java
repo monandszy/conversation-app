@@ -1,11 +1,16 @@
 package code.modules.conversation.data;
 
+import static code.modules.conversation.service.domain.Request.RequestId;
+import static code.modules.conversation.service.domain.Response.ResponseId;
+import static code.modules.conversation.service.domain.Section.SectionId;
+
 import code.modules.conversation.data.jpa.ConversationJpaRepo;
 import code.modules.conversation.data.jpa.RequestJpaRepo;
 import code.modules.conversation.data.jpa.ResponseJpaRepo;
 import code.modules.conversation.data.jpa.SectionJpaRepo;
+import code.modules.conversation.service.domain.AccountId;
+import code.modules.conversation.service.domain.Conversation.ConversationId;
 import code.util.ReadRepositoryAdapter;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 
 @ReadRepositoryAdapter
@@ -24,7 +29,7 @@ public class ValidationRepo {
    * @param accountId      The ID of the account.
    * @return true if the account owns the conversation, false otherwise.
    */
-  public boolean validateConversation(UUID conversationId, UUID accountId) {
+  public boolean validateConversation(ConversationId conversationId, AccountId accountId) {
     return conversationJpaRepo.existsByIdAndAccountId(conversationId, accountId);
   }
 
@@ -35,7 +40,7 @@ public class ValidationRepo {
    * @param accountId The ID of the account.
    * @return true if the account owns the conversation that owns the section, false otherwise.
    */
-  public boolean validateSection(UUID sectionId, UUID accountId) {
+  public boolean validateSection(SectionId sectionId, AccountId accountId) {
     return sectionJpaRepo.existsByIdAndConversationAccountId(sectionId, accountId);
   }
 
@@ -46,7 +51,7 @@ public class ValidationRepo {
    * @param accountId The ID of the account.
    * @return true if the account owns the conversation that owns the section that owns the request, false otherwise.
    */
-  public boolean validateRequest(UUID requestId, UUID accountId) {
+  public boolean validateRequest(RequestId requestId, AccountId accountId) {
     return requestJpaRepo.existsByIdAndSectionConversationAccountId(requestId, accountId);
   }
     /**
@@ -56,7 +61,7 @@ public class ValidationRepo {
    * @param accountId  The ID of the account.
    * @return true if the account owns the conversation that owns the section that owns the request that owns the response, false otherwise.
    */
-  public boolean validateResponse(UUID responseId, UUID accountId) {
+  public boolean validateResponse(ResponseId responseId, AccountId accountId) {
     return responseJpaRepo.existsByIdAndRequestSectionConversationAccountId(responseId, accountId);
   }
 

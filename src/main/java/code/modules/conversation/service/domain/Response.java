@@ -1,5 +1,7 @@
 package code.modules.conversation.service.domain;
 
+import jakarta.persistence.Embeddable;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.Builder;
@@ -14,10 +16,18 @@ import lombok.With;
 @EqualsAndHashCode(of = {"id"})
 @ToString(of = {"id"})
 public class Response {
-  UUID id;
+  ResponseId id;
   String text;
   Boolean selected;
   OffsetDateTime created;
   Request request;
-  Navigation navigation;
+  ResponseNavigation navigation;
+
+  @Embeddable
+  public record ResponseId(UUID value) implements Serializable {}
+
+  public record ResponseNavigation(
+    Response.ResponseId nextId,
+    Response.ResponseId previousId) {
+  }
 }

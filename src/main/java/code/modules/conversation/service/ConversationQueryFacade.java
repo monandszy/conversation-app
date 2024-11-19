@@ -1,7 +1,8 @@
 package code.modules.conversation.service;
 
 import code.modules.conversation.IConversationQueryFacade;
-import code.modules.conversation.service.domain.Conversation;
+import code.modules.conversation.service.domain.AccountId;
+import code.modules.conversation.service.domain.Conversation.ConversationId;
 import code.modules.conversation.service.domain.Request;
 import code.modules.conversation.service.domain.Response;
 import code.modules.conversation.service.domain.Section;
@@ -23,16 +24,18 @@ public class ConversationQueryFacade implements IConversationQueryFacade {
 
   @Override
   public Page<ConversationReadDto> getConversationPage(PageRequest pageRequest, UUID accountId) {
-    Page<ConversationReadDto> page = readDao.getConversationPage(pageRequest, accountId)
-      .map(e -> mapper.domainToReadDto(e));
+    Page<ConversationReadDto> page = readDao.getConversationPage(
+      pageRequest, new AccountId(accountId)
+    ).map(e -> mapper.domainToReadDto(e));
     log.info("Conversation Page: {}", page);
     return page;
   }
 
   @Override
   public Page<SectionReadDto> getSectionPage(PageRequest pageRequest, UUID conversationId) {
-    Conversation conversation = Conversation.builder().id(conversationId).build();
-    Page<Section> sectionPage = readDao.getSectionPage(pageRequest, conversation);
+    Page<Section> sectionPage = readDao.getSectionPage(
+      pageRequest, new ConversationId(conversationId)
+    );
     Page<SectionReadDto> page = sectionPage.map(e -> mapper.domainToReadDto(e));
     log.info("Conversation Item Page: {}", page);
     return page;
@@ -40,25 +43,24 @@ public class ConversationQueryFacade implements IConversationQueryFacade {
 
   @Override
   public RequestReadDto getRequest(UUID requestId, UUID sectionId) {
-    Request request = Request.builder().id(requestId).build();
-    Section section = Section.builder().id(sectionId).build();
-    request = readDao.getRequestWithNavigation(request, section);
+    Request request = readDao.getRequestWithNavigation(
+      new Request.RequestId(requestId),
+      new Section.SectionId(sectionId)
+    );
     return mapper.domainToReadDto(request);
   }
 
   @Override
   public ResponseReadDto getResponse(UUID responseId, UUID requestId) {
-    Response response = Response.builder().id(responseId).build();
-    Request request = Request.builder().id(requestId).build();
-    response = readDao.getResponseWithNavigation(response, request);
+    Response response = readDao.getResponseWithNavigation(
+      new Response.ResponseId(responseId),
+      new Request.RequestId(requestId)
+    );
     return mapper.domainToReadDto(response);
   }
 
   @Override
   public ConversationData getConversationData(UUID conversationId) {
-    Conversation conversation = Conversation.builder().id(conversationId).build();
-    ConversationData conversationData = readDao.getConversationData(conversation);
-    conversationData.setConversationId(conversationId);
-    return conversationData;
+    return readDao.getConversationData(new ConversationId(conversationId));
   }
 }

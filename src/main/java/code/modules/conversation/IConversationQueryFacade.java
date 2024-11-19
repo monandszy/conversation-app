@@ -2,7 +2,6 @@ package code.modules.conversation;
 
 import java.util.List;
 import java.util.UUID;
-import lombok.Data;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -45,11 +44,11 @@ public interface IConversationQueryFacade {
     UUID previousId
   ) {}
 
-  @Data
-  class ConversationData {
-    private Long sectionCount;
-    private Long requestCount;
-    private Long responseCount;
-    private UUID conversationId;
+  record ConversationData(
+    Long sectionCount,
+    Long requestCount,
+    Long responseCount,
+    UUID conversationId
+  ) {
   }
 }

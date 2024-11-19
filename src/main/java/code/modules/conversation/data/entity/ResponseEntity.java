@@ -1,16 +1,17 @@
 package code.modules.conversation.data.entity;
 
+import code.modules.conversation.service.domain.Response;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,10 +28,10 @@ import lombok.ToString;
 @Builder
 @Table(name = "responses")
 public class ResponseEntity {
-  @Id
+  @EmbeddedId
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id")
-  private UUID id;
+  @AttributeOverride(name = "value", column = @Column(name = "id"))
+  private Response.ResponseId id;
 
   @Column(name = "created", updatable = false)
   private OffsetDateTime created;

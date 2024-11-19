@@ -1,10 +1,16 @@
 package code.modules.conversation.service;
 
+import static code.modules.conversation.service.domain.Conversation.ConversationId;
+import static code.modules.conversation.service.domain.Request.RequestId;
+import static code.modules.conversation.service.domain.Response.ResponseId;
+import static code.modules.conversation.service.domain.Section.SectionId;
+
 import code.modules.conversation.IConversationCommandFacade;
 import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
 import code.modules.conversation.IConversationQueryFacade.RequestReadDto;
 import code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
 import code.modules.conversation.IConversationQueryFacade.SectionReadDto;
+import code.modules.conversation.service.domain.AccountId;
 import code.modules.conversation.service.domain.Conversation;
 import code.modules.conversation.service.domain.Request;
 import code.modules.conversation.service.domain.Response;
@@ -14,7 +20,6 @@ import code.modules.google_api.GoogleApiAdapter;
 import code.modules.google_api.GoogleApiAdapter.ApiRequestDto;
 import code.modules.google_api.GoogleApiAdapter.ApiResponseDto;
 import code.util.Facade;
-import jakarta.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -29,35 +34,44 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
   private ReadConversationDao readDao;
 
   @Override
-  public ConversationReadDto begin(@Valid ConversationBeginDto conversationDto) {
-    Conversation conversation = mapper.createDtoToDomain(conversationDto);
-    conversation = commandDao.create(conversation.withCreated(OffsetDateTime.now()));
+  public ConversationReadDto begin(UUID accountId) {
+    Conversation conversation = Conversation.builder()
+      .accountId(new AccountId(accountId))
+      .created(OffsetDateTime.now())
+      .build();
+    conversation = commandDao.create(conversation);
     return mapper.domainToReadDto(conversation);
   }
 
   @Override
-  public SectionReadDto generate(@Valid RequestGenerateDto generateDto, UUID conversationId) {
+  public SectionReadDto generate(
+    RequestGenerateDto generateDto,
+    UUID conversationId
+  ) {
     ApiRequestDto apiRequest = new ApiRequestDto(generateDto.text());
     ApiResponseDto apiResponse = googleApiAdapter.generate(apiRequest);
 
     OffsetDateTime now = OffsetDateTime.now();
-    Conversation dependency = Conversation.builder().id(conversationId).build();
+    Conversation dependency = Conversation.builder().id(new ConversationId(conversationId)).build();
     Section section = Section.builder().conversation(dependency).created(now).build();
     Request request = Request.builder()
       .text(apiRequest.text()).selected(true).created(now).build();
     Response response = Response.builder()
       .text(apiResponse.text()).selected(true).created(now).build();
-      section = commandDao.create(section, request, response);
+    section = commandDao.create(section, request, response);
     return mapper.domainToReadDto(section);
   }
 
   @Override
-  public RequestReadDto regenerate(@Valid RequestGenerateDto generateDto, UUID sectionId) {
+  public RequestReadDto regenerate(
+    RequestGenerateDto generateDto,
+    UUID sectionId
+  ) {
     ApiRequestDto apiRequest = new ApiRequestDto(generateDto.text());
     ApiResponseDto apiResponse = googleApiAdapter.generate(apiRequest);
     OffsetDateTime now = OffsetDateTime.now();
 
-    Section dependency = Section.builder().id(sectionId).build();
+    Section dependency = Section.builder().id(new SectionId(sectionId)).build();
     Request request = Request.builder().section(dependency)
       .text(apiRequest.text()).selected(true).created(now).build();
     Response response = Response.builder().text(apiResponse.text())
@@ -68,8 +82,7 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
 
   @Override
   public ResponseReadDto retry(UUID requestId) {
-    Request request = Request.builder().id(requestId).build();
-    Request dependency = readDao.getRequest(request);
+    Request dependency = readDao.getRequest(new RequestId(requestId));
     ApiRequestDto apiRequest = new ApiRequestDto(dependency.getText());
     ApiResponseDto apiResponse = googleApiAdapter.generate(apiRequest);
     OffsetDateTime now = OffsetDateTime.now();
@@ -81,25 +94,21 @@ public class ConversationCommandFacade implements IConversationCommandFacade {
 
   @Override
   public void deleteConversation(UUID conversationId) {
-    Conversation conversation = Conversation.builder().id(conversationId).build();
-    commandDao.deleteConversation(conversation);
+    commandDao.deleteConversation(new ConversationId(conversationId));
   }
 
   @Override
   public void deleteSection(UUID sectionId) {
-    Section section = Section.builder().id(sectionId).build();
-    commandDao.deleteSection(section);
+    commandDao.deleteSection(new SectionId(sectionId));
   }
 
   @Override
   public void deleteRequest(UUID requestId) {
-    Request request = Request.builder().id(requestId).build();
-    commandDao.deleteRequest(request);
+    commandDao.deleteRequest(new RequestId(requestId));
   }
 
   @Override
   public void deleteResponse(UUID responseId) {
-    Response response = Response.builder().id(responseId).build();
-    commandDao.deleteResponse(response);
+    commandDao.deleteResponse(new ResponseId(responseId));
   }
 }

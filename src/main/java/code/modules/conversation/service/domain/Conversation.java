@@ -1,5 +1,7 @@
 package code.modules.conversation.service.domain;
 
+import jakarta.persistence.Embeddable;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.Builder;
@@ -14,7 +16,10 @@ import lombok.With;
 @EqualsAndHashCode(of = {"id"})
 @ToString(of = {"id"})
 public class Conversation {
-  UUID id;
+  ConversationId id;
   OffsetDateTime created;
-  UUID accountId;
+  AccountId accountId;
+
+  @Embeddable
+  public record ConversationId(UUID value) implements Serializable {}
 }

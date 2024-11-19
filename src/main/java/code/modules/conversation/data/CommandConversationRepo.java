@@ -11,6 +11,7 @@ import code.modules.conversation.data.jpa.SectionJpaRepo;
 import code.modules.conversation.data.jpa.projection.SectionWindow;
 import code.modules.conversation.service.CommandConversationDao;
 import code.modules.conversation.service.domain.Conversation;
+import code.modules.conversation.service.domain.Conversation.ConversationId;
 import code.modules.conversation.service.domain.Request;
 import code.modules.conversation.service.domain.Response;
 import code.modules.conversation.service.domain.Section;
@@ -45,7 +46,7 @@ public class CommandConversationRepo implements CommandConversationDao {
     responseEntity.setRequest(requestEntity);
     requestEntity.getResponses().add(responseEntity);
     SectionEntity saved = sectionJpaRepo.save(sectionEntity);
-    SectionWindow projection = sectionJpaRepo.findProjectionBySection(saved);
+    SectionWindow projection = sectionJpaRepo.findProjectionBySectionId(saved.getId());
     return mapper.entityToDomain(projection);
   }
 
@@ -57,8 +58,8 @@ public class CommandConversationRepo implements CommandConversationDao {
     responseEntity.setRequest(requestEntity);
     requestEntity.getResponses().add(responseEntity);
     RequestEntity saved = requestJpaRepo.save(requestEntity);
-    requestJpaRepo.deselectAndSelect(section, saved);
-    Object[] projection = requestJpaRepo.findProjectionByRequest(saved.getId());
+    requestJpaRepo.deselectAndSelect(section.getId(), saved.getId());
+    Object[] projection = requestJpaRepo.findProjectionByRequest(saved.getId().value());
     return mapper.requestProjectionToDomain((Object[]) projection[0]);
   }
 
@@ -67,28 +68,28 @@ public class CommandConversationRepo implements CommandConversationDao {
     ResponseEntity entity = mapper.domainToEntity(response);
     RequestEntity request = entity.getRequest();
     ResponseEntity saved = responseJpaRepo.save(entity);
-    responseJpaRepo.deselectAndSelect(request, saved);
-    Object[] projection = responseJpaRepo.findProjectionByResponse(saved.getId());
+    responseJpaRepo.deselectAndSelect(request.getId(), saved.getId());
+    Object[] projection = responseJpaRepo.findProjectionByResponse(saved.getId().value());
     return mapper.responseProjectionToDomain((Object[]) projection[0]);
   }
 
   @Override
-  public void deleteConversation(Conversation conversation) {
-    conversationJpaRepo.deleteById(conversation.getId());
+  public void deleteConversation(ConversationId conversationId) {
+    conversationJpaRepo.deleteById(conversationId.value());
   }
 
   @Override
-  public void deleteSection(Section section) {
-    sectionJpaRepo.deleteById(section.getId());
+  public void deleteSection(Section.SectionId sectionId) {
+    sectionJpaRepo.deleteById(sectionId.value());
   }
 
   @Override
-  public void deleteRequest(Request request) {
-    requestJpaRepo.deleteById(request.getId());
+  public void deleteRequest(Request.RequestId requestId) {
+    requestJpaRepo.deleteById(requestId.value());
   }
 
   @Override
-  public void deleteResponse(Response response) {
-    responseJpaRepo.deleteById(response.getId());
+  public void deleteResponse(Response.ResponseId responseId) {
+    responseJpaRepo.deleteById(responseId.value());
   }
 }

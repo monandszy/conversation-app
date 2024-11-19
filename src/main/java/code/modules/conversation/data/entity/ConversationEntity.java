@@ -1,18 +1,20 @@
 package code.modules.conversation.data.entity;
 
+import code.modules.conversation.service.domain.AccountId;
+import code.modules.conversation.service.domain.Conversation.ConversationId;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,16 +32,16 @@ import lombok.ToString;
 @Table(name = "conversations")
 public class ConversationEntity {
 
-  @Id
+  @EmbeddedId
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id")
-  private UUID id;
+  @AttributeOverride(name = "value", column = @Column(name = "id"))
+  private ConversationId id;
 
   @Column(name = "created", updatable = false)
   private OffsetDateTime created;
 
-  @Column(name = "account_id")
-  private UUID accountId;
+  @AttributeOverride(name = "value", column = @Column(name = "account_id"))
+  private AccountId accountId;
 
   @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY,
     cascade = {CascadeType.PERSIST, CascadeType.REMOVE}

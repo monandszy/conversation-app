@@ -1,12 +1,14 @@
 package code.modules.conversation.data.entity;
 
+import code.modules.conversation.service.domain.Request;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -14,7 +16,6 @@ import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,11 +31,11 @@ import lombok.ToString;
 @Entity
 @Builder
 @Table(name = "requests")
-public class RequestEntity {
-  @Id
+public class  RequestEntity {
+  @EmbeddedId
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id")
-  private UUID id;
+  @AttributeOverride(name = "value", column = @Column(name = "id"))
+  private Request.RequestId id;
 
   @Column(name = "text")
   private String text;

@@ -4,7 +4,6 @@ import static code.modules.conversation.IConversationQueryFacade.RequestReadDto;
 import static code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 
 import code.configuration.SpringMapperConfig;
-import code.modules.conversation.IConversationCommandFacade.ConversationBeginDto;
 import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
 import code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
 import code.modules.conversation.data.entity.ConversationEntity;
@@ -13,9 +12,10 @@ import code.modules.conversation.data.entity.ResponseEntity;
 import code.modules.conversation.data.entity.SectionEntity;
 import code.modules.conversation.data.jpa.projection.SectionWindow;
 import code.modules.conversation.service.domain.Conversation;
-import code.modules.conversation.service.domain.Navigation;
 import code.modules.conversation.service.domain.Request;
+import code.modules.conversation.service.domain.Request.RequestId;
 import code.modules.conversation.service.domain.Response;
+import code.modules.conversation.service.domain.Response.ResponseId;
 import code.modules.conversation.service.domain.Section;
 import code.util.Generated;
 import java.time.Instant;
@@ -31,15 +31,21 @@ import org.mapstruct.Mapping;
 @AnnotateWith(Generated.class)
 public interface ConversationMapper {
 
+  @Mapping(source = "id.value", target = "id")
   ConversationReadDto domainToReadDto(Conversation domain);
 
+  @Mapping(source = "id.value", target = "id")
   SectionReadDto domainToReadDto(Section domain);
 
+  @Mapping(source = "id.value", target = "id")
+  @Mapping(source = "navigation.nextId.value", target = "navigation.nextId")
+  @Mapping(source = "navigation.previousId.value", target = "navigation.previousId")
   ResponseReadDto domainToReadDto(Response response);
 
+  @Mapping(source = "id.value", target = "id")
+  @Mapping(source = "navigation.nextId.value", target = "navigation.nextId")
+  @Mapping(source = "navigation.previousId.value", target = "navigation.previousId")
   RequestReadDto domainToReadDto(Request request);
-
-  Conversation createDtoToDomain(ConversationBeginDto domain);
 
   ConversationEntity domainToEntity(Conversation domain);
 
@@ -60,9 +66,6 @@ public interface ConversationMapper {
 
   Conversation entityToDomain(ConversationEntity entity);
 
-  ConversationReadDto entityToDomain(Conversation conversation);
-
-
   default Section entityToDomain(SectionWindow entityDto) {
     SectionEntity section = entityDto.section();
     if (section == null) {
@@ -72,23 +75,23 @@ public interface ConversationMapper {
     RequestEntity selectedRequest = entityDto.selectedRequest();
     ResponseEntity selectedResponse = entityDto.selectedResponse();
 
-    Navigation nextRequestNav = Navigation.builder()
-      .nextId(entityDto.nextRequestId())
-      .previousId(entityDto.prevRequestId())
-      .build();
+    Request.RequestNavigation requestNav = new Request.RequestNavigation(
+      entityDto.nextRequestId(),
+      entityDto.prevRequestId()
+    );
 
-    Navigation nextResponseNav = Navigation.builder()
-      .nextId(entityDto.nextResponseId())
-      .previousId(entityDto.prevResponseId())
-      .build();
+    Response.ResponseNavigation responseNav = new Response.ResponseNavigation(
+      entityDto.nextResponseId(),
+      entityDto.prevResponseId()
+    );
 
     return entityToDomain(section)
       .withRequests(selectedRequest == null
         ? List.of() : List.of(entityToDomain(selectedRequest)
-        .withNavigation(nextRequestNav)
+        .withNavigation(requestNav)
         .withResponses(selectedResponse == null
           ? List.of() : List.of(entityToDomain(selectedResponse)
-          .withNavigation(nextResponseNav))
+          .withNavigation(responseNav))
         ))
       );
   }
@@ -100,16 +103,16 @@ public interface ConversationMapper {
     String requestText = (String) projection[7];
     UUID prevRequestId = (UUID) projection[8];
     UUID nextRequestId = (UUID) projection[9];
-    Navigation reqNavigation = Navigation.builder()
-      .nextId(nextRequestId)
-      .previousId(prevRequestId)
-      .build();
+    Request.RequestNavigation requestNav = new Request.RequestNavigation(
+      new RequestId(nextRequestId),
+      new RequestId(prevRequestId)
+    );
     return Request.builder()
       .responses(List.of(response))
-      .id(requestId)
+      .id(new RequestId(requestId))
       .created(OffsetDateTime.ofInstant(requestCreated, ZoneId.systemDefault()))
       .text(requestText)
-      .navigation(reqNavigation)
+      .navigation(requestNav)
       .build();
   }
 
@@ -119,15 +122,15 @@ public interface ConversationMapper {
     String responseText = (String) projection[2];
     UUID prevResponseId = (UUID) projection[3];
     UUID nextResponseId = (UUID) projection[4];
-    Navigation resNavigation = Navigation.builder()
-      .nextId(nextResponseId)
-      .previousId(prevResponseId)
-      .build();
+    Response.ResponseNavigation responseNav = new Response.ResponseNavigation(
+      new ResponseId(nextResponseId),
+      new ResponseId(prevResponseId)
+    );
     return Response.builder()
-      .id(responseId)
+      .id(new ResponseId(responseId))
       .text(responseText)
       .created(OffsetDateTime.ofInstant(responseCreated, ZoneId.systemDefault()))
-      .navigation(resNavigation)
+      .navigation(responseNav)
       .build();
   }
 

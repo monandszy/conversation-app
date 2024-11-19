@@ -4,7 +4,6 @@ import static code.modules.conversation.IConversationQueryFacade.ConversationRea
 import static code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
 
 import code.modules.conversation.IConversationCommandFacade;
-import code.modules.conversation.IConversationCommandFacade.ConversationBeginDto;
 import code.modules.conversation.IConversationCommandFacade.RequestGenerateDto;
 import code.modules.conversation.IConversationQueryFacade.RequestReadDto;
 import code.modules.conversation.IConversationQueryFacade.SectionReadDto;
@@ -40,8 +39,7 @@ public class CreateAndDeleteController {
     Principal principal,
     Model model
   ) {
-    ConversationBeginDto beginDto = new ConversationBeginDto(UUID.fromString(principal.getName()));
-    ConversationReadDto readDto = commandFacade.begin(beginDto);
+    ConversationReadDto readDto = commandFacade.begin(UUID.fromString(principal.getName()));
     commandFacade.generate(generateDto, readDto.id());
     model.addAttribute(ModelAttr.conversationReadDto, readDto);
     return "conversation/sidebar :: singular-fragment";
