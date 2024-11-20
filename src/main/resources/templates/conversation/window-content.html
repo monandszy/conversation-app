@@ -146,8 +146,11 @@
       th:hx-get="'/conversation/section/' + ${sectionId} + '/request/' + ${request.navigation.previousId}"
       hx-target="closest .request-wrapper"
       hx-swap="outerHTML"
-      class="previous-btn"
+      class="prev-btn"
     ></button>
+  </th:block>
+  <th:block th:if="${request.navigation.count != 1}">
+    <span th:text="${request.navigation.position} + '/' + ${request.navigation.count}"></span>
   </th:block>
   <th:block th:if="${request.navigation.nextId != null}">
     <button
@@ -174,8 +177,11 @@
       th:hx-get="'/conversation/request/' + ${requestId} + '/response/' + ${response.navigation.previousId}"
       hx-target="closest .response-wrapper"
       hx-swap="outerHTML"
-      class="previous-btn"
+      class="prev-btn"
     ></button>
+  </th:block>
+  <th:block th:if="${response.navigation.count != 1}">
+    <span th:text="${response.navigation.position} + '/' + ${response.navigation.count}"></span>
   </th:block>
   <th:block th:if="${response.navigation.nextId != null}">
     <button

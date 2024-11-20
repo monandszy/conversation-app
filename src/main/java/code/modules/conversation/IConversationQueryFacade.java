@@ -42,9 +42,15 @@ public interface IConversationQueryFacade {
   ) {}
 
   record NavigationDto(
+    Long count,
+    Long position,
     UUID nextId,
     UUID previousId
-  ) {}
+  ) {
+    public boolean isNotSingle() {
+      return count != 1;
+    }
+  }
 
   record ConversationData(
     Long sectionCount,

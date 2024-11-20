@@ -35,11 +35,15 @@ public interface ConversationMapper {
   SectionReadDto domainToReadDto(Section domain);
 
   @Mapping(source = "id.value", target = "id")
+  @Mapping(source = "navigation.responseCount", target = "navigation.count")
+  @Mapping(source = "navigation.responsePosition", target = "navigation.position")
   @Mapping(source = "navigation.nextId.value", target = "navigation.nextId")
   @Mapping(source = "navigation.previousId.value", target = "navigation.previousId")
   ResponseReadDto domainToReadDto(Response response);
 
   @Mapping(source = "id.value", target = "id")
+  @Mapping(source = "navigation.requestCount", target = "navigation.count")
+  @Mapping(source = "navigation.requestPosition", target = "navigation.position")
   @Mapping(source = "navigation.nextId.value", target = "navigation.nextId")
   @Mapping(source = "navigation.previousId.value", target = "navigation.previousId")
   RequestReadDto domainToReadDto(Request request);
