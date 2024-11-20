@@ -17,12 +17,12 @@ public interface RequestJpaRepo extends JpaRepository<RequestEntity, RequestId> 
       WITH request_window AS (
         SELECT
           res.id,
-          (res.created)\\:\\:timestampz,
+          TO_CHAR(res.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
           res.text,
           LAG(res.id) OVER (PARTITION BY req.id ORDER BY res.created),
           LEAD(res.id) OVER (PARTITION BY req.id ORDER BY res.created),
           req.id AS sreqid,
-          (req.created)\\:\\:timestampz,
+          TO_CHAR(req.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
           req.text,
           LAG(req.id) OVER (PARTITION BY req.section_id ORDER BY req.created),
           LEAD(req.id) OVER (PARTITION BY req.section_id ORDER BY req.created)

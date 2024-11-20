@@ -18,7 +18,7 @@ public interface ResponseJpaRepo extends JpaRepository<ResponseEntity, ResponseI
       WITH response_window AS (
           SELECT
             res.id AS sResId,
-            (res.created)\\:\\:timestampz,
+            TO_CHAR(res.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
             res.text,
             LAG(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id),
             LEAD(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id)

@@ -18,17 +18,17 @@ public interface SectionJpaRepo extends JpaRepository<SectionEntity, Section.Sec
   @Query("""
     SELECT
       res.id.value,
-      res.created,
+      TO_CHAR(res.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
       res.text,
       LAG(res.id.value) OVER (PARTITION BY req.id ORDER BY res.created),
       LEAD(res.id.value) OVER (PARTITION BY req.id ORDER BY res.created),
       req.id.value,
-      req.created,
+      TO_CHAR(req.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
       req.text,
       LAG(req.id.value) OVER (PARTITION BY s.id ORDER BY req.created),
       LEAD(req.id.value) OVER (PARTITION BY s.id ORDER BY req.created),
       s.id.value,
-      s.created
+      TO_CHAR(s.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')
     FROM SectionEntity s
     LEFT JOIN RequestEntity req ON req.section.id = s.id AND req.selected = true
     LEFT JOIN ResponseEntity res ON res.request.id = req.id AND res.selected = true
@@ -42,17 +42,17 @@ public interface SectionJpaRepo extends JpaRepository<SectionEntity, Section.Sec
   @Query("""
     SELECT
       res.id.value,
-      res.created,
+      TO_CHAR(res.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
       res.text,
       LAG(res.id.value) OVER (PARTITION BY req.id ORDER BY res.created),
       LEAD(res.id.value) OVER (PARTITION BY req.id ORDER BY res.created),
       req.id.value,
-      req.created,
+      TO_CHAR(req.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
       req.text,
       LAG(req.id.value) OVER (PARTITION BY s.id ORDER BY req.created),
       LEAD(req.id.value) OVER (PARTITION BY s.id ORDER BY req.created),
       s.id.value,
-      s.created
+      TO_CHAR(s.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')
     FROM SectionEntity s
     LEFT JOIN RequestEntity req ON req.section.id = s.id AND req.selected = true
     LEFT JOIN ResponseEntity res ON res.request.id = req.id AND res.selected = true

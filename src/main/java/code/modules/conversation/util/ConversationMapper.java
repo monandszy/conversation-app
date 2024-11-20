@@ -19,7 +19,6 @@ import code.modules.conversation.service.domain.Response.ResponseId;
 import code.modules.conversation.service.domain.Section;
 import code.util.Generated;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -74,7 +73,7 @@ public interface ConversationMapper {
   default Section projectionToDomain(Object[] projection) {
     Request request = requestProjectionToDomain(projection);
     UUID sectionId = (UUID) projection[10];
-    OffsetDateTime sectionCreated = (OffsetDateTime) projection[11];
+    OffsetDateTime sectionCreated = OffsetDateTime.parse((String) projection[11]);
     return Section.builder()
       .requests(List.of(request))
       .id(new Section.SectionId(sectionId))
@@ -85,7 +84,7 @@ public interface ConversationMapper {
   default Request requestProjectionToDomain(Object[] projection) {
     Response response = responseProjectionToDomain(projection);
     UUID requestId = (UUID) projection[5];
-    OffsetDateTime requestCreated = (OffsetDateTime) projection[6];
+    OffsetDateTime requestCreated = OffsetDateTime.parse((String) projection[6]);
     String requestText = (String) projection[7];
     UUID prevRequestId = (UUID) projection[8];
     UUID nextRequestId = (UUID) projection[9];
@@ -104,7 +103,7 @@ public interface ConversationMapper {
 
   default Response responseProjectionToDomain(Object[] projection) {
     UUID responseId = (UUID) projection[0];
-    OffsetDateTime responseCreated = (OffsetDateTime) projection[1];
+    OffsetDateTime responseCreated = OffsetDateTime.parse((String) projection[1]);
     String responseText = (String) projection[2];
     UUID prevResponseId = (UUID) projection[3];
     UUID nextResponseId = (UUID) projection[4];
@@ -126,9 +125,9 @@ public interface ConversationMapper {
     String[] concatenatedDataArray = (String[]) projection[2];
     List<Conversation> content = Arrays.stream(concatenatedDataArray)
       .map(concatenated -> {
-        String[] parts = concatenated.split(","); // Split by comma
+        String[] parts = concatenated.split(",");
         UUID id = UUID.fromString(parts[0]);
-        OffsetDateTime created = OffsetDateTime.parse(parts[1], DB_FORMATTER);
+        OffsetDateTime created = OffsetDateTime.parse(parts[1]);
         return Conversation.builder()
           .id(new Conversation.ConversationId(id))
           .created(created)
@@ -137,6 +136,4 @@ public interface ConversationMapper {
     PageRequest pageRequest = PageRequest.of(pageNumber, Constants.PAGE_SIZE, Sort.by("created").descending());
     return new PageImpl<>(content, pageRequest, totalAmount);
   }
-
-  DateTimeFormatter DB_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSX");
 }

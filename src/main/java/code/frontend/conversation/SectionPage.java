@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -125,6 +126,6 @@ public class SectionPage implements ControllerUtil {
   }
 
   private static PageRequest getPageRequest(Integer page) {
-    return PageRequest.of(page, Constants.PAGE_SIZE);
+    return PageRequest.of(page, Constants.PAGE_SIZE, Sort.by("created").descending());
   }
 }

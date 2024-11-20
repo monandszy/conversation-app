@@ -41,7 +41,7 @@ public interface ConversationJpaRepo extends JpaRepository<ConversationEntity, C
     SELECT
       pr.page_number,
       pr.total_amount,
-      array_agg((c.id || ',' || c.created) ORDER BY c.created DESC)
+      array_agg((c.id || ',' || TO_CHAR(c.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')) ORDER BY c.created DESC)
     FROM conversations c
     CROSS JOIN position_range pr
     WHERE c.account_id = :accountId
