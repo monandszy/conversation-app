@@ -4,15 +4,30 @@
   flex-direction: row;
   height: 100vh;
   overflow: hidden;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
   #sidebar-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 150px;
+    width: 200px;
     flex-shrink: 0;
     height: 100vh;
     border-right: 1px solid #ccc;
+    box-sizing: border-box;
     position: relative;
+    #account-button-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      box-sizing: border-box;
+      button {
+        width: auto;
+        flex: none;
+      }
+    }
     #sidebar-content {
       display: flex;
       flex: 1;
@@ -21,28 +36,50 @@
       overflow-x: hidden;
       .sidebar-item {
         display: flex;
+        flex-direction: row;
         align-items: center;
-        button {
-          width: 100%;
-        }
+        justify-content: space-between;
+        padding: 10px;
+        width: 100%;
         .conv-delBtn {
+          order: 1;
+          text-align: left;
+          margin-right: auto;
+          width: auto;
         }
         .conv-getBtn {
+          order: 2;
+          text-align: right;
+          margin-left: auto;
+          width: auto;
         }
-        #selected-sidebar-item {
+        button {
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
       .load-button {
       }
     }
-    #new-conversation-form {
+    #sidebar-button-wrapper {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      flex-shrink: 0;
-      position: sticky;
-      bottom: 0;
-      #new-conversation-form-button {
-        width: 100%;
+      padding: 10px;
+      border-top: 1px solid #ccc;
+      box-sizing: border-box;
+      #new-conversation-form {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        align-items: center;
+        #new-conversation-form-button {
+          width: auto;
+        }
+      }
+      #collapse-btn {
+        width: auto;
+        flex: none;
       }
     }
   }
@@ -62,6 +99,8 @@
         position: sticky;
         top: 0;
         width: 100%;
+        border-bottom: 1px solid #ccc;
+        box-sizing: border-box;
       }
       #window-content {
         display: flex;
@@ -70,30 +109,32 @@
         min-height: 0;
         overflow-y: auto;
         .section {
-          .request-wrapper {
+          display: flex;
+          flex-direction: column;
+          border-bottom: 1px solid #ccc;
+          box-sizing: border-box;
+          .button-wrapper {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            justify-content: flex-start;
+            button {
+              width: auto;
+              text-align: center;
+            }
+          }
+          .request-wrapper, .response-wrapper {
             display: flex;
             flex-direction: column;
-            .request {
-            }
-            .previous-btn {
-            }
-            .next-btn {
-            }
-            .req-delBtn {
-            }
-            .response-wrapper {
+            flex: 1;
+            justify-content: flex-start;
+            width: 100%;
+            .text-wrapper {
               display: flex;
               flex-direction: column;
-              .response {
-              }
-              .previous-btn {
-              }
-              .next-btn {
-              }
-              .res-delBtn {
-              }
-              .retry-btn {
-              }
+              align-items: flex-start;
+              justify-content: flex-start;
+              width: 100%;
             }
           }
         }
@@ -108,6 +149,7 @@
       position: sticky;
       bottom: 0;
       border-top: 1px solid #ccc;
+      box-sizing: border-box;
       #dynamic-form {
         display: flex;
         flex: 1;

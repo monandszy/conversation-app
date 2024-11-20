@@ -57,14 +57,16 @@
 </th:block>
 
 <th:block th:fragment="section-fragment(section)">
-  <button
-    th:text="Del_Section"
-    th:hx-delete="@{/conversation/section/{id}(id=${section.id})}"
-    hx-swap="outerHTML"
-    hx-target="closest .section"
-    class="section-delBtn"
-    hx-on--before-request="setSectionDeleteAfter(event, this)"
-  ></button>
+  <div class="button-wrapper">
+    <button
+      th:text="Del_Section"
+      th:hx-delete="@{/conversation/section/{id}(id=${section.id})}"
+      hx-swap="outerHTML"
+      hx-target="closest .section"
+      class="section-delBtn"
+      hx-on--before-request="setSectionDeleteAfter(event, this)"
+    ></button>
+  </div>
   <th:block th:each="request : ${section.requests}">
     <div class="request-wrapper">
       <div
@@ -127,7 +129,7 @@
 </th:block>
 
 <th:block th:fragment="request-content-fragment(request, sectionId)">
-  <div hx-include="this">
+  <div hx-include="this" class="text-wrapper">
     <p
       th:text="${request.text}" class="request"
       contenteditable="true"
@@ -140,71 +142,77 @@
     ></p>
     <input id="hidden-input" type="hidden" name="text"/>
   </div>
-  <th:block th:if="${request.navigation.previousId != null}">
+  <div class="button-wrapper">
+    <th:block th:if="${request.navigation.previousId != null}">
+      <button
+        th:text="previous"
+        th:hx-get="'/conversation/section/' + ${sectionId} + '/request/' + ${request.navigation.previousId}"
+        hx-target="closest .request-wrapper"
+        hx-swap="outerHTML"
+        class="prev-btn"
+      ></button>
+    </th:block>
+    <th:block th:if="${request.navigation.count != 1}">
+      <span th:text="${request.navigation.position} + '/' + ${request.navigation.count}"></span>
+    </th:block>
+    <th:block th:if="${request.navigation.nextId != null}">
+      <button
+        th:text="next"
+        th:hx-get="'/conversation/section/' + ${sectionId} + '/request/' + ${request.navigation.nextId}"
+        hx-target="closest .request-wrapper"
+        hx-swap="outerHTML"
+        class="next-btn"
+      ></button>
+    </th:block>
     <button
-      th:text="previous"
-      th:hx-get="'/conversation/section/' + ${sectionId} + '/request/' + ${request.navigation.previousId}"
-      hx-target="closest .request-wrapper"
-      hx-swap="outerHTML"
-      class="prev-btn"
+      th:text="Del_Request"
+      th:hx-delete="@{/conversation/request/{id}(id=${request.id})}"
+      class="req-delBtn"
+      hx-on--before-request="setRequestDeleteAfter(event, this)"
     ></button>
-  </th:block>
-  <th:block th:if="${request.navigation.count != 1}">
-    <span th:text="${request.navigation.position} + '/' + ${request.navigation.count}"></span>
-  </th:block>
-  <th:block th:if="${request.navigation.nextId != null}">
-    <button
-      th:text="next"
-      th:hx-get="'/conversation/section/' + ${sectionId} + '/request/' + ${request.navigation.nextId}"
-      hx-target="closest .request-wrapper"
-      hx-swap="outerHTML"
-      class="next-btn"
-    ></button>
-  </th:block>
-  <button
-    th:text="Del_Request"
-    th:hx-delete="@{/conversation/request/{id}(id=${request.id})}"
-    class="req-delBtn"
-    hx-on--before-request="setRequestDeleteAfter(event, this)"
-  ></button>
+  </div>
 </th:block>
 
 <th:block th:fragment="response-content-fragment(response, requestId)">
-  <p th:text="${response.text}" class="response"></p>
-  <th:block th:if="${response.navigation.previousId != null}">
-    <button
-      th:text="previous"
-      th:hx-get="'/conversation/request/' + ${requestId} + '/response/' + ${response.navigation.previousId}"
-      hx-target="closest .response-wrapper"
-      hx-swap="outerHTML"
-      class="prev-btn"
-    ></button>
-  </th:block>
-  <th:block th:if="${response.navigation.count != 1}">
-    <span th:text="${response.navigation.position} + '/' + ${response.navigation.count}"></span>
-  </th:block>
-  <th:block th:if="${response.navigation.nextId != null}">
-    <button
-      th:text="next"
-      th:hx-get="'/conversation/request/' + ${requestId} + '/response/' + ${response.navigation.nextId}"
-      hx-target="closest .response-wrapper"
-      hx-swap="outerHTML"
-      class="next-btn"
-    ></button>
-  </th:block>
-  <button
-    th:text="retry"
-    th:hx-post="'/conversation/request/' + ${requestId}"
-    hx-target="closest .response-wrapper"
-    hx-swap="outerHTML"
-    class="retry-btn"
-    hx-on--before-request="setResponsePostAfter(this)"
-  ></button>
-  <button
-    th:text="Del_Response"
-    th:hx-delete="@{/conversation/response/{id}(id=${response.id})}"
-    class="res-delBtn"
-    hx-on--before-request="setResponseDeleteAfter(this)"
-  ></button>
+  <div hx-include="this" class="text-wrapper">
+    <p th:text="${response.text}" class="response"></p>
+  </div>
+  <div class="button-wrapper">
+    <th:block th:if="${response.navigation.previousId != null}">
+      <button
+        th:text="previous"
+        th:hx-get="'/conversation/request/' + ${requestId} + '/response/' + ${response.navigation.previousId}"
+        hx-target="closest .response-wrapper"
+        hx-swap="outerHTML"
+        class="prev-btn"
+      ></button>
+    </th:block>
+    <th:block th:if="${response.navigation.count != 1}">
+      <span th:text="${response.navigation.position} + '/' + ${response.navigation.count}"></span>
+    </th:block>
+    <th:block th:if="${response.navigation.nextId != null}">
+      <button
+        th:text="next"
+        th:hx-get="'/conversation/request/' + ${requestId} + '/response/' + ${response.navigation.nextId}"
+        hx-target="closest .response-wrapper"
+        hx-swap="outerHTML"
+        class="next-btn"
+      ></button>
+    </th:block>
+      <button
+        th:text="Del_Response"
+        th:hx-delete="@{/conversation/response/{id}(id=${response.id})}"
+        class="res-delBtn"
+        hx-on--before-request="setResponseDeleteAfter(this)"
+      ></button>
+      <button
+        th:text="retry"
+        th:hx-post="'/conversation/request/' + ${requestId}"
+        hx-target="closest .response-wrapper"
+        hx-swap="outerHTML"
+        class="retry-btn"
+        hx-on--before-request="setResponsePostAfter(this)"
+      ></button>
+  </div>
 </th:block>
 </html>

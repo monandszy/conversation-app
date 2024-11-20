@@ -8,26 +8,29 @@
 </head>
 <th:block th:fragment="fragment">
   <div id="sidebar-wrapper">
+    <div id="account-button-wrapper">
+      <button>Account</button>
+    </div>
     <div
       th:replace="~{conversation/sidebar-content :: fragment}"
     ></div>
-    <div id="new-conversation-form">
-      <form
-        hx-push-url="/conversation"
-        hx-get="/conversation/introduction"
-        hx-swap="outerHTML"
-        hx-target="#window-wrapper"
-        hx-trigger="submit"
-        hx-on--after-request="resetGlobal()"
-      >
-        <button
-          id="new-conversation-form-button"
-          type="submit" th:text="New_Conversation"
-        ></button>
-      </form>
-    </div>
-    <div>
-      <button id="theme-toggle"></button>
+    <div id="sidebar-button-wrapper">
+      <button id="collapse-btn">Collapse</button>
+      <div id="new-conversation-form">
+        <form
+          hx-push-url="/conversation"
+          hx-get="/conversation/introduction"
+          hx-swap="outerHTML"
+          hx-target="#window-wrapper"
+          hx-trigger="submit"
+          hx-on--after-request="resetGlobal()"
+        >
+          <button
+            id="new-conversation-form-button"
+            type="submit" th:text="New_Conversation"
+          ></button>
+        </form>
+      </div>
     </div>
   </div>
 </th:block>

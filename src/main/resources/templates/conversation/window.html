@@ -56,7 +56,7 @@
     <span> Response Count: </span>
     <span id="header-response-count" th:text="${selectedData.responseCount}"></span>
     <button
-      th:text="Del"
+      th:text="Del_Conversation"
       th:hx-delete="@{/conversation/{id}(id=${conversationId})}"
       id="selected-conv-DelBtn"
       hx-swap="none"
