@@ -12,13 +12,13 @@
     flex-shrink: 0;
     height: 100vh;
     border-right: 1px solid #ccc;
-    overflow-y: auto;
-    overflow-x: hidden;
     position: relative;
     #sidebar-content {
       display: flex;
       flex: 1;
       flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
       .sidebar-item {
         display: flex;
         align-items: center;

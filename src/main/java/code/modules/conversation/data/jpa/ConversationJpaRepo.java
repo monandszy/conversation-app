@@ -28,32 +28,44 @@ public interface ConversationJpaRepo extends JpaRepository<ConversationEntity, C
         total_amount,
         selected_position
       FROM (
-        SELECT ROW_NUMBER() OVER (ORDER BY c.created DESC)\\:\\:float AS selected_position
+        SELECT
+          c.id AS id,
+          ROW_NUMBER() OVER (ORDER BY c.created DESC)\\:\\:float AS selected_position
         FROM conversations c
-        WHERE c.id = :conversationId
+        WHERE c.account_id = :accountId
       ) selected,
       (
         SELECT COUNT(*) AS total_amount
         FROM conversations c
         WHERE c.account_id = :accountId
       ) total
+      WHERE selected.id = :conversationId
     )
     SELECT
-      pr.page_number,
-      pr.total_amount,
-      array_agg((c.id || ',' || TO_CHAR(c.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')) ORDER BY c.created DESC)
-    FROM conversations c
-    CROSS JOIN position_range pr
-    WHERE c.account_id = :accountId
+        pr.page_number,
+        pr.total_amount,
+        array_agg(agg_data.aggregated_data)
+    FROM position_range pr
+    CROSS JOIN LATERAL (
+        SELECT
+            c.id || ',' || TO_CHAR(c.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS aggregated_data
+        FROM conversations c
+        WHERE c.account_id = :accountId
+        ORDER BY c.created DESC
+        LIMIT :pageSize OFFSET (SELECT min_position FROM position_range)
+    ) agg_data
     GROUP BY
-      pr.page_number,
-      pr.total_amount
-    LIMIT :pageSize
-    OFFSET (SELECT min_position FROM position_range)
+        pr.page_number,
+        pr.total_amount
     """, nativeQuery = true)
   Object[] findByAccountIdWithFiler(
     UUID accountId,
     UUID conversationId,
     Integer pageSize
   );
+
+  /*    GROUP BY
+      pr.page_number,
+      pr.total_amount
+      array_agg((c.id || ',' || TO_CHAR(c.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')) ORDER BY c.created DESC),*/
 }

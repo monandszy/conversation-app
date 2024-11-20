@@ -8,6 +8,14 @@
 </head>
 <th:block th:fragment="fragment">
   <nav id="sidebar-content">
+    <th:block th:if="${conversationPage.hasPrevious()}">
+      <head hx-head="merge">
+        <script hx-head="re-eval" defer>
+          container = document.querySelector("#sidebar-content");
+          container.scrollTop = container.scrollHeight;
+        </script>
+      </head>
+    </th:block>
     <div
       th:replace="~{conversation/sidebar-content :: previous-content(${conversationPage})}"
     >
@@ -23,19 +31,16 @@
   </nav>
 </th:block>
 <th:block th:fragment="previous-fragment">
-  <nav id="sidebar-content">
+    <div
+      th:replace="~{conversation/sidebar-content :: previous-content(${conversationPage})}"
+    >
+    </div>
     <div
       th:replace="~{conversation/sidebar-content :: content(${conversationPage})}"
     >
     </div>
-    <div
-      th:replace="~{conversation/sidebar-content :: next-content(${conversationPage})}"
-    >
-    </div>
-  </nav>
 </th:block>
 <th:block th:fragment="next-fragment">
-  <nav id="sidebar-content">
     <div
       th:replace="~{conversation/sidebar-content :: content(${conversationPage})}"
     >
@@ -44,20 +49,20 @@
       th:replace="~{conversation/sidebar-content :: next-content(${conversationPage})}"
     >
     </div>
-  </nav>
 </th:block>
 
 <th:block th:fragment="previous-content(conversationPage)">
-  <div th:if="${conversationPage.hasPrevious()}">
+  <th:block th:if="${conversationPage.hasPrevious()}">
     <button
-      th:hx-get="@{/conversation/list/next(page=${conversationPage.number - 1})}"
+      th:hx-get="@{/conversation/list/previous(page=${conversationPage.number - 1})}"
       hx-trigger="intersect"
       hx-target="this"
       hx-swap="outerHTML"
       class="load-button"
+      hx-on--before-request="correctSidebarScroll(this)"
     >Load Previous
     </button>
-  </div>
+  </th:block>
 </th:block>
 
 <th:block th:fragment="content(conversationPage)">
@@ -72,16 +77,16 @@
 </th:block>
 
 <th:block th:fragment="next-content(conversationPage)">
-  <div th:if="${conversationPage.hasNext()}">
+  <th:block th:if="${conversationPage.hasNext()}">
     <button
-      th:hx-get="@{/conversation/list/previous(page=${conversationPage.number + 1})}"
+      th:hx-get="@{/conversation/list/next(page=${conversationPage.number + 1})}"
       hx-trigger="intersect"
       hx-target="this"
       hx-swap="outerHTML"
       class="load-button"
     >Load Next
     </button>
-  </div>
+  </th:block>
 </th:block>
 
 <th:block th:fragment="sidebar-item(conversationId)">

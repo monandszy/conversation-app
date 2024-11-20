@@ -25,15 +25,9 @@
           <div
             th:replace="~{conversation/window :: header-content(${selectedData})}"
           ></div>
-          <div id="window-content">
-            <div
-              th:replace="~{conversation/window-content :: fragment(${sectionPage}, ${conversationId})}"
-            ></div>
-            <script defer>
-              container = document.querySelector("#window-content");
-              container.scrollTop = container.scrollHeight;
-            </script>
-          </div>
+          <div
+            th:replace="~{conversation/window-content :: fragment(${sectionPage}, ${conversationId})}"
+          ></div>
         </div>
       </th:block>
       <div th:replace="~{conversation/generate-form :: fragment}"></div>

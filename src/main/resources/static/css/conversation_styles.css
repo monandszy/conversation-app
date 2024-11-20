@@ -12,13 +12,13 @@
     flex-shrink: 0;
     height: 100vh;
     border-right: 1px solid #ccc;
-    overflow-y: auto;
-    overflow-x: hidden;
     position: relative; }
     #content #sidebar-wrapper #sidebar-content {
       display: flex;
       flex: 1;
-      flex-direction: column; }
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden; }
       #content #sidebar-wrapper #sidebar-content .sidebar-item {
         display: flex;
         align-items: center; }

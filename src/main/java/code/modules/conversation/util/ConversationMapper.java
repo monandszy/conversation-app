@@ -58,9 +58,6 @@ public interface ConversationMapper {
 
   ResponseEntity domainToEntity(Response domain);
 
-  @Mapping(target = "conversation", source = "conversation", ignore = true)
-  Section entityToDomain(SectionEntity entity);
-
   @Mapping(target = "section", source = "section", ignore = true)
   Request entityToDomain(RequestEntity entity);
 

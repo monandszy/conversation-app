@@ -7,29 +7,33 @@
   <title>Window Content</title>
 </head>
 <th:block th:fragment="fragment(sectionPage, conversationId)">
-  <div
-    th:replace="~{conversation/window-content :: next-content(${sectionPage}, ${conversationId})}"
-  ></div>
-  <div
-    th:each="i : ${#numbers.sequence(sectionPage.content.size() - 1, 0, -1)}"
-    th:with="section=${sectionPage.content.get(i)}" th:classappend="section"
-  >
+  <div id="window-content">
+    <th:block th:if="${sectionPage.hasNext()}">
+      <head hx-head="merge">
+        <script hx-head="re-eval" defer>
+          container = document.querySelector("#window-content");
+          container.scrollTop = container.scrollHeight;
+        </script>
+      </head>
+    </th:block>
     <div
-      th:replace="~{conversation/window-content :: section-fragment(${section})}"
+      th:replace="~{conversation/window-content :: next-content(${sectionPage}, ${conversationId})}"
+    ></div>
+    <div
+      th:each="i : ${#numbers.sequence(sectionPage.content.size() - 1, 0, -1)}"
+      th:with="section=${sectionPage.content.get(i)}" th:classappend="section"
+    >
+      <div
+        th:replace="~{conversation/window-content :: section-fragment(${section})}"
+      ></div>
+    </div>
+    <div
+      th:replace="~{conversation/window-content :: previous-content(${sectionPage}, ${conversationId})}"
     ></div>
   </div>
-  <div
-    th:replace="~{conversation/window-content :: previous-content(${sectionPage}, ${conversationId})}"
-  ></div>
 </th:block>
 
 <th:block th:fragment="previous-fragment">
-  <head hx-head="merge">
-    <script hx-head="re-eval" defer>
-      container = document.querySelector("#window-content");
-      container.scrollTop = container.scrollHeight - container.clientHeight;
-    </script>
-  </head>
   <div
     th:each="i : ${#numbers.sequence(sectionPage.content.size() - 1, 0, -1)}"
     th:with="section=${sectionPage.content.get(i)}" th:classappend="section"
@@ -65,7 +69,7 @@
       hx-target="this"
       hx-swap="outerHTML"
       class="load-button"
-      hx-on--before-request="correctNextScroll(this)"
+      hx-on--before-request="correctWindowScroll(this)"
     >Load Next
     </button>
   </div>
@@ -105,7 +109,6 @@
       hx-target="this"
       hx-swap="outerHTML"
       class="load-button"
-      hx-on--before-request="correctPreviousScroll(this)"
     >Load Previous
     </button>
   </div>

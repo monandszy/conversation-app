@@ -76,3 +76,11 @@ function setSelectedDeleteAfter(button) {
     newConversationForm.click();
   })
 }
+
+function correctSidebarScroll(button) {
+  const container = document.querySelector("#sidebar-content")
+  const scrollPositionBefore = container.scrollHeight;
+  button.addEventListener('htmx:afterRequest', function () {
+    container.scrollTop = container.scrollHeight - scrollPositionBefore;
+  })
+}

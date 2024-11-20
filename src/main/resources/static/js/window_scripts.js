@@ -89,15 +89,7 @@ function updateCount() {
   });
 }
 
-function correctPreviousScroll(button) {
-  const container = document.querySelector("#window-content")
-  const scrollPositionBefore = container.scrollTop;
-  button.addEventListener('htmx:afterRequest', function () {
-    container.scrollTop = scrollPositionBefore;
-  })
-}
-
-function correctNextScroll(button) {
+function correctWindowScroll(button) {
   const container = document.querySelector("#window-content")
   const scrollPositionBefore = container.scrollHeight;
   button.addEventListener('htmx:afterRequest', function () {
