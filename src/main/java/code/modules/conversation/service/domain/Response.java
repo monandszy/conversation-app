@@ -31,6 +31,8 @@ public class Response {
   }
 
   public record ResponseNavigation(
+    Long responseCount,
+    Long responsePosition,
     Response.ResponseId nextId,
     Response.ResponseId previousId
   ) {

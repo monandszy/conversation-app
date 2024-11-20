@@ -21,7 +21,7 @@ public interface ConversationJpaRepo extends JpaRepository<ConversationEntity, C
         SELECT
           c.id AS id,
           COUNT(*) OVER() AS total_amount,
-          ROW_NUMBER() OVER (ORDER BY c.created)::FLOAT AS selected_position
+          ROW_NUMBER() OVER (ORDER BY c.created) AS selected_position
         FROM conversations c
         WHERE c.account_id = :accountId
       )

@@ -45,7 +45,7 @@ public class CommandConversationRepo implements CommandConversationDao {
     RequestEntity saveRequest = requestJpaRepo.save(requestEntity);
     responseEntity.setRequest(saveRequest);
     responseJpaRepo.save(responseEntity);
-    Object[] projection = sectionJpaRepo.findProjectionBySectionId(savedSection.getId());
+    Object[] projection = sectionJpaRepo.findProjectionBySectionId(savedSection.getId().value());
     return mapper.sectionProjectionToDomain((Object[]) projection[0]);
   }
 
@@ -58,7 +58,8 @@ public class CommandConversationRepo implements CommandConversationDao {
     responseEntity.setRequest(saveRequest);
     responseJpaRepo.save(responseEntity);
     requestJpaRepo.deselectAndSelect(section.getId(), saveRequest.getId());
-    Object[] projection = requestJpaRepo.findProjectionByRequest(saveRequest.getId().value());
+    Object[] projection = requestJpaRepo.findProjectionByRequest(
+      saveRequest.getId().value(), section.getId().value());
     return mapper.requestProjectionToDomain((Object[]) projection[0]);
   }
 
@@ -68,7 +69,8 @@ public class CommandConversationRepo implements CommandConversationDao {
     RequestEntity request = entity.getRequest();
     ResponseEntity saved = responseJpaRepo.save(entity);
     responseJpaRepo.deselectAndSelect(request.getId(), saved.getId());
-    Object[] projection = responseJpaRepo.findProjectionByResponse(saved.getId().value());
+    Object[] projection = responseJpaRepo.findProjectionByResponse(
+      saved.getId().value(), request.getId().value());
     return mapper.responseProjectionToDomain((Object[]) projection[0]);
   }
 

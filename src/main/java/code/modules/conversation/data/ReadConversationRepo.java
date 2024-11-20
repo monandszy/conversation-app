@@ -50,10 +50,10 @@ public class ReadConversationRepo implements ReadConversationDao {
   @Override
   public Page<Conversation> getConversationPageWithFilter(ConversationId conversationId, AccountId accountId) {
     Object[] pageData = (Object[]) conversationJpaRepo.getSelectedPosition(conversationId.value(), accountId.value())[0];
-    Double selectedPosition = (Double) pageData[0];
+    Long selectedPosition = (Long) pageData[0];
     Long totalAmount = (Long) pageData[1];
     int pageCount = (int) Math.floor(((double) totalAmount) / Constants.PAGE_SIZE);
-    int pageNumber = (int) Math.floor(selectedPosition / Constants.PAGE_SIZE);
+    int pageNumber = (int) Math.floor((double) selectedPosition / Constants.PAGE_SIZE);
     int minPosition = pageNumber * Constants.PAGE_SIZE;
     List<ConversationEntity> page = conversationJpaRepo
       .findContentByAccountId(accountId, Constants.PAGE_SIZE, minPosition);
@@ -69,7 +69,7 @@ public class ReadConversationRepo implements ReadConversationDao {
     int pageNumber = pageCount - pageRequest.getPageNumber();
     int minPosition = pageNumber * pageRequest.getPageSize();
     List<Object[]> page = sectionJpaRepo
-      .findProjectionPageByConversationId(conversationId, Constants.PAGE_SIZE, minPosition);
+      .findProjectionPageByConversationId(conversationId.value(), Constants.PAGE_SIZE, minPosition);
     List<Section> content = page.stream().map(mapper::sectionProjectionToDomain).toList();
     return new PageImpl<>(content, pageRequest, totalAmount);
   }
@@ -80,7 +80,7 @@ public class ReadConversationRepo implements ReadConversationDao {
       sectionId,
       requestId
     );
-    Object[] projection = requestJpaRepo.findProjectionByRequest(requestId.value());
+    Object[] projection = requestJpaRepo.findProjectionByRequest(requestId.value(), sectionId.value());
     return mapper.requestProjectionToDomain((Object[]) projection[0]);
   }
 
@@ -90,7 +90,7 @@ public class ReadConversationRepo implements ReadConversationDao {
       requestId,
       responseId
     );
-    Object[] projection = responseJpaRepo.findProjectionByResponse(responseId.value());
+    Object[] projection = responseJpaRepo.findProjectionByResponse(responseId.value(), requestId.value());
     return mapper.responseProjectionToDomain((Object[]) projection[0]);
   }
 

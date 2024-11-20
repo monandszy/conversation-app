@@ -33,6 +33,8 @@ public class Request {
   }
 
   public record RequestNavigation(
+    Long requestCount,
+    Long requestPosition,
     Request.RequestId nextId,
     Request.RequestId previousId
   ) {

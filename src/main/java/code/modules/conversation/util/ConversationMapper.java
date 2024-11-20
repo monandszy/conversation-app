@@ -3,7 +3,6 @@ package code.modules.conversation.util;
 import static code.modules.conversation.IConversationQueryFacade.RequestReadDto;
 import static code.modules.conversation.IConversationQueryFacade.SectionReadDto;
 
-import code.configuration.Constants;
 import code.configuration.SpringMapperConfig;
 import code.modules.conversation.IConversationQueryFacade.ConversationReadDto;
 import code.modules.conversation.IConversationQueryFacade.ResponseReadDto;
@@ -19,16 +18,11 @@ import code.modules.conversation.service.domain.Response.ResponseId;
 import code.modules.conversation.service.domain.Section;
 import code.util.Generated;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 @Mapper(config = SpringMapperConfig.class)
 @AnnotateWith(Generated.class)
@@ -69,8 +63,8 @@ public interface ConversationMapper {
 
   default Section sectionProjectionToDomain(Object[] projection) {
     Request request = requestProjectionToDomain(projection);
-    UUID sectionId = (UUID) projection[10];
-    OffsetDateTime sectionCreated = OffsetDateTime.parse((String) projection[11]);
+    UUID sectionId = (UUID) projection[14];
+    OffsetDateTime sectionCreated = OffsetDateTime.parse((String) projection[15]);
     return Section.builder()
       .requests(List.of(request))
       .id(new Section.SectionId(sectionId))
@@ -80,12 +74,16 @@ public interface ConversationMapper {
 
   default Request requestProjectionToDomain(Object[] projection) {
     Response response = responseProjectionToDomain(projection);
-    UUID requestId = (UUID) projection[5];
-    OffsetDateTime requestCreated = OffsetDateTime.parse((String) projection[6]);
-    String requestText = (String) projection[7];
-    UUID prevRequestId = (UUID) projection[8];
-    UUID nextRequestId = (UUID) projection[9];
+    UUID requestId = (UUID) projection[7];
+    OffsetDateTime requestCreated = OffsetDateTime.parse((String) projection[8]);
+    String requestText = (String) projection[9];
+    UUID prevRequestId = (UUID) projection[10];
+    UUID nextRequestId = (UUID) projection[11];
+    Long requestCount = (Long) projection[12];
+    Long requestPosition = (Long) projection[13];
     Request.RequestNavigation requestNav = new Request.RequestNavigation(
+      requestCount,
+      requestPosition,
       new RequestId(nextRequestId),
       new RequestId(prevRequestId)
     );
@@ -104,7 +102,11 @@ public interface ConversationMapper {
     String responseText = (String) projection[2];
     UUID prevResponseId = (UUID) projection[3];
     UUID nextResponseId = (UUID) projection[4];
+    Long responseCount = (Long) projection[5];
+    Long responsePosition = (Long) projection[6];
     Response.ResponseNavigation responseNav = new Response.ResponseNavigation(
+      responseCount,
+      responsePosition,
       new ResponseId(nextResponseId),
       new ResponseId(prevResponseId)
     );
@@ -114,23 +116,5 @@ public interface ConversationMapper {
       .created(responseCreated)
       .navigation(responseNav)
       .build();
-  }
-
-  default Page<Conversation> conversationProjectionToDomain(Object[] projection) {
-    Integer pageNumber = (Integer) projection[0];
-    Long totalAmount = (Long) projection[1];
-    String[] concatenatedDataArray = (String[]) projection[2];
-    List<Conversation> content = Arrays.stream(concatenatedDataArray)
-      .map(concatenated -> {
-        String[] parts = concatenated.split(",");
-        UUID id = UUID.fromString(parts[0]);
-        OffsetDateTime created = OffsetDateTime.parse(parts[1]);
-        return Conversation.builder()
-          .id(new Conversation.ConversationId(id))
-          .created(created)
-          .build();
-      }).toList();
-    PageRequest pageRequest = PageRequest.of(pageNumber, Constants.PAGE_SIZE, Sort.by("created").descending());
-    return new PageImpl<>(content, pageRequest, totalAmount);
   }
 }

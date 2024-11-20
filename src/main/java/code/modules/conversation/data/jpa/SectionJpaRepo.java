@@ -6,6 +6,7 @@ import code.modules.conversation.service.domain.Conversation;
 import code.modules.conversation.service.domain.Section;
 import jakarta.persistence.Tuple;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,52 +15,112 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SectionJpaRepo extends JpaRepository<SectionEntity, Section.SectionId> {
 
-  @Query("""
-    SELECT
-      res.id.value,
-      TO_CHAR(res.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
-      res.text,
-      LAG(res.id.value) OVER (PARTITION BY req.id ORDER BY res.created),
-      LEAD(res.id.value) OVER (PARTITION BY req.id ORDER BY res.created),
-      req.id.value,
-      TO_CHAR(req.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
-      req.text,
-      LAG(req.id.value) OVER (PARTITION BY s.id ORDER BY req.created),
-      LEAD(req.id.value) OVER (PARTITION BY s.id ORDER BY req.created),
-      s.id.value,
-      TO_CHAR(s.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')
-    FROM SectionEntity s
-    LEFT JOIN RequestEntity req ON req.section.id = s.id AND req.selected = true
-    LEFT JOIN ResponseEntity res ON res.request.id = req.id AND res.selected = true
-    WHERE s.conversation.id = :conversationId
-    ORDER BY s.created
-    LIMIT :pageSize OFFSET :offset
-    """)
+  @Query(value = """
+      WITH response_window AS (
+        SELECT
+          res.id AS id,
+          res.selected AS selected,
+          TO_CHAR(res.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created,
+          res.text AS text,
+          LAG(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id) AS prev,
+          LEAD(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id) AS next,
+          COUNT(*) OVER (PARTITION BY res.request_id) AS total,
+          ROW_NUMBER() OVER (PARTITION BY res.request_id ORDER BY res.created) AS position,
+          res.request_id AS request_id
+        FROM responses res
+        ),
+      request_window AS (
+        SELECT
+          req.id AS id,
+          req.selected AS selected,
+          TO_CHAR(req.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created,
+          req.text AS text,
+          LAG(req.id) OVER (PARTITION BY req.section_id ORDER BY req.created) AS prev,
+          LEAD(req.id) OVER (PARTITION BY req.section_id ORDER BY req.created) AS next,
+          COUNT(*) OVER (PARTITION BY req.section_id) AS total,
+          ROW_NUMBER() OVER (PARTITION BY req.section_id ORDER BY req.created) AS position,
+          req.section_id AS section_id
+        FROM requests req
+      )
+      SELECT
+        resw.id,
+        resw.created,
+        resw.text,
+        resw.prev,
+        resw.next,
+        resw.total,
+        resw.position,
+        reqw.id,
+        reqw.created,
+        reqw.text,
+        reqw.prev,
+        reqw.next,
+        reqw.total,
+        reqw.position,
+        s.id,
+        TO_CHAR(s.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')
+      FROM sections s
+      LEFT JOIN request_window reqw ON reqw.section_id = s.id AND reqw.selected = true
+      LEFT JOIN response_window resw ON resw.request_id = reqw.id AND resw.selected = true
+      WHERE s.conversation_id = :conversationId
+      ORDER BY s.created
+      LIMIT :pageSize OFFSET :offset
+    """, nativeQuery = true)
   List<Object[]> findProjectionPageByConversationId(
-    @Param("conversationId") Conversation.ConversationId conversationId,
+    UUID conversationId,
     Integer pageSize, Integer offset
   );
 
-  @Query("""
-    SELECT
-      res.id.value,
-      TO_CHAR(res.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
-      res.text,
-      LAG(res.id.value) OVER (PARTITION BY req.id ORDER BY res.created),
-      LEAD(res.id.value) OVER (PARTITION BY req.id ORDER BY res.created),
-      req.id.value,
-      TO_CHAR(req.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
-      req.text,
-      LAG(req.id.value) OVER (PARTITION BY s.id ORDER BY req.created),
-      LEAD(req.id.value) OVER (PARTITION BY s.id ORDER BY req.created),
-      s.id.value,
-      TO_CHAR(s.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')
-    FROM SectionEntity s
-    LEFT JOIN RequestEntity req ON req.section.id = s.id AND req.selected = true
-    LEFT JOIN ResponseEntity res ON res.request.id = req.id AND res.selected = true
+  @Query(value = """
+      WITH response_window AS (
+        SELECT
+          res.id AS id,
+          res.selected AS selected,
+          TO_CHAR(res.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created,
+          res.text AS text,
+          LAG(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id) AS prev,
+          LEAD(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id) AS next,
+          COUNT(*) OVER (PARTITION BY res.request_id) AS total,
+          ROW_NUMBER() OVER (PARTITION BY res.request_id ORDER BY res.created) AS position,
+          res.request_id AS request_id
+        FROM responses res
+      ),
+      request_window AS (
+        SELECT
+          req.id AS id,
+          req.selected AS selected,
+          TO_CHAR(req.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created,
+          req.text AS text,
+          LAG(req.id) OVER (PARTITION BY req.section_id ORDER BY req.created) AS prev,
+          LEAD(req.id) OVER (PARTITION BY req.section_id ORDER BY req.created) AS next,
+          COUNT(*) OVER (PARTITION BY req.section_id) AS total,
+          ROW_NUMBER() OVER (PARTITION BY req.section_id ORDER BY req.created) AS position,
+          req.section_id AS section_id
+        FROM requests req
+      )
+      SELECT
+        resw.id,
+        resw.created,
+        resw.text,
+        resw.prev,
+        resw.next,
+        resw.total,
+        resw.position,
+        reqw.id,
+        reqw.created,
+        reqw.text,
+        reqw.prev,
+        reqw.next,
+        reqw.total,
+        reqw.position,
+        s.id,
+        TO_CHAR(s.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')
+    FROM sections s
+    LEFT JOIN request_window reqw ON reqw.section_id = s.id AND reqw.selected = TRUE
+    LEFT JOIN response_window resw ON resw.request_id = reqw.id AND resw.selected = TRUE
     WHERE s.id = :sectionId
-    """)
-  Object[] findProjectionBySectionId(@Param("sectionId") Section.SectionId sectionId);
+    """, nativeQuery = true)
+  Object[] findProjectionBySectionId(UUID sectionId);
 
   boolean existsByIdAndConversationAccountId(Section.SectionId sectionId, AccountId accountId);
 

@@ -17,19 +17,28 @@ public interface ResponseJpaRepo extends JpaRepository<ResponseEntity, ResponseI
   @Query(value = """
       WITH response_window AS (
           SELECT
-            res.id AS sResId,
-            TO_CHAR(res.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
-            res.text,
-            LAG(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id),
-            LEAD(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id)
-          FROM responses res
+            res.id AS id,
+            res.selected AS selected,
+            TO_CHAR(res.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created,
+            res.text AS text,
+            LAG(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id) AS prev,
+            LEAD(res.id) OVER (PARTITION BY res.request_id ORDER BY res.created, res.id) AS next,
+            COUNT(*) OVER (PARTITION BY res.request_id) AS total,
+            ROW_NUMBER() OVER (PARTITION BY res.request_id ORDER BY res.created) AS position
+          FROM responses res WHERE res.request_id = :requestId
           )
         SELECT
-            rw.*
-        FROM response_window rw
-        WHERE rw.sResId = :selectedResponseId
+            resw.id,
+            resw.created,
+            resw.text,
+            resw.prev,
+            resw.next,
+            resw.total,
+            resw.position
+        FROM response_window resw
+        WHERE resw.id = :responseId AND resw.selected = true
     """, nativeQuery = true)
-  Object[] findProjectionByResponse(@Param("selectedResponseId") UUID selectedResponseId);
+  Object[] findProjectionByResponse(UUID responseId, UUID requestId);
 
   boolean existsByIdAndRequestSectionConversationAccountId(ResponseId responseId, AccountId accountId);
 
