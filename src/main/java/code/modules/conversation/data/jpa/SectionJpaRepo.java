@@ -5,8 +5,7 @@ import code.modules.conversation.service.domain.AccountId;
 import code.modules.conversation.service.domain.Conversation;
 import code.modules.conversation.service.domain.Section;
 import jakarta.persistence.Tuple;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,10 +32,12 @@ public interface SectionJpaRepo extends JpaRepository<SectionEntity, Section.Sec
     LEFT JOIN RequestEntity req ON req.section.id = s.id AND req.selected = true
     LEFT JOIN ResponseEntity res ON res.request.id = req.id AND res.selected = true
     WHERE s.conversation.id = :conversationId
+    ORDER BY s.created
+    LIMIT :pageSize OFFSET :offset
     """)
-  Page<Object[]> findProjectionPageByConversationId(
+  List<Object[]> findProjectionPageByConversationId(
     @Param("conversationId") Conversation.ConversationId conversationId,
-    Pageable pageable
+    Integer pageSize, Integer offset
   );
 
   @Query("""
@@ -68,4 +69,5 @@ public interface SectionJpaRepo extends JpaRepository<SectionEntity, Section.Sec
     "(SELECT COUNT(resp) FROM ResponseEntity resp WHERE resp.request.section.conversation.id = :conversationId) AS responseCount")
   Tuple countSectionsRequestsResponses(@Param("conversationId") Conversation.ConversationId conversationId);
 
+  long countByConversationId(Conversation.ConversationId conversationId);
 }

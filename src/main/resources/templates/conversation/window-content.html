@@ -16,49 +16,20 @@
         </script>
       </head>
     </th:block>
-    <div
-      th:replace="~{conversation/window-content :: next-content(${sectionPage}, ${conversationId})}"
-    ></div>
-    <div
-      th:each="i : ${#numbers.sequence(sectionPage.content.size() - 1, 0, -1)}"
-      th:with="section=${sectionPage.content.get(i)}" th:classappend="section"
-    >
-      <div
-        th:replace="~{conversation/window-content :: section-fragment(${section})}"
-      ></div>
-    </div>
-    <div
-      th:replace="~{conversation/window-content :: previous-content(${sectionPage}, ${conversationId})}"
-    ></div>
+    <div th:replace="~{conversation/window-content :: next-content(${sectionPage}, ${conversationId})}"></div>
+    <div th:replace="~{conversation/window-content ::content(${sectionPage})}"></div>
+    <div th:replace="~{conversation/window-content :: previous-content(${sectionPage}, ${conversationId})}"></div>
   </div>
 </th:block>
 
 <th:block th:fragment="previous-fragment">
-  <div
-    th:each="i : ${#numbers.sequence(sectionPage.content.size() - 1, 0, -1)}"
-    th:with="section=${sectionPage.content.get(i)}" th:classappend="section"
-  >
-    <div
-      th:replace="~{conversation/window-content :: section-fragment(${section})}"
-    ></div>
-  </div>
-  <div
-    th:replace="~{conversation/window-content :: previous-content(${section}, ${conversationId})}"
-  ></div>
+  <div th:replace="~{conversation/window-content ::content(${sectionPage})}"></div>
+  <div th:replace="~{conversation/window-content :: previous-content(${section}, ${conversationId})}"></div>
 </th:block>
 
 <th:block th:fragment="next-fragment">
-  <div
-    th:replace="~{conversation/window-content :: next-content(${sectionPage}, ${conversationId})}"
-  ></div>
-  <div
-    th:each="i : ${#numbers.sequence(sectionPage.content.size() - 1, 0, -1)}"
-    th:with="section=${sectionPage.content.get(i)}" th:classappend="section"
-  >
-    <div
-      th:replace="~{conversation/window-content :: section-fragment(${section})}"
-    ></div>
-  </div>
+  <div th:replace="~{conversation/window-content :: next-content(${sectionPage}, ${conversationId})}"></div>
+  <div th:replace="~{conversation/window-content ::content(${sectionPage})}"></div>
 </th:block>
 
 <th:block th:fragment="next-content(sectionPage, conversationId)">
@@ -68,10 +39,20 @@
       hx-trigger="intersect"
       hx-target="this"
       hx-swap="outerHTML"
-      class="load-button"
+      class="next-loadBtn"
       hx-on--before-request="correctWindowScroll(this)"
     >Load Next
     </button>
+  </div>
+</th:block>
+
+<th:block th:fragment="content(sectionPage)">
+  <div
+    th:each="section : ${sectionPage.content}" th:classappend="section"
+  >
+    <div
+      th:replace="~{conversation/window-content :: section-fragment(${section})}"
+    ></div>
   </div>
 </th:block>
 
@@ -108,7 +89,7 @@
       hx-trigger="intersect"
       hx-target="this"
       hx-swap="outerHTML"
-      class="load-button"
+      class="prev-loadBtn"
     >Load Previous
     </button>
   </div>

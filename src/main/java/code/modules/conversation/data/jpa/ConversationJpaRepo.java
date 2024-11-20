@@ -4,9 +4,8 @@ import static code.modules.conversation.service.domain.Conversation.Conversation
 
 import code.modules.conversation.data.entity.ConversationEntity;
 import code.modules.conversation.service.domain.AccountId;
+import java.util.List;
 import java.util.UUID;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,58 +13,44 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ConversationJpaRepo extends JpaRepository<ConversationEntity, ConversationId> {
 
-  Page<ConversationEntity> findByAccountId(AccountId accountId, Pageable pageRequest);
-
   boolean existsByIdAndAccountId(ConversationId id, AccountId accountId);
 
-
-  @Query(value = """
-    WITH position_range AS (
-      SELECT
-        FLOOR(selected_position / :pageSize)\\:\\:int AS page_number,
-        (FLOOR(selected_position / :pageSize) * :pageSize) AS min_position,
-        (LEAST(CEIL(selected_position / :pageSize) * :pageSize, total_amount)) AS max_position,
-        total_amount,
-        selected_position
-      FROM (
+  @Query(
+    value = """
+      WITH positions AS (
         SELECT
           c.id AS id,
-          ROW_NUMBER() OVER (ORDER BY c.created DESC)\\:\\:float AS selected_position
+          COUNT(*) OVER() AS total_amount,
+          ROW_NUMBER() OVER (ORDER BY c.created)::FLOAT AS selected_position
         FROM conversations c
         WHERE c.account_id = :accountId
-      ) selected,
-      (
-        SELECT COUNT(*) AS total_amount
-        FROM conversations c
-        WHERE c.account_id = :accountId
-      ) total
-      WHERE selected.id = :conversationId
-    )
-    SELECT
-        pr.page_number,
-        pr.total_amount,
-        array_agg(agg_data.aggregated_data)
-    FROM position_range pr
-    CROSS JOIN LATERAL (
-        SELECT
-            c.id || ',' || TO_CHAR(c.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS aggregated_data
-        FROM conversations c
-        WHERE c.account_id = :accountId
-        ORDER BY c.created DESC
-        LIMIT :pageSize OFFSET (SELECT min_position FROM position_range)
-    ) agg_data
-    GROUP BY
-        pr.page_number,
-        pr.total_amount
-    """, nativeQuery = true)
-  Object[] findByAccountIdWithFiler(
-    UUID accountId,
-    UUID conversationId,
-    Integer pageSize
+      )
+      SELECT
+        p.selected_position AS selected_postion,
+        p.total_amount AS total_amount
+      FROM positions p
+      WHERE p.id = :conversationId
+      """, nativeQuery = true
+  )
+  Object[] getSelectedPosition(UUID conversationId, UUID accountId);
+
+  @Query(
+    """
+        SELECT c
+        FROM ConversationEntity c
+        WHERE c.accountId = :accountId
+        ORDER BY c.created
+        LIMIT :pageSize OFFSET :offset
+      """)
+  List<ConversationEntity> findContentByAccountId(
+    AccountId accountId, Integer pageSize, Integer offset
   );
 
-  /*    GROUP BY
-      pr.page_number,
-      pr.total_amount
-      array_agg((c.id || ',' || TO_CHAR(c.created, 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')) ORDER BY c.created DESC),*/
+  long countByAccountId(AccountId accountId);
+
+  /*
+  *  FLOOR(selected_position / :pageSize)\:\:INT AS page_number,
+          (FLOOR(selected_position / :pageSize) * :pageSize) AS min_position,
+          (LEAST(CEIL(selected_position / :pageSize) * :pageSize, total_amount)) AS max_position,
+  * */
 }

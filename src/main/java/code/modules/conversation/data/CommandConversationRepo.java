@@ -46,7 +46,7 @@ public class CommandConversationRepo implements CommandConversationDao {
     responseEntity.setRequest(saveRequest);
     responseJpaRepo.save(responseEntity);
     Object[] projection = sectionJpaRepo.findProjectionBySectionId(savedSection.getId());
-    return mapper.projectionToDomain((Object[]) projection[0]);
+    return mapper.sectionProjectionToDomain((Object[]) projection[0]);
   }
 
   @Override

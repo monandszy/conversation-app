@@ -19,8 +19,10 @@ import code.modules.conversation.service.domain.Section;
 import code.modules.conversation.util.ConversationMapper;
 import code.util.ReadRepositoryAdapter;
 import jakarta.persistence.Tuple;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 @ReadRepositoryAdapter
@@ -35,22 +37,41 @@ public class ReadConversationRepo implements ReadConversationDao {
 
   @Override
   public Page<Conversation> getConversationPage(PageRequest pageRequest, AccountId accountId) {
-    Page<ConversationEntity> page = conversationJpaRepo.findByAccountId(accountId, pageRequest);
-    return page.map(mapper::entityToDomain);
+    long totalAmount = conversationJpaRepo.countByAccountId(accountId);
+    int pageCount = (int) Math.floor(((double) totalAmount) / pageRequest.getPageSize());
+    int pageNumber = pageCount - pageRequest.getPageNumber();
+    int minPosition = pageNumber * pageRequest.getPageSize();
+    List<ConversationEntity> page = conversationJpaRepo
+      .findContentByAccountId(accountId, Constants.PAGE_SIZE, minPosition);
+    List<Conversation> content = page.stream().map(mapper::entityToDomain).toList();
+    return new PageImpl<>(content, pageRequest, totalAmount);
   }
 
   @Override
   public Page<Conversation> getConversationPageWithFilter(ConversationId conversationId, AccountId accountId) {
-    Object[] projection = conversationJpaRepo.findByAccountIdWithFiler(
-      accountId.value(), conversationId.value(), Constants.PAGE_SIZE);
-    return mapper.conversationProjectionToDomain((Object[]) projection[0]);
+    Object[] pageData = (Object[]) conversationJpaRepo.getSelectedPosition(conversationId.value(), accountId.value())[0];
+    Double selectedPosition = (Double) pageData[0];
+    Long totalAmount = (Long) pageData[1];
+    int pageCount = (int) Math.floor(((double) totalAmount) / Constants.PAGE_SIZE);
+    int pageNumber = (int) Math.floor(selectedPosition / Constants.PAGE_SIZE);
+    int minPosition = pageNumber * Constants.PAGE_SIZE;
+    List<ConversationEntity> page = conversationJpaRepo
+      .findContentByAccountId(accountId, Constants.PAGE_SIZE, minPosition);
+    List<Conversation> content = page.stream().map(mapper::entityToDomain).toList();
+    pageNumber = pageCount - pageNumber; // page number needs to be reversed, for the frontend logic.
+    return new PageImpl<>(content, PageRequest.of(pageNumber, Constants.PAGE_SIZE), totalAmount);
   }
 
   @Override
   public Page<Section> getSectionPage(PageRequest pageRequest, ConversationId conversationId) {
-    Page<Object[]> page = sectionJpaRepo
-      .findProjectionPageByConversationId(conversationId, pageRequest);
-    return page.map(projection -> mapper.projectionToDomain(projection));
+    long totalAmount = sectionJpaRepo.countByConversationId(conversationId);
+    int pageCount = (int) Math.floor(((double) totalAmount) / pageRequest.getPageSize());
+    int pageNumber = pageCount - pageRequest.getPageNumber();
+    int minPosition = pageNumber * pageRequest.getPageSize();
+    List<Object[]> page = sectionJpaRepo
+      .findProjectionPageByConversationId(conversationId, Constants.PAGE_SIZE, minPosition);
+    List<Section> content = page.stream().map(mapper::sectionProjectionToDomain).toList();
+    return new PageImpl<>(content, pageRequest, totalAmount);
   }
 
   @Override

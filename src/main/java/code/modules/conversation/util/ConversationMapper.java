@@ -67,7 +67,7 @@ public interface ConversationMapper {
   Conversation entityToDomain(ConversationEntity entity);
 
 
-  default Section projectionToDomain(Object[] projection) {
+  default Section sectionProjectionToDomain(Object[] projection) {
     Request request = requestProjectionToDomain(projection);
     UUID sectionId = (UUID) projection[10];
     OffsetDateTime sectionCreated = OffsetDateTime.parse((String) projection[11]);

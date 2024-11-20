@@ -16,39 +16,18 @@
         </script>
       </head>
     </th:block>
-    <div
-      th:replace="~{conversation/sidebar-content :: previous-content(${conversationPage})}"
-    >
-    </div>
-    <div
-      th:replace="~{conversation/sidebar-content :: content(${conversationPage})}"
-    >
-    </div>
-    <div
-      th:replace="~{conversation/sidebar-content :: next-content(${conversationPage})}"
-    >
-    </div>
+    <div th:replace="~{conversation/sidebar-content :: previous-content(${conversationPage})}"></div>
+    <div th:replace="~{conversation/sidebar-content :: content(${conversationPage})}"></div>
+    <div th:replace="~{conversation/sidebar-content :: next-content(${conversationPage})}"></div>
   </nav>
 </th:block>
 <th:block th:fragment="previous-fragment">
-    <div
-      th:replace="~{conversation/sidebar-content :: previous-content(${conversationPage})}"
-    >
-    </div>
-    <div
-      th:replace="~{conversation/sidebar-content :: content(${conversationPage})}"
-    >
-    </div>
+  <div th:replace="~{conversation/sidebar-content :: previous-content(${conversationPage})}"></div>
+  <div th:replace="~{conversation/sidebar-content :: content(${conversationPage})}"></div>
 </th:block>
 <th:block th:fragment="next-fragment">
-    <div
-      th:replace="~{conversation/sidebar-content :: content(${conversationPage})}"
-    >
-    </div>
-    <div
-      th:replace="~{conversation/sidebar-content :: next-content(${conversationPage})}"
-    >
-    </div>
+  <div th:replace="~{conversation/sidebar-content :: content(${conversationPage})}"></div>
+  <div th:replace="~{conversation/sidebar-content :: next-content(${conversationPage})}"></div>
 </th:block>
 
 <th:block th:fragment="previous-content(conversationPage)">
@@ -58,7 +37,7 @@
       hx-trigger="intersect"
       hx-target="this"
       hx-swap="outerHTML"
-      class="load-button"
+      class="prev-loadBtn"
       hx-on--before-request="correctSidebarScroll(this)"
     >Load Previous
     </button>
@@ -67,26 +46,13 @@
 
 <th:block th:fragment="content(conversationPage)">
   <div
-    th:each="conversation : ${conversationPage.content}" th:classappend="sidebar-item"
+    th:each="i : ${#numbers.sequence(conversationPage.content.size() - 1, 0, -1)}"
+    th:with="conversation=${conversationPage.content.get(i)}" th:classappend="sidebar-item"
   >
     <div
       th:replace="~{conversation/sidebar-content :: sidebar-item(${conversation.id})}"
-    >
-    </div>
+    ></div>
   </div>
-</th:block>
-
-<th:block th:fragment="next-content(conversationPage)">
-  <th:block th:if="${conversationPage.hasNext()}">
-    <button
-      th:hx-get="@{/conversation/list/next(page=${conversationPage.number + 1})}"
-      hx-trigger="intersect"
-      hx-target="this"
-      hx-swap="outerHTML"
-      class="load-button"
-    >Load Next
-    </button>
-  </th:block>
 </th:block>
 
 <th:block th:fragment="sidebar-item(conversationId)">
@@ -107,4 +73,18 @@
     class="conv-getBtn"
   ></button>
 </th:block>
+
+<th:block th:fragment="next-content(conversationPage)">
+  <th:block th:if="${conversationPage.hasNext()}">
+    <button
+      th:hx-get="@{/conversation/list/next(page=${conversationPage.number + 1})}"
+      hx-trigger="intersect"
+      hx-target="this"
+      hx-swap="outerHTML"
+      class="next-loadBtn"
+    >Load Next
+    </button>
+  </th:block>
+</th:block>
+
 </html>
